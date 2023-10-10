@@ -967,6 +967,24 @@ async function handleSmartContractCall(e) {
 }
 
 /**
+ * Handle MetaMask account change.
+ *
+ * @param   Array<string>  accounts      Array of the addresses of the accounts the caller is permitted to access, with the most recently used account first
+ */
+
+function handleAccountsChanged(accounts) {
+    if (accounts.length === 0) {
+      // MetaMask is locked or the user has not connected any accounts.
+      UI.consoleError('Please connect to MetaMask.');
+    } else if (accounts[0] !== window.ethExp.userAccount) {
+      // Reload the interface with accounts[0].
+      window.ethExp.userAccount = accounts[0];
+      // Update the account displayed
+      UI.setInnerHtml('user-wallet', window.ethExp.userAccount);
+    }
+  }
+
+/**
  * Add dynamically the HTML for showing the tabs of each smart contract:
  * - In the HTML element "contracts-tab-nav" it adds a tab with the name of the smart contract.
  * - In the HTML element "contracts-tab-content" it adds the content of the tab (which is a dynamic
@@ -1315,6 +1333,8 @@ class EthereumExplorer {
         if (window.ethereum) {
             web3Provider = window.ethereum;
 
+            window.ethereum.on('accountsChanged', handleAccountsChanged);
+
             try {
                 // Request account access
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -1485,18 +1505,18 @@ class EthereumExplorer {
             throw 'Contract address not found!';
         }
 
-        // getting the transaction raw data
-        var txData = await this.getTransactionData(
+        // if the private key is given then we must sign the transaction with that private key
+        if (fromPrivateKey) {
+            // getting the transaction raw data
+            var txData = await this.getTransactionData(
             fromAddress,
             this.contractDetail(contractName).address,
             options
-        );
+            );
 
-        // checking if there is a fund to send to the smart contract
-        if (options.value) txData.value = options.value;
+            // checking if there is a fund to send to the smart contract
+            if (options.value) txData.value = options.value;
 		
-		// if the private key is given then we must sign the transaction with that private key
-        if (fromPrivateKey) {
             const data = this.contract(contractName).methods[contractFnc](...contractData).encodeABI();
             if (data) txData.data = data;
 
@@ -1513,7 +1533,7 @@ class EthereumExplorer {
         }
 
         // if the private key is not given then teh signature will be handled via Metamask (or similar)
-        this.contract(contractName).methods[contractFnc](...contractData).send(txData)
+        this.contract(contractName).methods[contractFnc](...contractData).send({from : await this.getUserAccount()})
             .on('transactionHash', transactionHash => this.emit('transactionHash', transactionHash))
             .on('receipt', receipt => this.emit('receipt', receipt))
             .on('error', error => this.emit('error', error));
