@@ -1505,10 +1505,12 @@ class EthereumExplorer {
             throw 'Contract address not found!';
         }
 
+        var txData = {};
+
         // if the private key is given then we must sign the transaction with that private key
         if (fromPrivateKey) {
             // getting the transaction raw data
-            var txData = await this.getTransactionData(
+            txData = await this.getTransactionData(
             fromAddress,
             this.contractDetail(contractName).address,
             options
@@ -1533,7 +1535,10 @@ class EthereumExplorer {
         }
 
         // if the private key is not given then teh signature will be handled via Metamask (or similar)
-        this.contract(contractName).methods[contractFnc](...contractData).send({from : await this.getUserAccount()})
+        txData.from = fromAddress;
+        if (options.value) txData.value = options.value;
+
+        this.contract(contractName).methods[contractFnc](...contractData).send(txData)
             .on('transactionHash', transactionHash => this.emit('transactionHash', transactionHash))
             .on('receipt', receipt => this.emit('receipt', receipt))
             .on('error', error => this.emit('error', error));
