@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Icon, Sidebar, Menu } from 'semantic-ui-react';
 
-const UserMenu = () => {
+const MainMenu = () => {
   const [menuVisible, setMenuVisible] = useState(false);
 
   const toggleMenu = () => {
@@ -35,4 +35,4 @@ const UserMenu = () => {
   );
 };
 
-export default UserMenu;
+export default MainMenu;

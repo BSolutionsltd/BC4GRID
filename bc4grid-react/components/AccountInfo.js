@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Dropdown } from 'semantic-ui-react';
+import { Dropdown, Icon } from 'semantic-ui-react';
 import Web3 from 'web3';
 
+import User from './User';
 
 // define compoenent
-const AddressInfo = () => {
+const AccountInfo = () => {
   const [accounts, setAccounts] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState('');
 
@@ -43,9 +44,9 @@ const AddressInfo = () => {
         options={accountOptions}
         value={selectedAccount}
         onChange={handleAccountChange}
-      />
+      />     
     </div>
   );
 };
 
-export default AddressInfo;
+export default AccountInfo;

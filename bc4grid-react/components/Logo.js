@@ -1,6 +1,5 @@
 import React from 'react';
 import { Header, Icon } from 'semantic-ui-react'
-import { Link }   from '../routes';
 
 const Logo = (props) => {
 
