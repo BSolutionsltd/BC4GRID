@@ -1,0 +1,6 @@
+const provider = new HDWalletProvider(
+    {
+      mnemonic: "clever identify total wrist where replace announce purse hub exact glass blood",
+      providerOrUrl : "https://sepolia.infura.io/v3/ec7bd72587b9421a93da94e87a762f41"   
+    }
+);
