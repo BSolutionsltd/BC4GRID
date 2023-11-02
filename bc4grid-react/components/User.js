@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Label } from 'semantic-ui-react';
+import { Image } from 'semantic-ui-react';
 
 const User = ({ name }) => {
   return (
@@ -7,7 +7,7 @@ const User = ({ name }) => {
       <Image
         src="/images/avatar/person.png"  // Replace with the URL of the person's image
         avatar
-        size="mini"
+        size="tiny"
       />
       {name}
     </div>

@@ -11,7 +11,7 @@ const MenuBar = (props) => {
   };
 
   return (
-    <Menu tabular>
+    <Menu pointing secondary >
       <Link href="/">
         <Menu.Item
           name="Home"

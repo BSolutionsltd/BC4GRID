@@ -26,10 +26,10 @@ const MainMenu = () => {
         direction = "right"
         vertical        
       >
-        <Menu.Item as="a">Home</Menu.Item>
-        <Menu.Item as="a">History</Menu.Item>
-        <Menu.Item as="a">Statistics</Menu.Item>
-        <Menu.Item as="a">Settings</Menu.Item>
+        <Menu.Item as="a" href="/" > Home </Menu.Item>
+        <Menu.Item as="a" href="/history">History</Menu.Item>
+        <Menu.Item as="a" href="/statistics">Statistics</Menu.Item>
+        <Menu.Item as="a" href="/settings">Settings</Menu.Item>
       </Sidebar>      
     </div>
   );
