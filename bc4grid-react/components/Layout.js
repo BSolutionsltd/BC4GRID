@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component }  from 'react';
 import MenuBar from './MenuBar';
 import Header from './Header';
 import BalanceInfo from './Balance';
@@ -8,7 +8,24 @@ import { Container }  from 'semantic-ui-react';
 
 import Head from 'next/head'; // adds everything into a header from <Head>
 
-const Layout = (props) => {
+class Layout extends Component {
+
+    state = {
+      accounts: [],
+      balance: ''  
+    };
+
+    static async getInitialProps(props) {
+        const accounts = await web3.eth.getAccounts();    
+        console.log(accounts[0]); 
+        const balance = await web3.eth.getbalance(accounts[0]);
+
+                
+        return { accounts, balance }; // Return accounts as an object
+      }
+
+render(){
+
     return (
         <Container>
             <Head>
@@ -16,12 +33,13 @@ const Layout = (props) => {
             </Head>
             <Header />
             <MenuBar />
-            <BalanceInfo balanceKwh="100 kWh" price="$50.00" />
+            <BalanceInfo balanceKwh="4kWh" price="$50.00" />
 
-            {props.children}
+            {this.props.children}
             
         </Container>
     )
+}
 }
 
 export default Layout;

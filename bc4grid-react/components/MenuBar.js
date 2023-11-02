@@ -1,17 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Menu } from 'semantic-ui-react';
-import  Link  from 'next/link';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
-
-const MenuBar = (props) => {
+const MenuBar = () => {
   const [activeItem, setActiveItem] = useState('Home');
+  const router = useRouter();
+
+  useEffect(() => {
+    // Update activeItem based on the current route
+    if (router.pathname === '/') {
+      setActiveItem('Home');
+    } else if (router.pathname === '/buy') {
+      setActiveItem('Buy');
+    } else if (router.pathname === '/sell') {
+      setActiveItem('Sell');
+    }
+  }, [router.pathname]);
 
   const handleItemClick = (e, { name }) => {
     setActiveItem(name);
   };
 
   return (
-    <Menu pointing secondary >
+    <Menu pointing secondary>
       <Link href="/">
         <Menu.Item
           name="Home"
@@ -21,7 +33,7 @@ const MenuBar = (props) => {
       </Link>
 
       <Link href="/buy">
-      <Menu.Item
+        <Menu.Item
           name="Buy"
           active={activeItem === 'Buy'}
           onClick={() => handleItemClick(null, { name: 'Buy' })}
@@ -29,13 +41,13 @@ const MenuBar = (props) => {
       </Link>
 
       <Link href="/sell">
-      <Menu.Item
+        <Menu.Item
           name="Sell"
           active={activeItem === 'Sell'}
           onClick={() => handleItemClick(null, { name: 'Sell' })}
         />
       </Link>
-    </Menu>    
+    </Menu>
   );
 };
 

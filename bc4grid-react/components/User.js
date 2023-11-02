@@ -1,15 +1,54 @@
-import React from 'react';
-import { Image } from 'semantic-ui-react';
 
-const User = ({ name }) => {
+import React, { useState, useEffect, useRef } from 'react';
+import { Image, Sidebar, Menu } from 'semantic-ui-react';
+
+// API endpoint: /user/id/
+const User = () => {
+  const [menuVisible, setMenuVisible] = useState(false);
+  const sidebarRef = useRef(null);
+
+  const toggleMenu = () => {
+    setMenuVisible(!menuVisible);
+  };
+
+  useEffect(() => {
+    const closeSidebar = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        setMenuVisible(false);
+      }
+    };
+
+    document.addEventListener('click', closeSidebar);
+
+    return () => {
+      document.removeEventListener('click', closeSidebar);
+    };
+  }, []);
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div ref={sidebarRef}>
       <Image
-        src="/images/avatar/person.png"  // Replace with the URL of the person's image
         avatar
-        size="tiny"
+        centered
+        size="mini"
+        src="/images/avatar/person.png"
+        style={{ cursor: 'pointer' }}
+        onClick={toggleMenu}        
       />
-      {name}
+
+      <Sidebar
+        as={Menu}
+        animation="overlay"
+        width="thin"
+        visible={menuVisible}
+        icon="labeled"
+        direction="right"
+        vertical
+      >
+        
+        <Menu.Item as="a" href="/profile">Profile</Menu.Item>
+        <Menu.Item as="a" href="/login">Login</Menu.Item>        
+      </Sidebar>
     </div>
   );
 };

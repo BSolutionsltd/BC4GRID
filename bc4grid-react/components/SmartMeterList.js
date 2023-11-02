@@ -1,9 +1,11 @@
 import React from 'react';
 import { Item, Icon, Button, Header, Segment } from 'semantic-ui-react';
 
+
+// API endpoint: user/id/meters
 const SmartMeterList = ({ meters }) => {
   return (
-    <>      
+    <div>      
       <Header as='h2' attached='top'> Smart Meters </Header>
     <Segment attached>
     <Item.Group divided>
@@ -22,7 +24,7 @@ const SmartMeterList = ({ meters }) => {
       ))}
     </Item.Group>
     </Segment>
-  </>
+  </div>
       
   );
 };

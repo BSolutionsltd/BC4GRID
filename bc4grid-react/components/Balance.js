@@ -1,6 +1,7 @@
 import React from 'react';
 import { Segment, Grid, Divider } from 'semantic-ui-react';
 
+// API endpoint: /user/id/balance
 const BalanceInfo = ({ balanceKwh, price }) => {
     
   return (

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Form, Grid, Header, Icon, Segment } from 'semantic-ui-react';
-import Layout from '../components/Layout';
+import LayoutLogin from '../components/LayoutLogin';
 
 class Login extends Component {
   constructor(props) {
@@ -28,10 +28,11 @@ class Login extends Component {
 
   render() {
     return (
-        <Layout>
+      <div>
+        <LayoutLogin>
       <Grid textAlign="center" verticalAlign="middle" style={{ height: '100vh' }}>
         <Grid.Column style={{ maxWidth: 450 }}>
-          <Header as="h2" color="teal" textAlign="center">
+          <Header as="h2" color="primary" textAlign="center">
           <Icon name='plug' /> Log-in to your account
           </Header>
           <Form size="large" onSubmit={this.handleLogin}>
@@ -61,7 +62,8 @@ class Login extends Component {
           </Form>
         </Grid.Column>
       </Grid>
-      </Layout>
+      </LayoutLogin >
+      </div>
     );
   }
 }

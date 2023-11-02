@@ -6,6 +6,10 @@ import User from './User';
 
 // define compoenent
 const AccountInfo = () => {
+
+  const style = { fontSize : '12px' };
+
+  
   const [accounts, setAccounts] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState('');
 
@@ -37,7 +41,7 @@ const AccountInfo = () => {
 
   return (
     <div>
-      <Dropdown
+      <Dropdown style = {style}
         placeholder="Select an account"
         fluid
         selection
