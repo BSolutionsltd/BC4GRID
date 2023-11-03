@@ -1,5 +1,5 @@
 import React, { Component }  from 'react';
-import MenuBar from './MenuBar';
+import TradeMenu from './TradeMenu';
 import Header from './Header';
 import BalanceInfo from './Balance';
 
@@ -32,7 +32,7 @@ render(){
             <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.12/semantic.min.css" />
             </Head>
             <Header />
-            <MenuBar />
+            <TradeMenu />
             <BalanceInfo balanceKwh="4kWh" price="$50.00" />
 
             {this.props.children}

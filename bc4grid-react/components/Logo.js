@@ -6,7 +6,7 @@ const Logo = () => {
   return (    
     <Link href="/">
       <a>
-        <Header as='h2'  style={{ cursor: 'pointer' }}>
+        <Header as='h2' style={{ cursor: 'pointer' }}>
           <Icon name='plug'/>
           <Header.Content>BC4GRID</Header.Content>
         </Header>

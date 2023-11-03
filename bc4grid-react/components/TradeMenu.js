@@ -3,7 +3,7 @@ import { Menu } from 'semantic-ui-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
-const MenuBar = () => {
+const TradeMenu = () => {
   const [activeItem, setActiveItem] = useState('Home');
   const router = useRouter();
 
@@ -30,6 +30,14 @@ const MenuBar = () => {
           active={activeItem === 'Home'}
           onClick={() => handleItemClick(null, { name: 'Home' })}
         />
+      </Link>     
+
+      <Link href="/sell">
+        <Menu.Item
+          name="Sell"
+          active={activeItem === 'Sell'}
+          onClick={() => handleItemClick(null, { name: 'Sell' })}
+        />
       </Link>
 
       <Link href="/buy">
@@ -40,15 +48,9 @@ const MenuBar = () => {
         />
       </Link>
 
-      <Link href="/sell">
-        <Menu.Item
-          name="Sell"
-          active={activeItem === 'Sell'}
-          onClick={() => handleItemClick(null, { name: 'Sell' })}
-        />
-      </Link>
+
     </Menu>
   );
 };
 
-export default MenuBar;
+export default TradeMenu;
