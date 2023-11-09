@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Layout from '../components/Layout';
+import Footer from '../components/Footer';
 
 // semantic-ui
 import SmartMeterList from '../components/SmartMeterList';
@@ -18,6 +19,7 @@ class Home extends Component {
     return (      
       <Layout>
        <SmartMeterList meters={ this.meters }/>
+       <Footer />  
       </Layout>      
     );
   }

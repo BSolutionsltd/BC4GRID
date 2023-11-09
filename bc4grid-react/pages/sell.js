@@ -8,7 +8,7 @@ import { Button, Table, Segment } from "semantic-ui-react";
 // custom components
 import Layout from '../components/Layout';
 import {OffersHeader, OffersRow, MakeOffer} from '../components/Sell';
-import Market from '../components/Market';
+import {Market} from '../components/Market';
 
 
 

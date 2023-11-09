@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 
 // semantic-ui
-import {Login} from '../components/Account';
+import {Register} from '../components/Account';
 
-class LogPage extends Component {
+class RegisterPage extends Component {
 
   // API call /user/meters
   users = [
@@ -15,10 +15,11 @@ class LogPage extends Component {
 
   render() {
     return (      
-      <Login />      
+      <Register /> 
+      
       
     );
   }
 }
 
-export default LogPage;
+export default RegisterPage;

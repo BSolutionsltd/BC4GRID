@@ -1,6 +1,7 @@
 import React, { Component }  from 'react';
 import TradeMenu from './TradeMenu';
 import Header from './Header';
+import Footer from './Footer';
 import BalanceInfo from './Balance';
 
 // semantic ui
@@ -35,9 +36,10 @@ render(){
             <TradeMenu />
             <BalanceInfo balanceKwh="4kWh" price="$50.00" />
 
-            {this.props.children}
-            
+            {this.props.children}          
+             
         </Container>
+
     )
 }
 }

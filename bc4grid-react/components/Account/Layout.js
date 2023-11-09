@@ -1,5 +1,4 @@
 import React, { Component }  from 'react';
-import Logo from '../components/Logo';
 
 // semantic ui
 import { Container }  from 'semantic-ui-react';
