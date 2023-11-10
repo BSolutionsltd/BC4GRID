@@ -7,6 +7,7 @@
     "test": "mocha",
     "dev": "next dev"
   },
+  "engines": {"node":"20.9.0"},
   "author": "",
   "license": "ISC",
   "dependencies": {
