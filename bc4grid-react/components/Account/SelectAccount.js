@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Dropdown, Icon } from 'semantic-ui-react';
 import Web3 from 'web3';
 
-import User from './User';
+
 
 // define compoenent
-const AccountInfo = () => {
+const SelectAccount = () => {
 
   const style = { fontSize : '12px' };
 
@@ -53,4 +53,4 @@ const AccountInfo = () => {
   );
 };
 
-export default AccountInfo;
+export default SelectAccount;

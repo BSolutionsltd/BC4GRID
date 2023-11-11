@@ -7,9 +7,9 @@ const Profile = ({ user }) => {
   return (
     <Layout>
       <Header />
-      <Grid stackable columns={2}>
-        <Grid.Column>
-          <Card>
+      <Grid stackable columns={2} relaxed>
+        <Grid.Column width={6}>
+          <Card fluid> 
             <Image src={user.avatar} wrapped ui={false} />
             <Card.Content>
               <Card.Header>{user.name}</Card.Header>
@@ -28,7 +28,7 @@ const Profile = ({ user }) => {
             </Card.Content>
           </Card>
         </Grid.Column>
-        <Grid.Column>
+        <Grid.Column width={10}>
           <Form>
             <Form.Field>
               <label>Full Name</label>

@@ -1,28 +1,20 @@
 import React, { Component } from 'react';
-import Layout from '../components/Layout';
+import App from '../components/App';
 import Footer from '../components/Footer';
 
 // semantic-ui
-import SmartMeterList from '../components/SmartMeterList';
-
-class Home extends Component {
-
-  // API call /user/meters
-  meters = [
-    { name: 'Smart Meter 1', description: 'Description for Smart Meter 1' },
-    { name: 'Smart Meter 2', description: 'Description for Smart Meter 2' },    
-  ];
-
-
-
-  render() {
-    return (      
-      <Layout>
-       <SmartMeterList meters={ this.meters }/>
-       <Footer />  
-      </Layout>      
-    );
-  }
+const HomePage = () => {
+  return <h3>Welcome to the home page!</h3>;
 }
 
-export default Home;
+
+const IndexPage = () => {
+  return (
+    <App>
+      <HomePage />
+      <Footer />
+    </App>
+  );
+};
+
+export default IndexPage;

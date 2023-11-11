@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Button, Form, Grid, Header, Icon, Segment } from 'semantic-ui-react';
 import Layout from './Layout';
 import Link from 'next/link';
+import Router from 'next/router'; 
 
 class Login extends Component {
   constructor(props) {
@@ -9,6 +10,7 @@ class Login extends Component {
     this.state = {
       email: '',
       password: '',
+      isLoggedIn: false, // Add isLoggedIn state
     };
   }
 
@@ -17,6 +19,9 @@ class Login extends Component {
     // For this example, we'll just log the email and password to the console
     console.log('Email:', this.state.email);
     console.log('Password:', this.state.password);
+
+    // Simulate successful login
+    this.setState({ isLoggedIn: true });
   };
 
   handleEmailChange = (e) => {
@@ -28,6 +33,14 @@ class Login extends Component {
   };
 
   render() {
+    const { isLoggedIn } = this.state;
+
+    if (isLoggedIn) {
+      // Redirect to the logged-in page or perform any other action
+      // Redirect to the profile page
+      Router.push('/profile');
+    }
+
     return (
       <div>
         <Layout>

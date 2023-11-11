@@ -1,17 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Table, Input, Checkbox, Button } from "semantic-ui-react";
 
-const Market = ( { isBuyPage } ) => {
-  // mimic data
-  const initialData = [
-    { account: "Account 1", amount: 100, pricePerUnit: 10, totalPrice: 1000 },
-    { account: "Account 2", amount: 200, pricePerUnit: 8, totalPrice: 1600 },
-    { account: "Account 3", amount: 150, pricePerUnit: 12, totalPrice: 1800 },
-    // Add more data as needed
-  ];
-
+const Market = ( { marketItems, isBuyPage } ) => {
+ 
   // market data
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState([]);
   // selected items from market
   const [selectedItems, setSelectedItems] = useState([]);
   // filters
@@ -19,6 +12,11 @@ const Market = ( { isBuyPage } ) => {
   const [amountFilter, setAmountFilter] = useState("");
   const [pricePerUnitFilter, setPricePerUnitFilter] = useState("");
   const [totalPriceFilter, setTotalPriceFilter] = useState("");
+
+  // update data
+  useEffect(() => {
+    setData(marketItems);
+  }, [marketItems]);
 
   
   // event handlers
@@ -115,9 +113,10 @@ const Market = ( { isBuyPage } ) => {
                 onChange={handleTotalPriceFilterChange}
               />
             </HeaderCell>
-            <HeaderCell>
-            {isBuyPage && <HeaderCell><Button primary onClick={handleBuyClick}>Add</Button></HeaderCell>}
-            </HeaderCell>
+            {isBuyPage ? (
+              <HeaderCell><Button primary onClick={handleBuyClick}>Add</Button></HeaderCell>
+            ) : null }
+            
           </Row>
         </Header>
         <Body>
@@ -132,7 +131,7 @@ const Market = ( { isBuyPage } ) => {
                   <Checkbox onChange={(e, {checked}) => handleCheckboxChange(index, checked)} />                  
                 </Cell>
               ) : (
-                <Cell />
+                null
               )}
             </Row>
           ))}

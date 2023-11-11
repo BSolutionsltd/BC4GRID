@@ -1,65 +1,67 @@
-import React, { Component } from 'react';
-// next components
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { Button, Table, Segment } from 'semantic-ui-react';
+import App from '../components/App';
+import { OffersHeader, OffersRow, MakeOffer } from '../components/Sell';
+import { Market } from '../components/Market';
 
-// semantic ui components
-import { Button, Table, Segment } from "semantic-ui-react";
+const Sell = ({offers, market}) => { 
+  // I want to re-render components on change
+  const [sellItems] = useState(offers);
+  const [marketItems] = useState(market);
 
-// custom components
-import Layout from '../components/Layout';
-import {OffersHeader, OffersRow, MakeOffer} from '../components/Sell';
-import {Market} from '../components/Market';
+  const renderRows = (offers) => {
+    return offers.map((offer) => (
+      <OffersRow
+        key={offer.id}
+        id={offer.id}
+        amount={offer.amount}
+        pricePerUnit={offer.pricePerUnit}
+        totalPrice={offer.totalPrice}
+      />
+    ));
+  };
 
-
-
-
-class Sell extends Component {
-
-  state = {
-    offers : [
-      { id: 1, amount: '10kWh', pricePerUnit: '2wei', totalPrice : '20wei' },
-      { id: 2, amount: '20kWh', pricePerUnit: '3wei', totalPrice : '60wei' }
-    ]
-  }
-    
-
-  renderRows() {
-    return this.state.offers.map((offer) => {
-      return (
-        <OffersRow
-          key = {offer.id}
-          id = {offer.id}
-          amount = {offer.amount}
-          pricePerUnit = {offer.pricePerUnit}
-          totalPrice = { offer.totalPrice }
-        />
-      );
-    });
-  }
-  
-  render() {
-
-   const { Header, Row, HeaderCell, Body } = Table;
-
-    return (
-      <Layout>
-        <Segment>
+  return (
+    <div>
+      <Segment>
         <h3>Make an offer</h3>
-        <MakeOffer />        
+        <MakeOffer />
         <h3>Your Offers</h3>
         <Table>
           <OffersHeader />
-          <Body>{this.renderRows()}</Body>
+          <Table.Body>{renderRows(marketItems)}</Table.Body>
         </Table>
-        </Segment>
+      </Segment>
 
-        <Segment>
+      <Segment>
         <h3>Market</h3>
-          <Market />
-        </Segment>
-      </Layout>
-    );
-    }
+        <Market marketItems={marketItems} isBuyPage={false}/>
+      </Segment>
+    </div>
+  );
+};
+
+
+const SellPage = () => {
+  const offers = [
+    { id: 1, account: 'Bob', amount: '50kWh', pricePerUnit: '2wei', totalPrice: '100wei' },
+    { id: 2, account: 'Alice:', amount: '10kWh', pricePerUnit: '3wei', totalPrice: '30wei' },
+  ]
+  
+  const market = [
+    { account: "Account 1", amount: 100, pricePerUnit: 10, totalPrice: 1000 },
+    { account: "Account 2", amount: 200, pricePerUnit: 8, totalPrice: 1600 },
+    { account: "Account 3", amount: 150, pricePerUnit: 12, totalPrice: 1800 }
+  ]
+
+
+
+  return (
+    <App>
+    <Sell offers = {offers} market = {market}/>
+    </App>
+  );
 }
 
-export default Sell;
+export default SellPage;

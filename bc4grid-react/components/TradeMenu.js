@@ -9,8 +9,8 @@ const TradeMenu = () => {
 
   useEffect(() => {
     // Update activeItem based on the current route
-    if (router.pathname === '/') {
-      setActiveItem('Home');
+    if (router.pathname === '/trading') {
+      setActiveItem('Overview');
     } else if (router.pathname === '/buy') {
       setActiveItem('Buy');
     } else if (router.pathname === '/sell') {
@@ -24,11 +24,11 @@ const TradeMenu = () => {
 
   return (
     <Menu pointing secondary>
-      <Link href="/">
+      <Link href="/trading">
         <Menu.Item
-          name="Home"
-          active={activeItem === 'Home'}
-          onClick={() => handleItemClick(null, { name: 'Home' })}
+          name="Trade"
+          active={activeItem === 'Trade'}
+          onClick={() => handleItemClick(null, { name: 'Trade' })}
         />
       </Link>     
 

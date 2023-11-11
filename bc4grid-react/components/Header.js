@@ -2,11 +2,11 @@ import React from 'react';
 import { Grid } from 'semantic-ui-react';
 
 import Logo  from './Logo';
-import AccountInfo from './AccountInfo';
 import MainMenu    from './MainMenu';
-import User from './User';
+import User from './Account/UserMenu';
 
 const Header = () => {
+
     return (
       
       <Grid columns={4} padded='vertically' verticalAlign='middle'>
@@ -20,12 +20,7 @@ const Header = () => {
           <Grid.Column width={4} textAlign='right'>
             <User name='User' />
           </Grid.Column>         
-        </Grid.Row>
-        <Grid.Row only="mobile">
-          <Grid.Column width={16}>
-            <AccountInfo />
-          </Grid.Column>
-        </Grid.Row>
+        </Grid.Row>        
      
 
         <Grid.Row only="tablet">
@@ -39,23 +34,16 @@ const Header = () => {
             <User name='User' />
           </Grid.Column>         
         </Grid.Row>
-        <Grid.Row only="tablet">
-          <Grid.Column width={16}>
-            <AccountInfo />
-          </Grid.Column>
-        </Grid.Row>
+        
         
         <Grid.Row only="computer">
         <Grid.Column width={1}>
             <MainMenu />
           </Grid.Column>   
-          <Grid.Column width={3}>
+          <Grid.Column width={14}>
             <Logo />
-          </Grid.Column>
-          <Grid.Column width={8}>
-            <AccountInfo />
-          </Grid.Column>
-          <Grid.Column width={4} textAlign='center'>
+          </Grid.Column>          
+          <Grid.Column width={1} textAlign='center'>
             <User name='User' />
           </Grid.Column>               
         </Grid.Row>
