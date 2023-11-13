@@ -4,24 +4,32 @@ import Layout from './Layout';
 import Link from 'next/link';
 import Router from 'next/router'; 
 
+
+// Authenication logic
+import { AuthContext } from '../Auth';
+
 class Login extends Component {
+
+  static contextType = AuthContext;
+
   constructor(props) {
     super(props);
     this.state = {
       email: '',
-      password: '',
-      isLoggedIn: false, // Add isLoggedIn state
+      password: ''      
     };
   }
 
   handleLogin = () => {
-    // Implement your authentication logic here
-    // For this example, we'll just log the email and password to the console
-    console.log('Email:', this.state.email);
-    console.log('Password:', this.state.password);
+    // Implement your authentication logic here   
+    // ...
+    // test if context is read
+    this.context.logIn();
+  
+    
 
-    // Simulate successful login
-    this.setState({ isLoggedIn: true });
+    // Redirect to the profile page
+    Router.push('/');
   };
 
   handleEmailChange = (e) => {
@@ -33,14 +41,7 @@ class Login extends Component {
   };
 
   render() {
-    const { isLoggedIn } = this.state;
-
-    if (isLoggedIn) {
-      // Redirect to the logged-in page or perform any other action
-      // Redirect to the profile page
-      Router.push('/profile');
-    }
-
+    
     return (
       <div>
         <Layout>

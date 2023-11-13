@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 
-// semantic-ui
-import {Login} from '../components/Account';
+import { Login } from '../components/Account'
 
+import { AuthProvider } from '../components/Auth';
+
+// semantic-ui
 class LogPage extends Component {
 
   // API call /user/meters
@@ -15,8 +17,9 @@ class LogPage extends Component {
 
   render() {
     return (      
-      <Login />      
-      
+      <AuthProvider>
+        <Login />
+      </AuthProvider>
     );
   }
 }

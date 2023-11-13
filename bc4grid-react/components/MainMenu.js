@@ -41,7 +41,7 @@ const MainMenu = () => {
         direction="left"
         vertical
       >
-        <Menu.Item as="a" href="/">Trading</Menu.Item>        
+        <Menu.Item as="a" href="/trading">Trading</Menu.Item>        
         <Menu.Item as="a" href="/history">History</Menu.Item>
         <Menu.Item as="a" href="/statistics">Statistics</Menu.Item>
         <Menu.Item as="a" href="/settings">Settings</Menu.Item>

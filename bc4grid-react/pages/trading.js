@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Layout from '../components/App';
+import App from '../components/App';
 import Footer from '../components/Footer';
 
 // semantic-ui
@@ -17,10 +17,10 @@ class Home extends Component {
 
   render() {
     return (      
-      <Layout>
+      <App>
        <SmartMeterList meters={ this.meters }/>
        <Footer />  
-      </Layout>      
+      </App>      
     );
   }
 }
