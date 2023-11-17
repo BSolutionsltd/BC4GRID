@@ -4,6 +4,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Image, Sidebar, Menu, Icon } from 'semantic-ui-react';
 
+import Link from 'next/link';
+
 // API endpoint: /user/id/
 const User = () => {
   const [menuVisible, setMenuVisible] = useState(false);
@@ -66,21 +68,20 @@ const User = () => {
         direction="right"
         vertical
       >
-        {isLoggedIn && (
+        
           <>
-            <Menu.Item as="a" href="/profile">
-              Profile
-            </Menu.Item>
-            <Menu.Item as="a" href="/logout" onClick={handleLogout}>
-              Logout
-            </Menu.Item>
-          </>
-        )}
-        {!isLoggedIn && (
-          <Menu.Item as="a" href="/login" onClick={handleLogin}>
-            Login
-          </Menu.Item>
-        )}
+          <Link href="/profile" >
+            <Menu.Item as="a" href="/auth/profile" />
+          </Link>
+
+          <Link href="/auth/login" >
+            <Menu.Item name="login" />
+          </Link>
+          <Link href="/auth/logout" >
+            <Menu.Item name="logout" />
+          </Link>
+        </>
+        
       </Sidebar>
     </div>
   );

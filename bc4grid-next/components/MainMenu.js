@@ -46,13 +46,13 @@ const MainMenu = () => {
         vertical
       >
         <Link href="/dashboard">
-          <Menu.Item name="trading"></Menu.Item>                
+          <Menu.Item name="trading" />
         </Link>
         <Link href="/history">
-          <Menu.Item name="history"></Menu.Item>                
+          <Menu.Item name="history" />
         </Link>
         <Link href="/statistics">
-          <Menu.Item name="statistics"></Menu.Item>                
+          <Menu.Item name="statistics" />
         </Link>
         
       </Sidebar>
