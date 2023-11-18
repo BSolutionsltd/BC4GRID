@@ -30,13 +30,6 @@ const User = () => {
     };
   }, []);
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-  };
 
   return (
     <div ref={sidebarRef}>
@@ -70,15 +63,20 @@ const User = () => {
       >
         
           <>
-          <Link href="/profile" >
-            <Menu.Item as="a" href="/auth/profile" />
+          <Link href="/auth/profile" passHref>
+            <Menu.Item as="a" name="profile" />
           </Link>
 
-          <Link href="/auth/login" >
-            <Menu.Item name="login" />
+          <Link href="/auth/login" passHref>
+            <Menu.Item as="a" name="login" />
           </Link>
-          <Link href="/auth/logout" >
-            <Menu.Item name="logout" />
+
+          <Link href="/auth/register" passHref>
+            <Menu.Item as="a" name="register" />
+          </Link>
+
+          <Link href="/auth/logout"  passHref>
+            <Menu.Item as="a" name="logout" />
           </Link>
         </>
         

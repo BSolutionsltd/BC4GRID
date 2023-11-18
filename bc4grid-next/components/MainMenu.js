@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Icon, Sidebar, Menu } from 'semantic-ui-react';
 
-import Link from 'next/link';
+import Link from 'next/link'; 
 
 const MainMenu = () => {
   const [menuVisible, setMenuVisible] = useState(false);
@@ -45,14 +45,14 @@ const MainMenu = () => {
         direction="left"
         vertical
       >
-        <Link href="/dashboard">
-          <Menu.Item name="trading" />
+        <Link href="/dashboard" passHref>
+          <Menu.Item as="a" name="trading" />
         </Link>
-        <Link href="/history">
-          <Menu.Item name="history" />
+        <Link href="/history" passHref>
+          <Menu.Item as="a"name="history" />
         </Link>
-        <Link href="/statistics">
-          <Menu.Item name="statistics" />
+        <Link href="/statistics" passHref>
+          <Menu.Item as="a"name="statistics" />
         </Link>
         
       </Sidebar>

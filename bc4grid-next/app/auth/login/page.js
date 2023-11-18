@@ -47,7 +47,7 @@ const LoginPage = () => {
         <Grid textAlign="center" verticalAlign="middle" style={{ height: '100vh' }}>
             <Grid.Column style={{ maxWidth: 450 }}>
               <Header as="h2" color="primary" textAlign="center">
-                <Icon name='plug' /> Log-in to your account
+                Log-in to your account
               </Header>
               <Form size="large" onSubmit={onSubmit}>
                 <Segment stacked>
