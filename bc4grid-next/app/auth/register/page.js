@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 
 import React from 'react';
-import { Button, Form, Grid, Header, Icon, Segment } from 'semantic-ui-react';
+import { Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react';
 
 
 
@@ -16,6 +16,15 @@ const Register = () => {
         password: '',
         confirmPassword: ''
     });
+    
+
+    const [alert, setAlert] = useState({
+        status: "",
+        message : ""
+    });
+
+    // New state variable to track whether status has been set
+    const [statusSet, setStatusSet] = useState(false);
 
     const onChange = (e) => {
         setRegisterData({
@@ -25,10 +34,53 @@ const Register = () => {
     };
     
     
-    const onSubmit = (e) => {
-        return null;
+    const onSubmit = async (e) => {
+      e.preventDefault();
         
-    }
+      try {
+          const response = await fetch(
+              '/api/auth/signup',
+              {
+                  method: 'POST',
+                  body: JSON.stringify(registerData),
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+              }
+          );
+  
+          if (response.ok) {
+              setAlert({
+                  status: 'success',
+                  message: 'Account created successfully',                  
+              });
+
+              console.log('status of response: ', response.status);  
+              setRegisterData({
+                  name: '',
+                  email: '',
+                  password: '',
+                  confirmPassword: '',
+              });
+
+              // Set the statusSet to true when the status changes
+              setStatusSet(true);
+          } else {
+              setAlert({
+                  status: 'error',
+                  message: 'Error creating account',
+              });
+          }
+      } catch (error) {
+          console.error({ error });
+          setAlert({
+              status: 'error',
+              message: 'Error creating account',
+          });
+      }
+      
+  };
+  
 
     return (
     <>         
@@ -44,7 +96,8 @@ const Register = () => {
                       icon="user"
                       iconPosition="left"
                       placeholder="Full Name"
-                      name="fullName"
+                      name="name"
+                      type="text"
                       value={registerData.name}
                       onChange={onChange}
                     />
@@ -81,12 +134,28 @@ const Register = () => {
                     />
                     <Button primary fluid size="large" type="submit">
                       Register
-                    </Button>
+                    </Button>                
                   </Segment>
+                 
                 </Form>
+                  
+                <Message hidden={!alert.status} visible={alert.status} success={alert.status == 'success'} >
+                {alert.message}
+              </Message>
+                
               </Grid.Column>
+              
+              
             </Grid>
-          
+            
+            <p>Message: TEST
+            Alert: {alert.status}</p>
+            
+           
+         
+              
+           
+            
         </>
       );
 };

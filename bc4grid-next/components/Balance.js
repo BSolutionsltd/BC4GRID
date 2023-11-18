@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Segment, Grid, Dropdown } from 'semantic-ui-react';
 
-import web3 from '@/libs/ethereum/web3';
+import web3 from '@/lib/ethereum/web3';
 
 // define component
 const SelectAccount = ({ accounts, selectedAccount, handleAccountChange }) => {
