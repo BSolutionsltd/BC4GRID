@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 
-import React from 'react';
+// semantic-ui-react
 import { Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react';
 
 
 
-const Register = () => {
+const SignIn = () => {
 
     const [registerData, setRegisterData] = useState({
         name : '',
@@ -37,6 +37,8 @@ const Register = () => {
     const onSubmit = async (e) => {
       e.preventDefault();
 
+      console.log('payload: ',registerData);
+
       // client side validation
       if (registerData.password !== registerData.confirmPassword) {
           setAlert({
@@ -48,7 +50,7 @@ const Register = () => {
         
       try {
           const response = await fetch(
-              '/api/auth/signup',
+              'http://localhost:3000/api/auth/signup',
               {
                   method: 'POST',
                   body: JSON.stringify(registerData),
@@ -59,6 +61,10 @@ const Register = () => {
           );
   
           if (response.ok) {
+            
+              const data = await response.json();
+              console.log(data);
+
               setAlert({
                   status: 'success',
                   message: 'Account created successfully',                  
@@ -172,4 +178,4 @@ const Register = () => {
 
 
 
-export default Register;
+export default SignIn;
