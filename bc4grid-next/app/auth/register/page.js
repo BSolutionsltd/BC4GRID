@@ -36,6 +36,15 @@ const Register = () => {
     
     const onSubmit = async (e) => {
       e.preventDefault();
+
+      // client side validation
+      if (registerData.password !== registerData.confirmPassword) {
+          setAlert({
+              status: 'error',
+              message: 'Passwords do not match',
+          });
+          return;
+      }
         
       try {
           const response = await fetch(
@@ -139,7 +148,7 @@ const Register = () => {
                  
                 </Form>
                   
-                <Message hidden={!alert.status} visible={alert.status} success={alert.status == 'success'} >
+                <Message hidden={!alert.status} visible={alert.status} success={alert.status == 'success'} error={alert.status == 'error'} >
                 {alert.message}
               </Message>
                 
