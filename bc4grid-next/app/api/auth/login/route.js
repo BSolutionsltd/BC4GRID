@@ -1,24 +1,25 @@
 
 // API endpoint for user login
 
-import { SHA256 as sha256 } from "crypto-js";
-
 // import prisma client
 import prisma from "@/lib/prisma";
-import hashPassword from "@/lib/crypto/hash";
+import hashPassword from "@/lib/hash";
+import { NextResponse } from "next/server";
 
-export default async function handle(req, res) {
-  if (req.method === "POST") {
-    //login uer
-    await loginUserHandler(req, res);
-  } else {
-    return res.status(405);
-  }
+
+export async function POST(req) {
+  return await loginUserHandler(req);
 }
-async function loginUserHandler(req, res) {
+
+
+
+async function loginUserHandler(req) {
+  const body = await req.json(); 
   const { email, password } = req.body;
+
   if (!email || !password) {
-    return res.status(400).json({ message: "invalid inputs" });
+    return NextResponse.json({ message: "invalid inputs" }, {status: 400});
+    
   }
   try {
     const user = await prisma.user.findUnique({
@@ -33,9 +34,11 @@ async function loginUserHandler(req, res) {
     });
     if (user && user.password === hashPassword(password)) {
       // exclude password from json response
-      return res.status(200).json(exclude(user, ["password"]));
+      return NextResponse.json(exclude(user, ["password"]),{status: 200});
+      
     } else {
-      return res.status(401).json({ message: "invalid credentials" });
+      return NextResponse.json({ message: "invalid credentials" }, {status: 401});
+      
     }
   } catch (e) {
     throw new Error(e);

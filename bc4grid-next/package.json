@@ -22,6 +22,7 @@
     "semantic-ui-css": "^2.5.0",
     "semantic-ui-react": "^2.1.4",
     "solc": "^0.8.23-fixed",
+    "validator": "^13.11.0",
     "web3": "^4.2.2"
   },
   "devDependencies": {

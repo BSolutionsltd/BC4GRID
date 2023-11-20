@@ -1,4 +1,4 @@
-import hashPassword from "@/lib/crypto/hash";
+import hashPassword from "@/lib/hash";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { NextResponse } from 'next/server';

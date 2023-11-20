@@ -1,32 +1,54 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Button, Form, Grid, Header, Icon, Segment } from 'semantic-ui-react';
+import React, { useEffect, useState } from 'react';
+import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
 
 
 import Link from 'next/link';
+import validateEmail from '@/lib/utils';
 
-import  { signIn }  from "next-auth/react";
+// next-auth 
+import {signIn} from "next-auth";
+
+// routing
+import { useRouter } from 'next/router';
 
 
 
 
 const LoginPage = () => {
-
-
     const [loginData, setLoginData] = useState( {
             email : "",
             password : ""
         });
-
-
     const [alert, setAlert] = useState({
             status: "message",
             message : ""
         });
-    
 
+    const validate = () => {
+       let emailIsValid = validateEmail(loginData.email);
+       if(!emailIsValid){
+        setAlert({
+          status: "error",
+          message: "Please enter a valid email address"
+        });
+        return;
+       }
+       if(loginData.password.length < 6){
+        setAlert({
+          status: "error",
+          message: "Password length should be more than 6 characters"
+        });
+        return;
+       }
 
+    }
+    // validate email
+    useEffect(() => {
+      validate(),
+      [loginData.email, loginData.password]
+    })
     // set event handlers
     const onChange = (e) => {
         setLoginData({
@@ -36,9 +58,27 @@ const LoginPage = () => {
     };
     
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
-        console.log(loginData);
+        
+        let response = await signIn("credentials",{
+            email  : loginData.email,
+            password : loginData.password,
+            callbackUrl:  `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}`,
+            redirect: false
+          }
+        );
+
+        if (response?.ok) {
+            console.log('success');            
+        }
+        else {
+            setAlert({
+                status: "error",
+                message: response?.error
+            });
+        }
+        return response;
         
     }
     
@@ -57,6 +97,7 @@ const LoginPage = () => {
                     iconPosition="left"
                     placeholder="E-mail address"
                     type="email"
+                    name = "email"
                     value={loginData.email}                    
                     onChange={onChange}
                   />
@@ -66,6 +107,7 @@ const LoginPage = () => {
                     iconPosition="left"
                     placeholder="Password"
                     type="password"
+                    name="password"
                     value={loginData.password}
                     onChange={onChange}
                   />
