@@ -6,21 +6,19 @@ import prisma from "@/lib/prisma";
 export const authOptions = {
  
   providers: [
-    CredentialsProvider({
-      id: "credentials",
-      name: "Credentials",
-      credentials: {
-        email: { label: "email", type: "email" },
-        password: { label: "password", type: "password" },
-      },
+    CredentialsProvider({     
+      name: "credentials",
+      
       async authorize(credentials, req) {
+             
 
-        const userCredentials = {
-          email: credentials.email,
-          password: credentials.password,
-        };
+        let userCredentials = {
+          email : credentials.email,
+          password : credentials.password
+        }
 
-        const res = await fetch(
+              
+        const response = await fetch(          
           `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/auth/login`,
           {
             method: "POST",
@@ -30,9 +28,12 @@ export const authOptions = {
             },
           }
         );
-        const user = await res.json();
+        const user = await response.json();
+        
+        console.log('User: ', user);
 
-        if (res.ok && user) {
+
+        if (response.ok && user) {        
           return user;
         } else {
           return null;

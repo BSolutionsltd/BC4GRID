@@ -8,15 +8,13 @@ import Link from 'next/link';
 import validateEmail from '@/lib/utils';
 
 // next-auth 
-import {signIn} from "next-auth";
-
-// routing
-import { useRouter } from 'next/router';
-
-
+import { signIn } from "next-auth/react";
+import { useRouter } from 'next/navigation'; // Import useRouter
 
 
 const LoginPage = () => {
+    const router = useRouter();
+
     const [loginData, setLoginData] = useState( {
             email : "",
             password : ""
@@ -60,17 +58,20 @@ const LoginPage = () => {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        
+
+        const {email, password} = loginData;
+
         let response = await signIn("credentials",{
-            email  : loginData.email,
-            password : loginData.password,
+            email,
+            password,
             callbackUrl:  `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}`,
             redirect: false
           }
         );
 
         if (response?.ok) {
-            console.log('success');            
+            console.log('success');    
+            router.push('/dashboard'); // Redirect to the trading page        
         }
         else {
             setAlert({

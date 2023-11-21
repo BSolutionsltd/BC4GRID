@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { NextResponse } from 'next/server';
 
-export async function POST(req) {
+export async function POST(req) {  
   return await createUserHandler(req);
 }
 

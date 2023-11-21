@@ -8,14 +8,15 @@ import { NextResponse } from "next/server";
 
 
 export async function POST(req) {
+  
   return await loginUserHandler(req);
 }
 
+async function loginUserHandler(req) {  
 
-
-async function loginUserHandler(req) {
   const body = await req.json(); 
-  const { email, password } = req.body;
+  console.log('body: ', body);
+  const { email, password } = body;  
 
   if (!email || !password) {
     return NextResponse.json({ message: "invalid inputs" }, {status: 400});

@@ -50,7 +50,7 @@ const SignIn = () => {
         
       try {
           const response = await fetch(
-              'http://localhost:3000/api/auth/signup',
+            `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/auth/signup`,
               {
                   method: 'POST',
                   body: JSON.stringify(registerData),
