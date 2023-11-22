@@ -30,7 +30,7 @@ export const authOptions = {
         console.log('User: ', user);
 
 
-        if (response.ok && user) {        
+        if (response.ok && user) {            
           return user;
         } else {
           return null;
@@ -56,17 +56,21 @@ export const authOptions = {
   },
 
   callbacks: {
-    async session(session, user, token) {
-      if (user !== null) {
-        
-        session.user = user;
+    async session({ session, token }) {
+      if (token && token.user) {
+        console.log('User from token:', token.user);        
+        session.user = token.user; // Assuming 'user' is a property on the token object
       }
-      return await session;
+      return session;
     },
-
+  
     async jwt({ token, user }) {
-       return await token;
-    },
+      if (user) {
+        console.log('User from authorize:', user);
+        token.user = user; // Embed the user information into the token
+      }
+      return token;
+    },  
   },
 };
 

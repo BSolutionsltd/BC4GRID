@@ -42,7 +42,7 @@ const User = () => {
     <div ref={sidebarRef}>
       {isLoggedIn ? (
         <div style={{ float: 'right' }}>
-      <span style={{ marginRight: '10px' }}>Hello, <strong>{session?.token?.name}</strong></span>
+      <span style={{ marginRight: '10px' }}>Hello, <strong>{session?.user?.name}</strong></span>
           <Image
             avatar
             size="mini"
