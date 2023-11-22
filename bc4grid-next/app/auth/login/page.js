@@ -64,14 +64,14 @@ const LoginPage = () => {
         let response = await signIn("credentials",{
             email,
             password,
-            callbackUrl:  `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}`,
-            redirect: false
+            callbackUrl:  '/dashboard',
+            redirect: true
           }
         );
 
         if (response?.ok) {
             console.log('success');    
-            router.push('/dashboard'); // Redirect to the trading page        
+            //router.push('/dashboard'); // Redirect to the trading page        
         }
         else {
             setAlert({

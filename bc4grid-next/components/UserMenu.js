@@ -6,11 +6,19 @@ import { Image, Sidebar, Menu, Icon } from 'semantic-ui-react';
 
 import Link from 'next/link';
 
+// authenitification
+import { useSession, signOut } from 'next-auth/react';
+
 // API endpoint: /user/id/
 const User = () => {
   const [menuVisible, setMenuVisible] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Add isLoggedIn state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const sidebarRef = useRef(null);
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    setIsLoggedIn(!!session);
+  }, [session]);
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
@@ -30,26 +38,27 @@ const User = () => {
     };
   }, []);
 
-
   return (
     <div ref={sidebarRef}>
       {isLoggedIn ? (
-         <Image
-         avatar         
-         size="mini"
-         src="/images/avatar/person.png"
-         style={{ cursor: 'pointer' }}
-         onClick={toggleMenu}
-       />
-        
+        <div style={{ float: 'right' }}>
+      <span style={{ marginRight: '10px' }}>Hello, <strong>{session?.token?.name}</strong></span>
+          <Image
+            avatar
+            size="mini"
+            src="/images/avatar/person.png"
+            style={{ cursor: 'pointer' }}
+            onClick={toggleMenu}
+          />
+        </div>
       ) : (
         <Icon
-        circular
-        size="large"
-        name="user"        
-        style={{ cursor: 'pointer' }}
-        onClick={toggleMenu}
-      />
+          circular
+          size="large"
+          name="user"
+          style={{ cursor: 'pointer' }}
+          onClick={toggleMenu}
+        />
       )}
 
       <Sidebar
@@ -61,25 +70,23 @@ const User = () => {
         direction="right"
         vertical
       >
-        
+        {isLoggedIn ? (
           <>
-          <Link href="/auth/profile" passHref>
-            <Menu.Item as="a" name="profile" />
-          </Link>
-
-          <Link href="/auth/login" passHref>
-            <Menu.Item as="a" name="login" />
-          </Link>
-
-          <Link href="/auth/register" passHref>
-            <Menu.Item as="a" name="register" />
-          </Link>
-
-          <Link href="/auth/logout"  passHref>
-            <Menu.Item as="a" name="logout" />
-          </Link>
-        </>
-        
+            <Link href="/auth/profile" passHref>
+              <Menu.Item as="a" name="profile" />
+            </Link>            
+            <Menu.Item as="a" name="logout" onClick={() => signOut({ callbackUrl: '/' })} />
+          </>
+        ) : (
+          <>
+            <Link href="/auth/login" passHref>
+              <Menu.Item as="a" name="login" />
+            </Link>
+            <Link href="/auth/register" passHref>
+              <Menu.Item as="a" name="register" />
+            </Link>
+          </>
+        )}
       </Sidebar>
     </div>
   );

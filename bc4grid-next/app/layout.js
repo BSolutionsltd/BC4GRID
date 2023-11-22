@@ -1,12 +1,16 @@
-import { Inter } from 'next/font/google'
-// import './globals.css'
-
 // CSS style
+// import '@/app/globals.css'
 import 'semantic-ui-css/semantic.min.css';
+import { Inter } from 'next/font/google'
 
+// session manager
+import Provider from "@/app/auth/context/client-provider";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from './api/auth/[...nextauth]/route';
+
+
+// components
 import { Container }  from 'semantic-ui-react';
-
-
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -17,15 +21,20 @@ export const metadata = {
   description: 'Next.js app',
 }
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="en">
       <body className={inter.className}>
+        <Provider session={session}>
         <Container>
           <Header />        
             {children}        
             <Footer />
         </Container>
+        </Provider>
         </body>
     </html>
   )

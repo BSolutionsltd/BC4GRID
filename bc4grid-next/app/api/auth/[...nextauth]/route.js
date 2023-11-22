@@ -7,16 +7,13 @@ export const authOptions = {
  
   providers: [
     CredentialsProvider({     
-      name: "credentials",
-      
-      async authorize(credentials, req) {
-             
+      name: "credentials",      
+      async authorize(credentials, req) {            
 
         let userCredentials = {
           email : credentials.email,
           password : credentials.password
         }
-
               
         const response = await fetch(          
           `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/auth/login`,

@@ -47,10 +47,10 @@ const Header = () => {
         <Grid.Column width={1}>
             <MainMenu />
           </Grid.Column>   
-          <Grid.Column width={14}>
+          <Grid.Column width={12}>
             <Logo />
           </Grid.Column>          
-          <Grid.Column width={1} textAlign='center'>
+          <Grid.Column width={3} textAlign='center'>
             <User name='User' />
           </Grid.Column>               
         </Grid.Row>
