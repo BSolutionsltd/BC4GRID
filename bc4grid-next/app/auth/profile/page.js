@@ -1,31 +1,54 @@
 "use client";
 
-import React, { useState  }  from 'react';
+import React, { useState, useEffect  }  from 'react';
+import { useSession } from 'next-auth/react';
 
 // semantic-ui
-
 import { Card, Image, Form, Button, Grid } from 'semantic-ui-react';
 
 const Profile = () => {
+  const { data: session } = useSession();
 
   const [profileData, setProfileData] = useState({
-    
-      avatar: '/images/avatar/person.png',
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-      phone: '+1123456789',
-      joinedYear: 2020,
-      transactions: 100
+    image: '/images/avatar/person.png',
+    name: 'Ivana',
+    email: '',
+    phone: '',
+    joinedYear: '',
+    transactions: 0,
+  }); 
   
-  })
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetch(`/api/auth/profile?id=${session.user.id}`)
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          }
+          throw new Error('Network response was not ok.');
+        })
+        .then(data => {
+          setProfileData({ ...data.profile });
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  }, [session?.user?.id]);
+  
+ 
+
+  
 
   return (
     
     <>
+
       <Grid stackable columns={2} relaxed>
         <Grid.Column width={6}>
           <Card fluid> 
-            <Image src={profileData.avatar} wrapped ui={false} />
+            <Image src={profileData.image} wrapped ui={false} />
             <Card.Content>
               <Card.Header>{profileData.name}</Card.Header>
               <Card.Meta>
@@ -64,6 +87,9 @@ const Profile = () => {
     </>
   );
 };
+
+
+
 
 export default Profile;
 
