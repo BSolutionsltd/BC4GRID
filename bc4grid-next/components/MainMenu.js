@@ -1,11 +1,12 @@
-"use client";
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Icon, Sidebar, Menu } from 'semantic-ui-react';
 
+import { useSession } from 'next-auth/react';
 import Link from 'next/link'; 
 
 const MainMenu = () => {
+  const { data: session } = useSession();
+  
   const [menuVisible, setMenuVisible] = useState(false);
   const sidebarRef = useRef(null);
 
@@ -45,16 +46,23 @@ const MainMenu = () => {
         direction="left"
         vertical
       >
-        <Link href="/dashboard" passHref>
-          <Menu.Item as="a" name="trading" />
-        </Link>
-        <Link href="/history" passHref>
-          <Menu.Item as="a"name="history" />
-        </Link>
-        <Link href="/statistics" passHref>
-          <Menu.Item as="a"name="statistics" />
-        </Link>
-        
+        {session ? (
+          <>
+            <Link href="/dashboard" passHref>
+              <Menu.Item as="a" name="trading" />
+            </Link>
+            <Link href="/history" passHref>
+              <Menu.Item as="a" name="history" />
+            </Link>
+            <Link href="/statistics" passHref>
+              <Menu.Item as="a" name="statistics" />
+            </Link>
+          </>
+        ) : (
+          <Link href="/about" passHref>
+            <Menu.Item as="a" name="about">About</Menu.Item>
+          </Link>
+        )}
       </Sidebar>
     </div>
   );

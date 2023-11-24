@@ -37,10 +37,6 @@ const Profile = () => {
     }
   }, [session?.user?.id]);
   
- 
-
-  
-
   return (
     
     <>

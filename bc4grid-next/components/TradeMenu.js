@@ -6,13 +6,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 const TradeMenu = () => {
-  const [activeItem, setActiveItem] = useState('Home');
+  const [activeItem, setActiveItem] = useState('Dashboard');
   const router = useRouter();
 
   useEffect(() => {
     // Update activeItem based on the current route
     if (router.pathname === '/dashboard') {
-      setActiveItem('Trade');
+      setActiveItem('Dashboard');
     } else if (router.pathname === '/buy') {
       setActiveItem('Buy');
     } else if (router.pathname === '/sell') {
@@ -28,9 +28,9 @@ const TradeMenu = () => {
     <Menu pointing secondary>
       <Link href="/dashboard">
         <Menu.Item
-          name="Trade"
-          active={activeItem === 'Trade'}
-          onClick={() => handleItemClick(null, { name: 'Trade' })}
+          name="Dashboard"
+          active={activeItem === 'Dashboard'}
+          onClick={() => handleItemClick(null, { name: 'Dashboard' })}
         />
       </Link>     
 
