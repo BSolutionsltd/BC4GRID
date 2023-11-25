@@ -1,0 +1,34 @@
+// withAuth.js
+import { useSession, signIn } from 'next-auth/react';
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/router';
+
+const withAuth = (WrappedComponent) => {
+  return function (props) {
+    const { data: session, status } = useSession();
+    const router = useRouter();
+
+    useEffect(() => {
+      // If loading session, return a loading indicator
+      if (status === 'loading') {
+        // You can implement a loading component here
+        return;
+      }
+
+      // If no session exists, redirect to the login page
+      if (!session) {
+        signIn(); // Redirects to the login page
+      }
+    }, [session, status, router]);
+
+    // If there is a session, render the wrapped component
+    if (session) {
+      return <WrappedComponent {...props} />;
+    }
+
+    // While waiting for session or if no session, return null or a loading indicator
+    return null;
+  };
+};
+
+export default withAuth;

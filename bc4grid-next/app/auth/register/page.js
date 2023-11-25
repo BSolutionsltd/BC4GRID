@@ -1,22 +1,19 @@
 "use client";
-
 import React, { useState, useEffect } from 'react';
-
 
 // semantic-ui-react
 import { Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react';
+import { useRouter } from 'next/navigation';
+import { getSession } from 'next-auth/react';
 
-
-
-const SignIn = () => {
-
+const SignUp = () => {
+  const router = useRouter();  
     const [registerData, setRegisterData] = useState({
         name : '',
         email: '',
         password: '',
         confirmPassword: ''
-    });
-    
+    });   
 
     const [alert, setAlert] = useState({
         status: "",
@@ -25,6 +22,19 @@ const SignIn = () => {
 
     // New state variable to track whether status has been set
     const [statusSet, setStatusSet] = useState(false);
+
+
+    // check if user is already registered
+    useEffect(() => {
+      const checkUserRegistered = async () => {       
+      const session = await getSession();
+        console.log('Session status: ', session);
+        if (session) {
+          router.push('/');
+        }
+      };
+      checkUserRegistered();
+    }, []);
 
     const onChange = (e) => {
         setRegisterData({
@@ -60,24 +70,12 @@ const SignIn = () => {
               }
           );
   
-          if (response.ok) {
-            
-              const data = await response.json();
-              console.log(data);
-
+          if (response.ok) {            
+              const data = await response.json();              
               setAlert({
                   status: 'success',
                   message: 'Account created successfully',                  
-              });
-
-              console.log('status of response: ', response.status);  
-              setRegisterData({
-                  name: '',
-                  email: '',
-                  password: '',
-                  confirmPassword: '',
-              });
-
+              });              
               // Set the statusSet to true when the status changes
               setStatusSet(true);
           } else {
@@ -92,11 +90,8 @@ const SignIn = () => {
               status: 'error',
               message: 'Error creating account',
           });
-      }
-      
+      }      
   };
-  
-
     return (
     <>         
             <Grid textAlign="center" verticalAlign="middle" style={{ height: '100vh' }}>
@@ -150,32 +145,15 @@ const SignIn = () => {
                     <Button primary fluid size="large" type="submit">
                       Register
                     </Button>                
-                  </Segment>
-                 
-                </Form>
-                  
+                  </Segment>                 
+                </Form>                  
                 <Message hidden={!alert.status} visible={alert.status} success={alert.status == 'success'} error={alert.status == 'error'} >
                 {alert.message}
-              </Message>
-                
+              </Message>                
               </Grid.Column>
-              
-              
-            </Grid>
-            
-            <p>Message: TEST
-            Alert: {alert.status}</p>
-            
-           
-         
-              
-           
-            
+            </Grid>     
         </>
       );
 };
 
-
-
-
-export default SignIn;
+export default SignUp;

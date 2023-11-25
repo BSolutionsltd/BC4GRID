@@ -3,12 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
 
-
 import Link from 'next/link';
 import validateEmail from '@/lib/utils';
 
 // next-auth 
 import { signIn } from "next-auth/react";
+import { getSession } from 'next-auth/react';
+
 import { useRouter } from 'next/navigation'; // Import useRouter
 
 
@@ -24,29 +25,49 @@ const LoginPage = () => {
             message : ""
         });
 
-    const validate = () => {
-       let emailIsValid = validateEmail(loginData.email);
-       if(!emailIsValid){
-        setAlert({
-          status: "error",
-          message: "Please enter a valid email address"
-        });
-        return;
-       }
-       if(loginData.password.length < 6){
-        setAlert({
-          status: "error",
-          message: "Password length should be more than 6 characters"
-        });
-        return;
-       }
+   
 
-    }
-    // validate email
+    // check if user is already registered
     useEffect(() => {
-      validate(),
-      [loginData.email, loginData.password]
-    })
+      const checkUserRegistered = async () => {
+          const session = await getSession();
+          //console.log('Session status: ', session);
+          if (session) {
+              router.push('/');
+          }
+      };
+      checkUserRegistered();
+  }, [router]); // Added router to the dependency array
+
+
+
+    // validate email
+    // validate email and password
+    useEffect(() => {
+      const validate = () => {
+          let emailIsValid = validateEmail(loginData.email);
+          if (!emailIsValid) {
+              setAlert({
+                  status: "error",
+                  message: "Please enter a valid email address"
+              });
+              return false;
+          }
+          if (loginData.password.length < 6) {
+              setAlert({
+                  status: "error",
+                  message: "Password length should be more than 6 characters"
+              });
+              return false;
+          }
+          return true;
+      };
+
+      if (loginData.email && loginData.password) {
+          validate();
+      }
+  }, [loginData.email, loginData.password]); // Correct dependency array
+
     // set event handlers
     const onChange = (e) => {
         setLoginData({
