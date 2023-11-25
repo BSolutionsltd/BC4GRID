@@ -49,18 +49,18 @@ const MainMenu = () => {
         {session ? (
           <>
             <Link href="/dashboard" passHref>
-              <Menu.Item as="a" name="trading" />
+              <Menu.Item name="trading" />
             </Link>
             <Link href="/history" passHref>
-              <Menu.Item as="a" name="history" />
+              <Menu.Item  name="history" />
             </Link>
             <Link href="/statistics" passHref>
-              <Menu.Item as="a" name="statistics" />
+              <Menu.Item name="statistics" />
             </Link>
           </>
         ) : (
           <Link href="/about" passHref>
-            <Menu.Item as="a" name="about">About</Menu.Item>
+            <Menu.Item  name="about">About</Menu.Item>
           </Link>
         )}
       </Sidebar>

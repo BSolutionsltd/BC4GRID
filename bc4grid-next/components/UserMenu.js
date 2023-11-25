@@ -73,17 +73,17 @@ const User = () => {
         {isLoggedIn ? (
           <>
             <Link href="/auth/profile" passHref>
-              <Menu.Item as="a" name="profile" />
-            </Link>            
-            <Menu.Item as="a" name="logout" onClick={() => signOut({ callbackUrl: '/' })} />
+              <Menu.Item  name="profile" />
+            </Link>                        
+            <Menu.Item name="logout" onClick={() => signOut({ callbackUrl: '/' })} />            
           </>
         ) : (
           <>
             <Link href="/auth/login" passHref>
-              <Menu.Item as="a" name="login" />
+              <Menu.Item  name="login" />
             </Link>
             <Link href="/auth/register" passHref>
-              <Menu.Item as="a" name="register" />
+              <Menu.Item  name="register" />
             </Link>
           </>
         )}

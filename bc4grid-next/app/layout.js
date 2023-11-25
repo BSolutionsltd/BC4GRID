@@ -29,7 +29,7 @@ export default async function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <Provider session={session}>
-        <Container>
+        <Container  >
           <Header />        
             {children}        
             <Footer />
