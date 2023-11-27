@@ -1,15 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Image, Sidebar, Menu, Icon } from 'semantic-ui-react';
+import {Link} from 'next/link';
 
 // API endpoint: /user/id/
 const User = () => {
   const [menuVisible, setMenuVisible] = useState(false);
+  const [session, loading] = useSession(); // useSession hook from next-auth/client
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Add isLoggedIn state
   const sidebarRef = useRef(null);
+
+  
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
   };
+
+  useEffect(() => {
+    if (!loading) {
+      setIsLoggedIn(!!session);
+    }
+  }, [loading, session]);
+  
 
   useEffect(() => {
     const closeSidebar = (event) => {
@@ -25,13 +36,6 @@ const User = () => {
     };
   }, []);
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-  };
 
   return (
     <div ref={sidebarRef}>
@@ -65,18 +69,18 @@ const User = () => {
       >
         {isLoggedIn && (
           <>
-            <Menu.Item as="a" href="/profile">
-              Profile
-            </Menu.Item>
-            <Menu.Item as="a" href="/logout" onClick={handleLogout}>
-              Logout
-            </Menu.Item>
+          <Link href="/auth/profile" passHref>
+              <Menu.Item name="Profile" />
+          </Link>          
+          <Link>
+            <Menu.Item  name="Logout"  onClick={handleLogout} />
+          </Link>
           </>
         )}
         {!isLoggedIn && (
-          <Menu.Item as="a" href="/login" onClick={handleLogin}>
-            Login
-          </Menu.Item>
+          <Link href="/auth/login" passHref>
+          <Menu.Item  name="Login" onClick={handleLogin} />
+            </Link>
         )}
       </Sidebar>
     </div>

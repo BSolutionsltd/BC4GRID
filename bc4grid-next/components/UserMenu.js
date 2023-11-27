@@ -46,7 +46,8 @@ const User = () => {
           <Image
             avatar
             size="mini"
-            src="/images/avatar/person.png"
+            src={ session?.user?.image }
+            alt="User Avatar"
             style={{ cursor: 'pointer' }}
             onClick={toggleMenu}
           />
