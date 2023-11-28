@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { Segment, Grid, Dropdown } from 'semantic-ui-react';
+import { Segment, Grid, Dropdown, Statistic } from 'semantic-ui-react';
 
 import web3 from '@/lib/ethereum/web3';
 
@@ -32,20 +32,16 @@ const SelectAccount = ({ accounts, selectedAccount, handleAccountChange }) => {
 
 // API endpoint: /user/id/balance
 const BalanceInfo = ({ balance, power }) => {
-
-  
-
-  console.log('Balance: ', balance);
-
+   
   return (
     <Segment padded="very">
       <Grid columns={2} relaxed="very" stackable textAlign="center">
         <Grid.Row>
           <Grid.Column>
-        <strong>Balance (kWh): {balance}</strong>
+          <Statistic label='Balance (eth)' value={Number(balance).toFixed(2)} /> 
           </Grid.Column>
           <Grid.Column>
-            <strong>Price: {power}</strong>
+          <Statistic label='Tokens (EC20)' value={power} /> 
           </Grid.Column>
         </Grid.Row>
       </Grid>
@@ -57,7 +53,7 @@ const Balance = () => {
   const [accounts, setAccounts] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState('');
   const [balance, setBalance] = useState(''); // assuming balance is a string
-  const [power, setPower] = useState(''); // total power at disposal
+  const [power, setPower] = useState('1300'); // total power at disposal
 
   useEffect(() => {
     const fetchAccountAndBalance = async () => {

@@ -10,8 +10,14 @@ class Dashboard extends Component {
 
   // API call /user/meters
   meters = [
-    { name: 'Smart Meter 1', description: 'Description for Smart Meter 1' },
-    { name: 'Smart Meter 2', description: 'Description for Smart Meter 2' },    
+    { 
+      name: 'Smart Meter ', 
+      description: 'Description for Smart Meter' ,
+      SN : '123456789',
+      energy: 123,
+      tokens: 1300,
+      update: '01/10/2022'
+    }        
   ];
 
 

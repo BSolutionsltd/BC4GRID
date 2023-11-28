@@ -1,31 +1,43 @@
 import React from 'react';
-import { Item, Icon, Header, Segment } from 'semantic-ui-react';
+import { Grid, Item, Icon, Header, Segment, Statistic } from 'semantic-ui-react';
 
-
-// API endpoint: user/id/meters
 const SmartMeters = ({ meters }) => {
   return (
-    <div>      
+    <div>
       <Header as='h2' attached='top'> Smart Meters </Header>
-    <Segment attached>
-    <Item.Group divided>
-      {meters.map((meter, index) => (
-        <Item key={index}>
-          <Item.Image>
-            <Icon name="plug" size="big" bordered circular />
-          </Item.Image>
-          <Item.Content>
-            <Item.Header>{meter.name}</Item.Header>
-            <Item.Description>
-              {meter.description}
-            </Item.Description>
-          </Item.Content>
-        </Item>
-      ))}
-    </Item.Group>
-    </Segment>
-  </div>
-      
+      <Segment attached>
+        <Grid columns={2} divided>
+          {meters.map((meter, index) => (
+            <Grid.Row key={index}>
+              <Grid.Column>
+                <Item.Group>
+                  <Item>
+                    <Item.Image>
+                      <Icon name="plug" size="big" bordered circular />
+                    </Item.Image>
+                    <Item.Content>
+                      <Item.Header>{meter.name}</Item.Header>
+                      <Item.Description>
+                        <p>description: {meter.description}</p>
+                        <p>serial number: {meter.SN}</p>
+                        <p>last update: {meter.update}</p>
+                      </Item.Description>
+                    </Item.Content>
+                  </Item>
+                </Item.Group>
+              </Grid.Column>
+              <Grid.Column  textAlign='center'>                
+                <Statistic size='tiny'>
+                  <Statistic.Label>Current Production</Statistic.Label>
+                  <Statistic.Value>{`${meter.energy} KWh`}</Statistic.Value>
+                  </Statistic>                                
+                             
+                </Grid.Column>
+            </Grid.Row>
+          ))}
+        </Grid>
+      </Segment>
+    </div>
   );
 };
 

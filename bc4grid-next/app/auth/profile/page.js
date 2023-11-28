@@ -10,8 +10,8 @@ const Profile = () => {
   const { data: session } = useSession();
 
   const [profileData, setProfileData] = useState({
-    image: '/images/avatar/person.png',
-    name: 'Ivana',
+    image: '',
+    name: '',
     email: '',
     phone: '',
     joinedYear: '',
