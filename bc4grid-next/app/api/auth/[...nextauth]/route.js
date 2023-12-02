@@ -54,8 +54,7 @@ export const authOptions = {
 
   callbacks: {
     async session({ session, token }) {
-      if (token && token.user) {
-        console.log('User from token:', token.user);        
+      if (token && token.user) {        
         session.user = token.user; // Assuming 'user' is a property on the token object
       }
       return session;
@@ -63,7 +62,7 @@ export const authOptions = {
   
     async jwt({ token, user }) {
       if (user) {
-        console.log('User from authorize:', user);
+        //console.log('User from authorize:', user);
         token.user = user; // Embed the user information into the token
       }
       return token;

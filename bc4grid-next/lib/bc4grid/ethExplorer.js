@@ -1,6 +1,17 @@
 
 // define a component that will load the web3 library
 
+import Web3 from 'web3';
+
+import TokenDispenser from './build/TokenDispenser.json';
+import Trading from './build/Trading.json';
+
+
+const contracts = {
+    TokenDispenser,
+    Trading
+}
+
 class EthereumExplorer {
     
     /**
@@ -16,6 +27,7 @@ class EthereumExplorer {
 			baseFeePerGas: null,
         };
         this.userAccount = null;
+        this.netId = null;
         this.callbacks = {};
     }
 
@@ -23,31 +35,32 @@ class EthereumExplorer {
      * Initialize Web3.js
      */
     async bootWeb3() {
-        var web3Provider = null;
+    let web3Provider = null;
 
+    if (typeof window !== 'undefined' && window.ethereum !== "undefined") {
         // Modern dapp browsers...
-        if (window.ethereum) {
-            web3Provider = window.ethereum;
+        web3Provider = window.ethereum;
 
-            window.ethereum.on('accountsChanged', handleAccountsChanged);
+        //window.ethereum.on('accountsChanged', handleAccountsChanged);
 
-            try {
-                // Request account access
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-            } catch (error) {
-                // User denied account access...
-                throw error;
-            }
-        } else if (window.web3) {
-            // Legacy dapp browsers...
-            web3Provider = window.web3.currentProvider;
-        } else {
-            // If no injected web3 instance is detected, fall back to Sepolia testnet
-			web3Provider = new Web3.providers.HttpProvider('https://sepolia.gateway.tenderly.co');
-		}
-
-        this.web3 = new Web3(web3Provider);
+        try {
+            // Request account access
+            await window.ethereum.request({ method: 'eth_requestAccounts' });             
+        } catch (error) {
+            // User denied account access...
+            throw error;
+        }
+    } else if (typeof window !== 'undefined' && window.web3) {
+        // Legacy dapp browsers...
+        web3Provider = window.web3.currentProvider;
+    } else {
+        // If no injected web3 instance is detected, fall back to Sepolia testnet
+        web3Provider = new Web3.providers.HttpProvider('https://sepolia.gateway.tenderly.co');
     }
+    
+    
+    this.web3 = new Web3(web3Provider);
+}
 
     /**
      * Load into the EthereumExplorer object all the details of a smart contract.
@@ -63,7 +76,7 @@ class EthereumExplorer {
             throw 'The network ID does not exist in the JSON of the contract. Probably you have to change network. Current network: ' + netId;
         }
 
-        this.loadContact(contractJson.networks[netId].address, contractJson.abi, contractName);
+        this.loadContract(contractJson.networks[netId].address, contractJson.abi, contractName);
     }
 
     /**
@@ -75,7 +88,7 @@ class EthereumExplorer {
      * @param   {Object}  contractAbi      The ABI of the contract.
      * @param   {string}  contractName     The name of the contract, useful if you deal with more than one smart contract.
      */
-    loadContact(contractAddress, contractAbi, contractName='default') {
+    loadContract(contractAddress, contractAbi, contractName='default') {
         this.contractDetails[contractName] = {};
         this.contractDetails[contractName].address = contractAddress;
         this.contractDetails[contractName].abi = contractAbi;
@@ -128,7 +141,13 @@ class EthereumExplorer {
      * @return  {Integer}    The ID of the blockchain network.
      */
     async getNetworkId() {
-        return await this.web3.eth.net.getId(); 
+        if(this.netId) return this.netId;
+        else {
+            const netId =  await this.web3.eth.net.getId(); 
+            this.netId = netId;
+        }
+
+        return this.netId;
     }
 
     /**
@@ -385,3 +404,22 @@ class EthereumExplorer {
     }
 
 }
+
+
+
+async function bc4grid() {
+    const ethExplorer = new EthereumExplorer();
+    await ethExplorer.bootWeb3();
+  
+    // Load contracts directly using the imported JSON files
+    await ethExplorer.loadContractFromJson(TokenDispenser, 'TokenDispenser');
+    await ethExplorer.loadContractFromJson(Trading, 'Trading');
+
+    // Get the user account
+    await ethExplorer.getUserAccount();
+    await ethExplorer.getNetworkId();
+
+    return ethExplorer;
+}  
+  
+  export default bc4grid;
