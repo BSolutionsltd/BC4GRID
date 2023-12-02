@@ -4,6 +4,6 @@ export const config = {
 matcher: [
     "/auth/profile",
     "/buy/:path*",
-    "/sell/:path*"
-
+    "/sell/:path*",
+    //"/web3/:path*",
 ] }

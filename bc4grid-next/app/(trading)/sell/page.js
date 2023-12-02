@@ -5,8 +5,6 @@ import React, { useState } from 'react';
 
 import { Table, Form, Segment, Button } from 'semantic-ui-react';
 
-
-
 import  Market  from '@/components/Market';
 
 

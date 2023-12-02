@@ -1,6 +1,5 @@
 
 // define a component that will load the web3 library
-
 import Web3 from 'web3';
 
 import TokenDispenser from './build/TokenDispenser.json';
@@ -402,13 +401,40 @@ class EthereumExplorer {
             return this.callbacks[eventName](data);
         }
     }
+}
+
+class bc4Grid extends EthereumExplorer {
+    constructor() {
+        super();
+    }
+
+    async createEnergyOffer(energyAmount, validUntil, pricePerEnergyAmount) {
+        // Get the user's account address
+        const fromAddress = await this.getUserAccount();
+    
+        // Get the Trading contract instance
+        const tradingContract = this.contract('Trading');
+    
+        // Prepare the transaction options
+        const options = {
+          from: fromAddress,
+          gas: 3000000, // Set an appropriate gas limit for the transaction
+          // value: 0, // Add this if the method is payable and requires sending Ether
+        };
+    
+        // Call the CreateEnergyOffer method from the Trading contract
+        return tradingContract.methods.CreateEnergyOffer(validUntil, pricePerEnergyAmount, energyAmount).send(options)
+          .on('transactionHash', transactionHash => console.log('Transaction Hash:', transactionHash))
+          .on('receipt', receipt => console.log('Transaction Receipt:', receipt))
+          .on('error', error => console.error('Transaction Error:', error));
+      }       
 
 }
 
 
 
 async function bc4grid() {
-    const ethExplorer = new EthereumExplorer();
+    const ethExplorer = new bc4Grid();
     await ethExplorer.bootWeb3();
   
     // Load contracts directly using the imported JSON files
