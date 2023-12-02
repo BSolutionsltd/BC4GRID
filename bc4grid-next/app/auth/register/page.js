@@ -75,7 +75,18 @@ const SignUp = () => {
               setAlert({
                   status: 'success',
                   message: 'Account created successfully',                  
-              });              
+              }); 
+              // Reset the form data
+              setRegisterData({
+                name: '',
+                email: '',
+                password: '',
+                confirmPassword: ''
+              });
+              
+              setTimeout(() => {
+                router.push('/auth/login'); // Replace '/login' with your login route
+              }, 1500); // 3000 milliseconds = 3 seconds
               // Set the statusSet to true when the status changes
               setStatusSet(true);
           } else {
