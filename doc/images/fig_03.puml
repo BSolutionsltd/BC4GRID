@@ -1,0 +1,10 @@
+@startuml fig_03
+"Smart Meter (Simulator)" --> "Authorization Server": send POST request with **serial_number** and **scope** (i.e. Client Identifier)
+"Authorization Server" --> "Smart Meter (Simulator)": send response with **device_code**, **user_code** and **verification_uri**
+
+"User" --> "Authorization Server" 
+"Smart Meter (Simulator)" --> "Smart Meter Collector Backend": Request to the protected resource with Access Token
+activate "Smart Meter Collector Backend"
+"Smart Meter Collector Backend" --> "Smart Meter (Simulator)": Protected resource response
+deactivate "Smart Meter Collector Backend"
+@enduml

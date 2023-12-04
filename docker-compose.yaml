@@ -1,0 +1,40 @@
+services:
+  sim1:
+    build:
+      context: ./smart-meter-simulator
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./smart-meter-simulator:/app
+    environment:
+      - SN=54FGX67K
+      - CONSUMER=Consumer1
+      - SMART_COLLECTOR_BACKEND_URL=localhost:5000
+      - DATA_DIR=./data
+      - DATA_FILE=Dataset.xlsx
+      - DATA_KEYS=TemperatureC,Dish washer
+    entrypoint: /bin/bash
+    tty: true
+    user: root
+    network_mode: host
+  
+  sim2:
+    build:
+      context: ./smart-meter-simulator
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./smart-meter-simulator:/app
+    environment:
+      - SN=HG6789DS
+      - CONSUMER=Consumer2
+    entrypoint: /bin/bash
+    tty: true
+    user: root
+    network_mode: host
+  smart-data-collector:
+    build: .
+    volumes:
+      - .:/app
+    entrypoint: /bin/bash
+    tty: true
+    user: root
+    network_mode: host
