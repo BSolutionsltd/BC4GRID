@@ -85,4 +85,3 @@ contract TokenDispenser is ERC20 {
         selfdestruct(payable(msg.sender));
     }
 }
-
