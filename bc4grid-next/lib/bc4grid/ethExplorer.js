@@ -418,7 +418,7 @@ class bc4Grid extends EthereumExplorer {
         // Prepare the transaction options
         const options = {
           from: fromAddress,
-          gas: 3000000, // Set an appropriate gas limit for the transaction
+          gas: 3000000 // Set an appropriate gas limit for the transaction
           // value: 0, // Add this if the method is payable and requires sending Ether
         };
     
@@ -429,8 +429,68 @@ class bc4Grid extends EthereumExplorer {
           .on('error', error => console.error('Transaction Error:', error));
       }
 
+    async modifyOffer(offerId, validUntil, pricePerEnergyAmount, energyAmount) {
+        // Get the user's account address
+        const fromAddress = await this.getUserAccount();
 
-      async getAllOfferDetails() {
+        // Get the Trading contract instance
+        const tradingContract = this.contract('Trading');
+    
+        // Prepare the transaction options
+        const options = {
+            from: fromAddress,
+            gas: 3000000 // Set an appropriate gas limit for the transaction
+        };
+    
+        // Call the ModifyOffer method from the Trading contract
+        return tradingContract.methods.ModifyOffer(offerId, validUntil, pricePerEnergyAmount, energyAmount).send(options)
+            .on('transactionHash', transactionHash => console.log('Transaction Hash:', transactionHash))
+            .on('receipt', receipt => console.log('Transaction Receipt:', receipt))
+            .on('error', error => console.error('Transaction Error:', error));
+    }
+
+    async cancelOffer(offerId) {
+        // Get the user's account address
+        const fromAddress = await this.getUserAccount();
+
+        // Get the Trading contract instance
+        const tradingContract = this.contract('Trading');
+    
+        // Prepare the transaction options
+        const options = {
+            from: fromAddress,
+            gas: 3000000 // Set an appropriate gas limit for the transaction
+        };
+    
+        // Call the CancelOffer method from the Trading contract
+        return tradingContract.methods.CancelOffer(offerId).send(options)
+            .on('transactionHash', transactionHash => console.log('Transaction Hash:', transactionHash))
+            .on('receipt', receipt => console.log('Transaction Receipt:', receipt))
+            .on('error', error => console.error('Transaction Error:', error));
+    }
+
+    async buyEnergyFromOffer(offerId, energyAmount, txValue) {
+        // Get the user's account address
+        const fromAddress = await this.getUserAccount();
+    
+        // Get the Trading contract instance
+        const tradingContract = this.contract('Trading');
+    
+        // Prepare the transaction options
+        const options = {
+            from: fromAddress,
+            gas: 3000000, // Set an appropriate gas limit for the transaction
+            value: txValue
+        };
+    
+        // Call the BuyEnergyFromOffer method from the Trading contract
+        return tradingContract.methods.BuyEnergyFromOffer(offerId, energyAmount).send(options)
+            .on('transactionHash', transactionHash => console.log('Transaction Hash:', transactionHash))
+            .on('receipt', receipt => console.log('Transaction Receipt:', receipt))
+            .on('error', error => console.error('Transaction Error:', error));
+    }
+
+    async getAllOfferDetails() {
         // Get the Trading contract instance
         const tradingContract = this.contract('Trading');
 
@@ -443,9 +503,48 @@ class bc4Grid extends EthereumExplorer {
             .catch(error => console.error('Error fetching offer details:', error));
     }
       
+    async retrieveTokens(offerId) {
+        // Get the user's account address
+        const fromAddress = await this.getUserAccount();
+            
+        // Get the TokenDispenser contract instance
+        const tokenDispenserContract = this.contract('TokenDispenser');
+
+        // Prepare the transaction options
+        const options = {
+            from: fromAddress,
+            gas: 3000000 // Set an appropriate gas limit for the transaction
+        };
+
+        // Call the RetrieveTokens method from the TokenDispenser contract
+        return tokenDispenserContract.methods.RetrieveTokens(offerId).send(options)
+            .on('transactionHash', transactionHash => console.log('Transaction Hash:', transactionHash))
+            .on('receipt', receipt => console.log('Transaction Receipt:', receipt))
+            .on('error', error => console.error('Transaction Error:', error));
+    }
+
+    async approveSmartContract(spender, amount) {
+        // Get the user's account address
+        const fromAddress = await this.getUserAccount();
+            
+        // Get the TokenDispenser contract instance
+        const tokenDispenserContract = this.contract('TokenDispenser');
+
+        // Prepare the transaction options
+        const options = {
+            from: fromAddress,
+            gas: 3000000 // Set an appropriate gas limit for the transaction
+        };
+
+        // Call the approve method from the TokenDispenser contract
+        return tokenDispenserContract.methods.approve(spender, amount).send(options)
+            .on('transactionHash', transactionHash => console.log('Transaction Hash:', transactionHash))
+            .on('receipt', receipt => console.log('Transaction Receipt:', receipt))
+            .on('error', error => console.error('Transaction Error:', error));
+    }
       
-      // event handler
-      async loadEventsFromLatestBlocks(fromBlockNumber) {        
+    // event handler
+    async loadEventsFromLatestBlocks(fromBlockNumber) {        
         var blockNumber = await this.getBlockNumber();
         var from = blockNumber - fromBlockNumber;
     
