@@ -427,11 +427,72 @@ class bc4Grid extends EthereumExplorer {
           .on('transactionHash', transactionHash => console.log('Transaction Hash:', transactionHash))
           .on('receipt', receipt => console.log('Transaction Receipt:', receipt))
           .on('error', error => console.error('Transaction Error:', error));
-      }       
+      }
 
+
+      async getAllOfferDetails() {
+        // Get the Trading contract instance
+        const tradingContract = this.contract('Trading');
+
+        // Call the GetAllOfferDetails method from the Trading contract
+        return tradingContract.methods.GetAllOfferDetails().call()
+            .then(offerDetails => {
+                console.log('Offer Details:', offerDetails);
+                return offerDetails;
+            })
+            .catch(error => console.error('Error fetching offer details:', error));
+    }
+      
+      
+      // event handler
+      async loadEventsFromLatestBlocks(fromBlockNumber) {        
+        var blockNumber = await this.getBlockNumber();
+        var from = blockNumber - fromBlockNumber;
+    
+        if (from < 0) {
+            console.log(`The blockchain has ${blockNumber} blocks. Loading the events from the block 0.`);
+            from = 0;
+        } else {
+            console.log('Loading the events from the latest ' + fromBlockNumber + ' blocks');
+        }
+    
+        loadEventsFromSmartContracts(from);
+    }
+    
+    
+    async loadEventsFromSmartContracts(fromBlockNumber) {
+        for (let contractName in window.ethExp.contractDetails) {
+            this.contract(contractName).events.allEvents({
+                fromBlock: fromBlockNumber //'latest'
+            }, function(error, event) { 
+                console.log(event);
+            })
+            .on("connected", function(subscriptionId){
+                console.log({ on:'connected', subscriptionId });
+            })
+            .on('data', function(event){
+                console.log({ on:'data', event }); // same results as the optional callback above
+            })
+            .on('changed', function(event){
+                console.log({ on:'changed', event });
+            })
+            .on('error', function(error, receipt) {
+                // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
+                if (receipt) {
+                    console.log({ on:'error', receipt, error });
+                } else {
+                    console.log({ on:'error', error});
+                }
+            });
+        }
+    }
+
+    async initSmartContractEvents() {
+        // dodati  nesto sto ima smisla ...
+        loadEventsFromSmartContracts(0);
+    }
+      
 }
-
-
 
 async function bc4grid() {
     const ethExplorer = new bc4Grid();
@@ -444,6 +505,10 @@ async function bc4grid() {
     // Get the user account
     await ethExplorer.getUserAccount();
     await ethExplorer.getNetworkId();
+
+    // initialize events
+
+    // await ethExplorer.initSmartContractEvents();
 
     return ethExplorer;
 }  

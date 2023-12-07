@@ -56,14 +56,30 @@ const MakeOffer = ({ onCreateOffer }) => {
   const [energyAmount, setEnergyAmount] = useState('');
   const [validUntil, setValidUntil] = useState('');
   const [pricePerEnergyAmount, setPricePerEnergyAmount] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onCreateOffer(energyAmount, validUntil, pricePerEnergyAmount);
+
+    console.log('Values: ', energyAmount, validUntil, pricePerEnergyAmount);
+
+    const validateOffer = (...values) => {
+        return values.every(value => value !== '');
+    };
+
+    if (!validateOffer(energyAmount, validUntil, pricePerEnergyAmount)) {
+      setShowAlert(true);
+    }
+    else {
+      setShowAlert(false);
+      onCreateOffer(energyAmount, validUntil, pricePerEnergyAmount);
+    }
+
+    
   };
 
   return (
-    <Segment>
+<Segment style={{ minHeight: '35vh' }}>
       <Header as="h2">Create Energy Offer</Header>
       <Form onSubmit={handleSubmit}>
         <Form.Field>
@@ -91,8 +107,18 @@ const MakeOffer = ({ onCreateOffer }) => {
             onChange={(e) => setPricePerEnergyAmount(e.target.value)}
           />
         </Form.Field>
-        <Button type='submit'>Create Offer</Button>
-      </Form>
+        <div style={{ textAlign: 'center' }}>
+        {showAlert ? (
+        <Message
+          negative
+          header="Please fill in all fields"
+          onDismiss={() => setShowAlert(false)}
+        />
+      ) : (
+        <Button primary type="submit" style={{marginTop:'10px'}}>Create Offer</Button>
+      )}   
+      </div>
+      </Form>     
     </Segment>
   );
 };
@@ -100,10 +126,10 @@ const MakeOffer = ({ onCreateOffer }) => {
 // OfferApproval component
 const OfferApproval = ({ offers, onFinalize, onDiscard }) => {
   return (
-    <Segment>
-      <Header as="h3">Your Offers</Header>
+<Segment style={{ minHeight: '20vh' }}>
+      <Header as="h2">Your Offers</Header>
       <Table>
-        <OffersHeader />
+      {offers.length > 0 && <OffersHeader />}
         <Table.Body>
           {offers.map((offer) => (
             <OffersRow
@@ -169,13 +195,7 @@ const OfferCreator = () => {
         offerToFinalize.pricePerUnit
       );
   
-  // Execute the createEnergyOffer function on the blockchain
-    await ethExplorer.createEnergyOffer(
-      offerToFinalize.amount,
-      Math.floor(new Date(offerToFinalize.validUntil).getTime() / 1000),
-      offerToFinalize.pricePerUnit
-    );
-
+  
     // Update the offer as finalized in the local state
     const updatedOffers = offers.map(offer =>
       offer.id === offerId ? { ...offer, isFinalized: true } : offer

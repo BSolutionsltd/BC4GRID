@@ -41,7 +41,7 @@ const BalanceInfo = ({ balance, power }) => {
           <Statistic label='Balance (eth)' value={Number(balance).toFixed(2)} /> 
           </Grid.Column>
           <Grid.Column>
-          <Statistic label='Tokens (EC20)' value={power} /> 
+          <Statistic label='Tokens (ENT)' value={power} /> 
           </Grid.Column>
         </Grid.Row>
       </Grid>

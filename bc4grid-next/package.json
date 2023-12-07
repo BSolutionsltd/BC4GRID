@@ -17,6 +17,7 @@
     "ganache": "^7.9.1",
     "jsdom": "^23.0.1",
     "mocha": "^10.2.0",
+    "nanoid": "^5.0.4",
     "next": "14.0.3",
     "next-auth": "^4.24.5",
     "react": "^18",
@@ -24,6 +25,7 @@
     "semantic-ui-css": "^2.5.0",
     "semantic-ui-react": "^2.1.4",
     "solc": "^0.8.23-fixed",
+    "uuid": "^9.0.1",
     "validator": "^13.11.0",
     "web3": "^4.2.2"
   },
