@@ -587,8 +587,73 @@ class bc4Grid extends EthereumExplorer {
     }
 
     async initSmartContractEvents() {
-        // dodati  nesto sto ima smisla ...
-        loadEventsFromSmartContracts(0);
+        // Subscribe to events from the `latest` block
+        for (let contractName in this.contractDetails) {
+            const subscription = await this.contract(contractName).events.allEvents({ fromBlock: 'latest' });
+
+            subscription.on('connected', subscriptionId => {
+                console.log({ on:'connected', subscriptionId });
+            });
+
+            subscription.on('data', event => {
+                console.log({ on:'data', event });
+                this.handleContractEvent(event);
+            });
+            
+            subscription.on('changed', event => {
+                console.log({ on:'changed', event });
+            });
+            
+            subscription.on('error', (error, receipt) => {
+                // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
+                if (receipt) {
+                    console.log({ on:'error', receipt, error });
+                } else {
+                    console.log({ on:'error', error});
+                }
+            });
+        }
+    }
+
+    handleContractEvent(event) {
+        switch (event.event) {
+            case 'OfferCreated':
+                // this affects the market, propagate appropriately
+                console.log(`Event: OfferCreated. Offer Details:
+                    ID: ${event.returnValues.id}
+                    Seller: ${event.returnValues.seller}
+                    Valid Until: ${event.returnValues.validUntil}
+                    Price: ${event.returnValues.pricePerEnergyAmount}
+                    Amount: ${event.returnValues.energyAmount}`);
+                break;
+            case 'OfferModified':
+                // this affects the market, propagate appropriately
+                console.log(`Event: OfferModified. Offer Details:
+                    ID: ${event.returnValues.id}
+                    Seller: ${event.returnValues.seller}
+                    Valid Until: ${event.returnValues.validUntil}
+                    Price: ${event.returnValues.pricePerEnergyAmount}
+                    Amount: ${event.returnValues.energyAmount}
+                    Buyer: ${event.returnValues.buyer}`);
+                break;
+            case 'OfferClosed':
+                // this affects the market, propagate appropriately
+                console.log(`Event: OfferClosed. Offer Details:
+                    ID: ${event.returnValues.id}
+                    Seller: ${event.returnValues.seller}
+                    Valid Until: ${event.returnValues.validUntil}
+                    Price: ${event.returnValues.pricePerEnergyAmount}
+                    Amount: ${event.returnValues.energyAmount}
+                    Buyer: ${event.returnValues.buyer}`);
+                break;
+            case 'TokenRetrieved':
+                console.log(`Event: TokenRetrieved. Offer Details:
+                    ID: ${event.returnValues.id}
+                    Seller: ${event.returnValues.seller}`);
+                break;
+            default:
+                break;
+            }
     }
       
 }
@@ -606,8 +671,7 @@ async function bc4grid() {
     await ethExplorer.getNetworkId();
 
     // initialize events
-
-    // await ethExplorer.initSmartContractEvents();
+    await ethExplorer.initSmartContractEvents();
 
     return ethExplorer;
 }  
