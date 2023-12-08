@@ -1,6 +1,16 @@
+
+"use client";
 import React, { useEffect, useState } from 'react';
-//import bc4grid from '@/lib/bc4grid/ethExplorer'; // Update with the actual path
-import { Header, Segment, Table, Form, Button, Message } from 'semantic-ui-react';
+import Offers from '@/components/Offers';
+
+import { 
+  Header, 
+  Segment, 
+  Table, 
+  Form,   
+  Button,   
+  Message } from 'semantic-ui-react';
+
 
 
 // ethExplorer
@@ -131,7 +141,7 @@ const MakeOffer = ({ onCreateOffer }) => {
 const OfferApproval = ({ offers, onFinalize, onDiscard }) => {
   return (
 <Segment style={{ minHeight: '20vh' }}>
-      <Header as="h2">Your Offers</Header>
+      <Header as="h2">Pending Offers</Header>
       <Table>
       {offers.length > 0 && <OffersHeader />}
         <Table.Body>
@@ -154,15 +164,28 @@ const OfferApproval = ({ offers, onFinalize, onDiscard }) => {
   );
 };
 
+
 // OfferCreator component (parent component)
 const OfferCreator = () => {
   const { ethExplorer, setEthExplorer } = useEthExplorer();
   const [offers, setOffers] = useState([]); // State to hold offers
   const [error, setError] = useState(null);
+  const [account, setAccount] = useState(null);
 
   useEffect(() => {
-
-  }, [ethExplorer]);
+    const fetchAccount = async () => {
+      try {
+          const fetchedAccount = await ethExplorer.getUserAAccount();
+          // Transform the offer details to match the expected data structure
+          setAccount(fetchedAccount);
+        
+      } catch (error) {
+        console.error('Error fetching offer details:', error);
+      }
+    };
+  
+    fetchAccount();
+  }, [ethExplorer, account]);
 
   // Callback function to handle local offer creation (not yet on blockchain)
   const handleCreateOffer = (energyAmount, validUntil, pricePerEnergyAmount) => {
@@ -221,6 +244,7 @@ return (
       <>
         <MakeOffer onCreateOffer={handleCreateOffer} />
         <OfferApproval offers={offers} onFinalize={handleFinalize} onDiscard={onDiscard}/>
+        <Offers />
       </>
     )}
   </>

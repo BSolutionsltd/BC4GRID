@@ -1,5 +1,6 @@
 "use client";
 
+
 import React, { useState, useEffect } from "react";
 import { Table, Segment, Checkbox, Input, Button, Dropdown, Grid } from "semantic-ui-react";
 
@@ -7,19 +8,15 @@ import web3 from "web3";
 
 import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
 
-import { useSelectedOrders } from '@/app/(trading)/context/OrdersContext';
 
 
-
-
-const Market = ( { isBuyPage } ) => {
+const Offers = ( { isBuyPage } ) => {
   // ethExplorer
   // const [ethExplorer, setEthExplorer] = useState(null);
   // use ethExplorer
   const { ethExplorer, setEthExplorer } = useEthExplorer();
-  const { setSelectedOrders } = useSelectedOrders();
-
-    const [error, setError] = useState(null);
+  const [error, setError] = useState(null);
+  const [account, setAccount] = useState('');
  
   // market data
   const [data, setData] = useState([]);
@@ -27,14 +24,9 @@ const Market = ( { isBuyPage } ) => {
   const [selectedItems, setSelectedItems] = useState([]);
   
   // search state
-  const [searchColumn, setSearchColumn] = useState('account'); // Default search column
+  const [searchColumn, setSearchColumn] = useState('totalPrice'); // Default search column
   const [searchQuery, setSearchQuery] = useState('');
 
-
-  // Function to handle order selection
-  const handleSelectOrder = (order) => {
-    setSelectedOrders((prevSelectedOrders) => [...prevSelectedOrders, order]);
-  };
 
 
 // Fetch offer details from the smart contract
@@ -42,6 +34,7 @@ useEffect(() => {
   const fetchOffers = async () => {
     try {
       const offerDetails = await ethExplorer.getAllOfferDetails();
+      const fetchedAccount = await ethExplorer.getUserAccount();
       // Transform the offer details to match the expected data structure
       let transformedData = [];
 
@@ -50,17 +43,21 @@ useEffect(() => {
 
       for (const offer of offerDetails) {
         // Convert the energy amount and price per energy amount to BigInt        
-        transformedData.push({
+        const transformedOffer = {
           key: Number(offer.offerId),
           account: web3.utils.toChecksumAddress(offer.sellerAddress),
           amount: Number(offer.energyAmount),
           pricePerUnit: Number(offer.pricePerEnergyAmount),
           validUntil: new Date(Number(offer.validUntil) * 1000).toLocaleDateString(),
           totalPrice: Number(offer.energyAmount) * Number(offer.pricePerEnergyAmount),
-          
-        });
+        };
+
+        if (transformedOffer.account === fetchedAccount) {
+          transformedData.push(transformedOffer);
+        }
       }
       setData(transformedData);
+      setAccount(fetchedAccount);
 
       //console.log('All Offers: ', transformedData);
     } catch (error) {
@@ -83,8 +80,7 @@ useEffect(() => {
   };
  
   const searchOptions = [
-    {key: 'id', text: 'ID', value: 'key'},
-    { key: 'account', text: 'Account', value: 'account' },
+    {key: 'id', text: 'ID', value: 'key'},    
     { key: 'amount', text: 'Amount', value: 'amount' },
     { key: 'pricePerUnit', text: 'Price per Unit', value: 'pricePerUnit' },
     { key: 'validUntil', text: 'Valid Until', value: 'validUntil' },
@@ -123,7 +119,7 @@ useEffect(() => {
     
   <div style={{overflowX : 'auto'}}>
       <Segment style={{ marginBottom: '200px', minHeight: '50vh'}}>
-        <Header as="h2">Energy Market</Header>
+        <Header as="h2">Your Offers</Header>
       <Grid>
         <Grid.Row>
         <Grid.Column width={16} textAlign="center">
@@ -193,4 +189,4 @@ useEffect(() => {
 };
 
 
-export default Market;
+export default Offers;

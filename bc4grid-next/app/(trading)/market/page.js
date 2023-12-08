@@ -11,7 +11,7 @@ const SellPage = () => {
   
   return (    
     <>  
-    <Market />
+    <Market isBuyPage={true} />
     </>
   );
 }
