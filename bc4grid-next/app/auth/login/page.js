@@ -91,7 +91,7 @@ const LoginPage = () => {
         );
 
         if (response?.ok) {
-            console.log('success');    
+            //console.log('success');    
             //router.push('/dashboard'); // Redirect to the trading page        
         }
         else {

@@ -497,7 +497,7 @@ class bc4Grid extends EthereumExplorer {
         // Call the GetAllOfferDetails method from the Trading contract
         return tradingContract.methods.GetAllOfferDetails().call()
             .then(offerDetails => {
-                console.log('Offer Details:', offerDetails);
+                //console.log('Offer Details:', offerDetails);
                 return offerDetails;
             })
             .catch(error => console.error('Error fetching offer details:', error));
@@ -521,6 +521,13 @@ class bc4Grid extends EthereumExplorer {
             .on('transactionHash', transactionHash => console.log('Transaction Hash:', transactionHash))
             .on('receipt', receipt => console.log('Transaction Receipt:', receipt))
             .on('error', error => console.error('Transaction Error:', error));
+    }
+
+    async getBalance() {
+        // Get the user's account address
+        const fromAddress = await this.getUserAccount();
+            
+        return this.web3.eth.getBalance(fromAddress);
     }
 
     async approveSmartContract(spender, amount) {

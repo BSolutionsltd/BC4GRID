@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 
 // semantic-ui
 import SmartMeters from '@/components/SmartMeters';
+import Balance from '@/components/Balance';
 
 class Dashboard extends Component {
 
@@ -23,9 +24,11 @@ class Dashboard extends Component {
 
 
   render() {
-    return (      
-      
+    return (    
+      <>  
+      <Balance />
        <SmartMeters meters={ this.meters }/>
+      </>
       
     );
   }

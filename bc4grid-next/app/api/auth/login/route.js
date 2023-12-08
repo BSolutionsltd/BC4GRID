@@ -15,7 +15,7 @@ export async function POST(req) {
 async function loginUserHandler(req) {  
 
   const body = await req.json(); 
-  console.log('body: ', body);
+  //console.log('body: ', body);
   const { email, password } = body;  
 
   if (!email || !password) {

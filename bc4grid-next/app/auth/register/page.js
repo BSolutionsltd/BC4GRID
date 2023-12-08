@@ -28,7 +28,7 @@ const SignUp = () => {
     useEffect(() => {
       const checkUserRegistered = async () => {       
       const session = await getSession();
-        console.log('Session status: ', session);
+        //console.log('Session status: ', session);
         if (session) {
           router.push('/');
         }

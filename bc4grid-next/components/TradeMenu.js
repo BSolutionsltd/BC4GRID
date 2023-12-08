@@ -20,8 +20,11 @@ const TradeMenu = () => {
       setActiveItem('Buy');
     } else if (router.pathname === '/sell') {
       setActiveItem('Sell');
+    }else if (router.pathname === '/market') {
+      setActiveItem('market');
     }
-  }, [router.pathname]);
+  },
+   [router.pathname]);
 
   const handleItemClick = (e, { name }) => {
     setActiveItem(name);
@@ -50,6 +53,13 @@ const TradeMenu = () => {
           name="Buy"          
           active={activeItem === 'Buy'}
           onClick={() => handleItemClick(null, { name: 'Buy' })}
+        />
+      </Link>
+      <Link href="/market" passHref>
+        <Menu.Item
+          name="Market"          
+          active={activeItem === 'Market'}
+          onClick={() => handleItemClick(null, { name: 'Market' })}
         />
       </Link>
     </Menu>

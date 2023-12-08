@@ -4,13 +4,11 @@ import dynamic from 'next/dynamic'
 const TradeMenu = dynamic(() => import('@/components/TradeMenu'), { ssr: false })
 
 //import  TradeMenu from "@/components/TradeMenu";
-import Balance from "@/components/Balance";
 
 const Trading = ({ children }) => {
     return (
         <>
         <TradeMenu/>   
-            <Balance />
               {children}        
         </>      
       

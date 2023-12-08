@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Table, Button } from "semantic-ui-react";
+import { Table, Button, Segment, Header } from "semantic-ui-react";
 
 
 const { Row, Cell, Body } = Table;
@@ -70,10 +70,13 @@ const Cart = ( {offers} ) => {
 
     }
     return (
+      <Segment>
+        <Header as="h2">Cart</Header>
     <Table>
           <CartHeader />
           <Body>{renderRows(offers)}</Body>
     </Table>
+    </Segment>
     )
 }
 

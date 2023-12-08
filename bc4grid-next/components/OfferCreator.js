@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import bc4grid from '@/lib/bc4grid/ethExplorer'; // Update with the actual path
-import { Container, Header, Segment, Table, Form, Button, Message } from 'semantic-ui-react';
+//import bc4grid from '@/lib/bc4grid/ethExplorer'; // Update with the actual path
+import { Header, Segment, Table, Form, Button, Message } from 'semantic-ui-react';
+
+
+// ethExplorer
+import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
 
 
 const messageStyles = {
@@ -61,7 +65,7 @@ const MakeOffer = ({ onCreateOffer }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    console.log('Values: ', energyAmount, validUntil, pricePerEnergyAmount);
+    //console.log('Values: ', energyAmount, validUntil, pricePerEnergyAmount);
 
     const validateOffer = (...values) => {
         return values.every(value => value !== '');
@@ -152,22 +156,13 @@ const OfferApproval = ({ offers, onFinalize, onDiscard }) => {
 
 // OfferCreator component (parent component)
 const OfferCreator = () => {
-  const [ethExplorer, setEthExplorer] = useState(null);
+  const { ethExplorer, setEthExplorer } = useEthExplorer();
   const [offers, setOffers] = useState([]); // State to hold offers
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const initializeBlockchain = async () => {
-      try {
-        const explorer = await bc4grid();
-        setEthExplorer(explorer);
-      } catch (err) {
-        setError('Error initializing blockchain: ' + err.message);
-      }
-    };
 
-    initializeBlockchain();
-  }, []);
+  }, [ethExplorer]);
 
   // Callback function to handle local offer creation (not yet on blockchain)
   const handleCreateOffer = (energyAmount, validUntil, pricePerEnergyAmount) => {

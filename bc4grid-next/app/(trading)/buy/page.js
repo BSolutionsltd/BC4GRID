@@ -2,11 +2,11 @@
 "use client";
 
 import React, { useState } from 'react';
-import {  Segment } from 'semantic-ui-react';
-
 
 import  Cart    from '@/components/Cart';
 import  Market  from '@/components/Market';
+
+import Balance from '@/components/Balance';
 
 const Buy = ({ cart, market }) => {
   const [cartItems] = useState(cart);
@@ -14,15 +14,9 @@ const Buy = ({ cart, market }) => {
 
   return (
     <div>
-      <Segment>
-        <h3>Cart</h3>
-        <Cart offers={cartItems} />
-      </Segment>
-
-      <Segment>
-        <h3>Market</h3>
+        <Cart offers={cartItems} />      
         <Market marketItems={marketItems} isBuyPage={true} />
-      </Segment>
+      
     </div>
   );
 };
@@ -40,7 +34,10 @@ const BuyPage = () => {
   ];
 
   return (    
+    <>
+      <Balance />
       <Buy cart={cart} market={market} />
+    </>
     
   );
 };

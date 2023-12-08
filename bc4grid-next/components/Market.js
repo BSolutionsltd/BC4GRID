@@ -7,11 +7,15 @@ import { Table, Segment, Checkbox, Input, Button, Dropdown, Grid } from "semanti
 import bc4grid from "@/lib/bc4grid/ethExplorer";
 import web3 from "web3";
 
+import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
+
 
 
 const Market = ( { isBuyPage } ) => {
   // ethExplorer
-  const [ethExplorer, setEthExplorer] = useState(null);
+  // const [ethExplorer, setEthExplorer] = useState(null);
+  // use ethExplorer
+  const { ethExplorer, setEthExplorer } = useEthExplorer();
   const [error, setError] = useState(null);
  
   // market data
@@ -24,20 +28,6 @@ const Market = ( { isBuyPage } ) => {
   const [searchQuery, setSearchQuery] = useState('');
 
 
-  // update data
-  // initialize blockchain
-  useEffect(() => {
-    const initializeBlockchain = async () => {
-      try {
-        const explorer = await bc4grid();        
-        setEthExplorer(explorer);
-      } catch (err) {
-        setError('Error initializing blockchain: ' + err.message);
-      }
-    };
-
-    initializeBlockchain();
-  }, []);
 
 // Fetch offer details from the smart contract
 useEffect(() => {
@@ -47,7 +37,7 @@ useEffect(() => {
       // Transform the offer details to match the expected data structure
       let transformedData = [];
 
-      console.log('offerDetails: ', offerDetails);
+      //console.log('offerDetails: ', offerDetails);
 
       function generateShortId() {
         const size = 10; // Customize the size as needed
@@ -55,8 +45,7 @@ useEffect(() => {
       }
 
       for (const offer of offerDetails) {
-        // Convert the energy amount and price per energy amount to BigInt
-        console.log('OFFER: ', offer);
+        // Convert the energy amount and price per energy amount to BigInt        
         transformedData.push({
           key: Number(offer.offerId),
           account: web3.utils.toChecksumAddress(offer.sellerAddress),
@@ -69,7 +58,7 @@ useEffect(() => {
       }
       setData(transformedData);
 
-      console.log('All Offers: ', transformedData);
+      //console.log('All Offers: ', transformedData);
     } catch (error) {
       console.error('Error fetching offer details:', error);
     }
