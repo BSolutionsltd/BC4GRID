@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 
 // semantic-ui
-import { Card, Image, Form, Button, Grid } from 'semantic-ui-react';
+import { Card, Image, Form, Button, Grid, Header } from 'semantic-ui-react';
 
 const Profile = () => {
   const { data: session } = useSession();
@@ -62,6 +62,7 @@ const Profile = () => {
 
   return (
     <>
+    <Header as="h1">User profile</Header>
       <Grid stackable columns={2} relaxed>
         <Grid.Column width={6}>
           <Card fluid>

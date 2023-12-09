@@ -31,9 +31,11 @@ async function loginUserHandler(req) {
         email: true,
         password: true,
         image: true,
+        isAdmin: true,
+        isVerified: true, 
       },
     });
-    if (user && user.password === hashPassword(password)) {
+    if (user && user.password === hashPassword(password) && user.isVerified) {      
       // exclude password from json response
       return NextResponse.json(exclude(user, ["password"]),{status: 200});
       

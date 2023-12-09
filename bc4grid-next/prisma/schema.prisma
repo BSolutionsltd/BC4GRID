@@ -44,6 +44,8 @@ model User {
   password      String?
   emailVerified DateTime?
   image         String?
+  isAdmin       Boolean   @default(false)
+  isVerified    Boolean   @default(false)  
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   accounts      Account[]

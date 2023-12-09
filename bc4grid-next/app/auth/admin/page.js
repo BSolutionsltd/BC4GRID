@@ -1,51 +1,70 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { Button, Table, Loader, Message } from 'semantic-ui-react';
+import { Button, Card, Loader, Message, Image } from 'semantic-ui-react'; // Import Image from semantic-ui-react
 
 const AdminConsole = () => {
   const { data: session } = useSession();
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (session) {
-      setLoading(true);
-      fetch('/api/auth/users')
-        .then((response) => response.json())
-        .then((data) => {
-          setUsers(data);
-          setLoading(false);
+    if (session?.user?.isAdmin) {
+      fetch(`/api/auth/users`)
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          }
+          throw new Error('Network response was not ok.');
         })
-        .catch((error) => {
+        .then(data => {
+          setUsers(data.users); // Assuming the API returns an object with a 'users' array
+        })
+        .catch(error => {
+          console.error(error);
           setError(error.message);
+        })
+        .finally(() => {
           setLoading(false);
         });
     }
-  }, [session]);
+  }, [session?.user?.isAdmin]);
 
-  const handleUserPermissionChange = (userId, canUseApp) => {
-    // Update user permission on the server
-    fetch(`/api/users/${userId}`, {
+  const handleUserApproval = (userId, isApproved) => {
+    setLoading(true);
+    // Update user approval on the server
+    fetch(`/api/auth/users`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ canUseApp }),
+      body: JSON.stringify({ userId, isVerified: isApproved }),
     })
-      .then((response) => response.json())
-      .then((updatedUser) => {
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to update user approval status');
+        }
+        return response.json();
+      })
+      .then((data) => {
         // Update the local state to reflect the change
-        setUsers(users.map((user) => (user.id === userId ? updatedUser : user)));
+        setUsers(users.map((user) => (user.id === userId ? { ...user, ...data.updatedUser } : user)));
       })
       .catch((error) => {
         setError(error.message);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   if (!session) {
     return <Message>You must be logged in to view this page.</Message>;
+  }
+
+  if (!session.user.isAdmin) {
+    return <Message>You must be an admin to view this page.</Message>;
   }
 
   return (
@@ -56,34 +75,36 @@ const AdminConsole = () => {
       ) : error ? (
         <Message error header='Error' content={error} />
       ) : (
-        <Table celled>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>Name</Table.HeaderCell>
-              <Table.HeaderCell>Email</Table.HeaderCell>
-              <Table.HeaderCell>Can Use App</Table.HeaderCell>
-              <Table.HeaderCell>Actions</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {users.map((user) => (
-              <Table.Row key={user.id}>
-                <Table.Cell>{user.name}</Table.Cell>
-                <Table.Cell>{user.email}</Table.Cell>
-                <Table.Cell>{user.canUseApp ? 'Yes' : 'No'}</Table.Cell>
-                <Table.Cell>
-                  <Button
-                    toggle
-                    active={user.canUseApp}
-                    onClick={() => handleUserPermissionChange(user.id, !user.canUseApp)}
-                  >
-                    {user.canUseApp ? 'Revoke Access' : 'Grant Access'}
-                  </Button>
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
+    <Card.Group stackable itemsPerRow={4}>
+          {users.map((user) => (
+            <Card key={user.id}>
+              {/* Add the Image component with the user's image */}             
+              <Card.Content>
+              {user.image && <Image floated="right" size="tiny" src={user.image} />}
+                <Card.Header>{user.name || 'No name provided'}</Card.Header>
+                <Card.Meta>Email: {user.email}</Card.Meta>
+                <Card.Description>
+                  Status: {user.isVerified ? 'Approved' : 'Not Approved'}
+                </Card.Description>
+                <Card.Description>
+                  Account Created: {new Date(user.createdAt).toLocaleString()}
+                </Card.Description>
+              </Card.Content>
+              {!user.isVerified && (
+                <Card.Content extra>
+                  <div className='ui two buttons'>
+                    <Button basic color='green' onClick={() => handleUserApproval(user.id, true)}>
+                      Approve
+                    </Button>
+                    <Button basic color='red' onClick={() => handleUserApproval(user.id, false)}>
+                      Decline
+                    </Button>
+                  </div>
+                </Card.Content>
+              )}
+            </Card>
+          ))}
+        </Card.Group>
       )}
     </div>
   );

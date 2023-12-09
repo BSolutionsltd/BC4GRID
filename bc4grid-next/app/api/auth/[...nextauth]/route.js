@@ -27,7 +27,7 @@ export const authOptions = {
         );
         const user = await response.json();
 
-        if (response.ok && user) {            
+        if (response.ok) {            
           return user;
         } else {
           return null;
@@ -55,7 +55,7 @@ export const authOptions = {
   callbacks: {
     async session({ session, token }) {
       if (token && token.user) {        
-        session.user = token.user; // Assuming 'user' is a property on the token object
+        session.user = token.user; // Assuming 'user' is a property on the token object         
       }
       return session;
     },
@@ -72,4 +72,4 @@ export const authOptions = {
 
 
 const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
+export { handler as GET, handler as POST, handler as PUT };
