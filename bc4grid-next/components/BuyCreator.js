@@ -13,6 +13,9 @@ import {
 // ethExplorer
 import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
 
+// cart items
+import { useSelectedOrders } from '@/app/(trading)/context/OrdersContext';
+
 
 const messageStyles = {
   whiteSpace: 'nowrap', // Prevent text from wrapping to the next line
@@ -24,8 +27,7 @@ const messageStyles = {
 
 
 const Cart = ({ offers, onApprove }) => {
-  const { Header, Row, HeaderCell, Body, Cell } = Table;
-
+  const { Header, Row, HeaderCell, Body, Cell } = Table;  
   const CartHeader = () => (
     <Header>
       <Row>
@@ -86,7 +88,7 @@ const Cart = ({ offers, onApprove }) => {
 
 const BuyCreator = () => {
   const { ethExplorer } = useEthExplorer();
-  const [selectedItems, setSelectedItems] = useState([]);
+  const { selectedOrders, setSelectedOrders } = useSelectedOrders();
   const [error, setError] = useState(null);
 
   const handleCheckboxChange = (offer, checked) => {
@@ -104,21 +106,16 @@ const BuyCreator = () => {
     // Implement the approval logic here
   };
 
-
-
   return (
     <>
       {error && (
-        <Message negative>
+        <Message negative style={messageStyles}>
           <Message.Header>Error</Message.Header>
           <p>{error}</p>
         </Message>
       )}
-      <Cart offers={selectedItems}  onApprove={onApprove}/>
-      <Orders
-        onCheckboxChange={handleCheckboxChange}
-        selectedItems={selectedItems}
-      />
+      <Cart offers={selectedOrders} onApprove={onApprove} />
+      
     </>
   );
 };

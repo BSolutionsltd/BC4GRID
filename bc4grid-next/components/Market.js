@@ -17,7 +17,7 @@ const Market = ( { isBuyPage } ) => {
   // const [ethExplorer, setEthExplorer] = useState(null);
   // use ethExplorer
   const { ethExplorer, setEthExplorer } = useEthExplorer();
-  const { setSelectedOrders } = useSelectedOrders();
+  const { selectedOrders, setSelectedOrders } = useSelectedOrders();
 
     const [error, setError] = useState(null);
  
@@ -92,15 +92,15 @@ useEffect(() => {
   ];
   
 
-  const handleCheckboxChange = (index, checked) => {
-    const newSelectedItems = [...selectedItems];
-    if (newSelectedItems.includes(index)) {
-      const itemIndex = newSelectedItems.indexOf(index);
-      newSelectedItems.splice(itemIndex, 1);
-    } else {
-      newSelectedItems.push(index);
-    }
-    setSelectedItems(newSelectedItems);
+  // Function to handle checkbox change
+  const handleCheckboxChange = (offer, checked) => {
+    setSelectedItems((prevSelectedItems) => {
+      if (checked) {
+        return [...prevSelectedItems, offer];
+      } else {
+        return prevSelectedItems.filter((item) => item.key !== offer.key);
+      }
+    });
   };
 
   // Filter data based on search query and selected column
@@ -110,9 +110,9 @@ useEffect(() => {
   }) : data;
 
   const handleBuyClick = () => {
-    const itemsToBuy = selectedItems.map((index) => data[index]);
-    console.log(itemsToBuy);
-    // Process the items to buy
+    // Pass the selected items to the context
+    setSelectedOrders(selectedItems);
+    console.log('Selected items to buy:', selectedOrders);
   };
 
 
@@ -163,7 +163,7 @@ useEffect(() => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {filteredData.map((item, index) => (
+          {filteredData.map((item) => (
             <Table.Row key={item.key}>
               <Table.Cell>{item.key}</Table.Cell>
               <Table.Cell>{item.account}</Table.Cell>
@@ -174,18 +174,24 @@ useEffect(() => {
               {isBuyPage ? (
                 <Table.Cell>
                   <Checkbox
-                    checked={selectedItems.includes(index)}
-                    onChange={(e, { checked }) => handleCheckboxChange(index, checked)}
+                    checked={selectedItems.some((selectedItem) => selectedItem.key === item.key)}
+                    onChange={(e, { checked }) => handleCheckboxChange(item, checked)}
                   />
                 </Table.Cell>
-              ) : null}
+      ) : null}
             </Table.Row>
           ))}
         </Table.Body>
       </Table>
-      {isBuyPage ? (
-        <Button primary onClick={handleBuyClick}>Buy Selected</Button>
+      <Grid>
+        <Grid.Row>
+      <Grid.Column width={16} textAlign="center">
+      {isBuyPage ? (       
+        <Button primary  onClick={handleBuyClick}>Add to Cart </Button>        
       ) : null}
+      </Grid.Column>
+      </Grid.Row>
+      </Grid>
       </Segment>	
     </div>
   );
