@@ -3,15 +3,13 @@
 
 import React, { useState } from 'react';
 
-import OfferCreator from '@/components/OfferCreator';
-import Balance from '@/components/Balance';
+import OfferCreator from '@/components/Selling';
 
 
 const SellPage = () => {
   
   return (    
-    <>
-    <Balance />
+    <>    
     <OfferCreator />    
     </>
   );

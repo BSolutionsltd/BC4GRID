@@ -13,7 +13,7 @@ const SmartMeters = ({ meters }) => {
                 <Item.Group>
                   <Item>
                     <Item.Image>
-                      <Icon name="plug" size="big" bordered circular />
+                      <Icon name="superpowers" size="big" bordered circular />
                     </Item.Image>
                     <Item.Content>
                       <Item.Header>{meter.name}</Item.Header>

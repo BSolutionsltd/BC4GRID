@@ -4,16 +4,13 @@
 import React, { useState } from 'react';
 
 
-import Balance from '@/components/Balance';
-import BuyCreator from '@/components/BuyCreator';
+import BuyCreator from '@/components/Buying';
 
 
-const BuyPage = () => {
-  
+const BuyPage = () => { 
 
   return (    
-    <>
-      <Balance />
+    <>      
       <BuyCreator />
     </>
     

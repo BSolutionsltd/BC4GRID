@@ -75,10 +75,10 @@ const Cart = ({ offers, onApprove }) => {
   };
 
   return (
-    <Segment>
+  <Segment style={{ minHeight: '20vh' }}>
       <Header as="h2">Cart</Header>
       <Table>
-        <CartHeader />
+      {offers.length > 0 && <CartHeader />}
         <Body>{renderRows()}</Body>
       </Table>
     </Segment>
@@ -115,6 +115,7 @@ const BuyCreator = () => {
         </Message>
       )}
       <Cart offers={selectedOrders} onApprove={onApprove} />
+      <Orders />
       
     </>
   );

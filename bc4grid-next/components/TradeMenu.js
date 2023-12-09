@@ -3,28 +3,32 @@
 import React, { useState, useEffect } from 'react';
 import { Menu } from 'semantic-ui-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+//import { useRouter } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation'
 
 
 
 const TradeMenu = () => {
   const [activeItem, setActiveItem] = useState('Dashboard');
-  const router = useRouter();
+  //const router = useRouter();
+  const pathname = usePathname()
 
   useEffect(() => {
-    
     // Update activeItem based on the current route
-    if (router.pathname === '/dashboard') {
-      setActiveItem('Dashboard');
-    } else if (router.pathname === '/buy') {
-      setActiveItem('Buy');
-    } else if (router.pathname === '/sell') {
-      setActiveItem('Sell');
-    }else if (router.pathname === '/market') {
-      setActiveItem('market');
+    //console.log('Putanja: ', pathname);
+    const pathToMenuItem = {
+      '/dashboard': 'Dashboard',
+      '/buy': 'Buy',
+      '/sell': 'Sell',
+      '/market': 'Market', // Corrected from 'market' to 'Market'
+    };
+
+    const menuItem = pathToMenuItem[pathname];
+    if (menuItem) {
+      setActiveItem(menuItem);
     }
-  },
-   [router.pathname]);
+  }, [pathname]);
+
 
   const handleItemClick = (e, { name }) => {
     setActiveItem(name);
@@ -38,7 +42,22 @@ const TradeMenu = () => {
           active={activeItem === 'Dashboard'}       
           onClick={() => handleItemClick(null, { name: 'Dashboard' })}
         />
-      </Link>     
+      </Link>   
+
+       <Link href="/market" passHref>
+        <Menu.Item
+          name="Market"          
+          active={activeItem === 'Market'}
+          onClick={() => handleItemClick(null, { name: 'Market' })}
+        />
+      </Link>  
+      <Link href="/buy" passHref>
+        <Menu.Item
+          name="Buy"          
+          active={activeItem === 'Buy'}
+          onClick={() => handleItemClick(null, { name: 'Buy' })}
+        />
+      </Link>
 
       <Link href="/sell" passHref>
         <Menu.Item
@@ -48,20 +67,8 @@ const TradeMenu = () => {
         />
       </Link>
 
-      <Link href="/buy" passHref>
-        <Menu.Item
-          name="Buy"          
-          active={activeItem === 'Buy'}
-          onClick={() => handleItemClick(null, { name: 'Buy' })}
-        />
-      </Link>
-      <Link href="/market" passHref>
-        <Menu.Item
-          name="Market"          
-          active={activeItem === 'Market'}
-          onClick={() => handleItemClick(null, { name: 'Market' })}
-        />
-      </Link>
+      
+     
     </Menu>
   );
 };
