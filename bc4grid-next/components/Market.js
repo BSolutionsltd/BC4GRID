@@ -9,7 +9,8 @@ import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
 
 import { useSelectedOrders } from '@/app/(trading)/context/OrdersContext';
 
-
+// routing
+import { useRouter } from 'next/navigation';
 
 
 const Market = ( { isBuyPage } ) => {
@@ -19,7 +20,8 @@ const Market = ( { isBuyPage } ) => {
   const { ethExplorer, setEthExplorer } = useEthExplorer();
   const { selectedOrders, setSelectedOrders } = useSelectedOrders();
 
-    const [error, setError] = useState(null);
+  // errors
+  const [error, setError] = useState(null);
  
   // market data
   const [data, setData] = useState([]);
@@ -30,50 +32,45 @@ const Market = ( { isBuyPage } ) => {
   const [searchColumn, setSearchColumn] = useState('account'); // Default search column
   const [searchQuery, setSearchQuery] = useState('');
 
+  // routing
+    const router = useRouter()
 
-  // Function to handle order selection
-  const handleSelectOrder = (order) => {
-    setSelectedOrders((prevSelectedOrders) => [...prevSelectedOrders, order]);
-  };
+  // Fetch offer details from the smart contract
+  useEffect(() => {
+    const fetchOffers = async () => {
+      try {
+        const offerDetails = await ethExplorer.getAllOfferDetails();
+        // Transform the offer details to match the expected data structure
+        let transformedData = [];
 
+        //console.log('offerDetails: ', offerDetails);
+        
 
-// Fetch offer details from the smart contract
-useEffect(() => {
-  const fetchOffers = async () => {
-    try {
-      const offerDetails = await ethExplorer.getAllOfferDetails();
-      // Transform the offer details to match the expected data structure
-      let transformedData = [];
+        for (const offer of offerDetails) {
+          // Convert the energy amount and price per energy amount to BigInt        
+          transformedData.push({
+            key: Number(offer.offerId),
+            account: web3.utils.toChecksumAddress(offer.sellerAddress),
+            amount: Number(offer.energyAmount),
+            pricePerUnit: Number(offer.pricePerEnergyAmount),
+            validUntil: new Date(Number(offer.validUntil) * 1000).toLocaleDateString(),
+            totalPrice: Number(offer.energyAmount) * Number(offer.pricePerEnergyAmount),
+            
+          });
+        }
+        setData(transformedData);
 
-      //console.log('offerDetails: ', offerDetails);
-      
-
-      for (const offer of offerDetails) {
-        // Convert the energy amount and price per energy amount to BigInt        
-        transformedData.push({
-          key: Number(offer.offerId),
-          account: web3.utils.toChecksumAddress(offer.sellerAddress),
-          amount: Number(offer.energyAmount),
-          pricePerUnit: Number(offer.pricePerEnergyAmount),
-          validUntil: new Date(Number(offer.validUntil) * 1000).toLocaleDateString(),
-          totalPrice: Number(offer.energyAmount) * Number(offer.pricePerEnergyAmount),
-          
-        });
+        //console.log('All Offers: ', transformedData);
+      } catch (error) {
+        console.error('Error fetching offer details:', error);
       }
-      setData(transformedData);
+    };
 
-      //console.log('All Offers: ', transformedData);
-    } catch (error) {
-      console.error('Error fetching offer details:', error);
-    }
-  };
-
-  fetchOffers();
-}, [ethExplorer]);
+    fetchOffers();
+  }, [ethExplorer]);
 
 
-   
-  // search bar ops
+   // search bar ops
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
@@ -113,6 +110,8 @@ useEffect(() => {
     // Pass the selected items to the context
     setSelectedOrders(selectedItems);
     console.log('Selected items to buy:', selectedOrders);
+    router.push('/buy');    
+    
   };
 
 
