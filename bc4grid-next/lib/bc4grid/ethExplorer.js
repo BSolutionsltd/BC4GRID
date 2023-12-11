@@ -5,6 +5,7 @@ import Web3 from 'web3';
 import TokenDispenser from './build/TokenDispenser.json';
 import Trading from './build/Trading.json';
 
+const BigNumber = require("bignumber.js");
 
 const contracts = {
     TokenDispenser,
@@ -523,11 +524,18 @@ class bc4Grid extends EthereumExplorer {
             .on('error', error => console.error('Transaction Error:', error));
     }
 
-    async getBalance() {
-        // Get the user's account address
-        const fromAddress = await this.getUserAccount();
-            
-        return this.web3.eth.getBalance(fromAddress);
+    async getBalance(userAddress) {
+        return this.web3.eth.getBalance(userAddress);
+    }
+
+    async getTokenBalance(userAddress) {
+        
+        const tokenDispenserContract = this.contract('TokenDispenser');
+        
+        const res = await tokenDispenserContract.methods.balanceOf(userAddress).call(); 
+        const decimals = await tokenDispenserContract.methods.decimals().call();
+        const balance = new BigNumber(res + "e-" + decimals);
+        return balance.toString();
     }
 
     async approveSmartContract(spender, amount) {
