@@ -558,6 +558,55 @@ class bc4Grid extends EthereumExplorer {
             .on('error', error => console.error('Transaction Error:', error));
     }
 
+    async registerSmartMeter(meterAddress) {
+        // Get the user's account address
+        const fromAddress = await this.getUserAccount();
+    
+        // Get the TokenDispenser contract instance
+        const tokenDispenserContract = this.contract('TokenDispenser');
+
+        // Prepare the transaction options
+        const options = {
+            from: fromAddress,
+            gas: 3000000 // Set an appropriate gas limit for the transaction
+        };
+
+        // Call the RegisterSmartMeter method from the TokenDispenser contract
+        return tokenDispenserContract.methods.RegisterSmartMeter(meterAddress).send(options)
+            .on('transactionHash', transactionHash => console.log('Transaction Hash:', transactionHash))
+            .on('receipt', receipt => console.log('Transaction Receipt:', receipt))
+            .on('error', error => console.error('Transaction Error:', error));
+    }
+
+    async unregisterSmartMeter(meterAddress) {
+        // Get the user's account address
+        const fromAddress = await this.getUserAccount();
+    
+        // Get the TokenDispenser contract instance
+        const tokenDispenserContract = this.contract('TokenDispenser');
+
+        // Prepare the transaction options
+        const options = {
+            from: fromAddress,
+            gas: 3000000 // Set an appropriate gas limit for the transaction
+        };
+
+        // Call the UnregisterSmartMeter method from the TokenDispenser contract
+        return tokenDispenserContract.methods.UnregisterSmartMeter(meterAddress).send(options)
+            .on('transactionHash', transactionHash => console.log('Transaction Hash:', transactionHash))
+            .on('receipt', receipt => console.log('Transaction Receipt:', receipt))
+            .on('error', error => console.error('Transaction Error:', error));
+    }
+
+    async isRegistered(meterAddress) {
+        // Get the TokenDispenser contract instance
+        const tokenDispenserContract = this.contract('TokenDispenser');
+
+        // Call IsRegistered method from the TokenDispenser contract
+        const res = await tokenDispenserContract.methods.IsRegistered(meterAddress).call();
+        return res;
+    }
+
     async sendEnergy(energyAmount) {
         // Get the user's account address
         const fromAddress = await this.getUserAccount();
