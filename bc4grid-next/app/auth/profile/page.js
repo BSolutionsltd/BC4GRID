@@ -66,7 +66,7 @@ const Profile = () => {
       <Grid stackable columns={2} relaxed>
         <Grid.Column width={6}>
           <Card fluid>
-            <Image src={profileData.image} wrapped ui={false} />
+            <Image src={profileData.image} wrapped ui={false} alt=''/>
             <Card.Content>
               <Card.Header>{profileData.name}</Card.Header>
               <Card.Meta>

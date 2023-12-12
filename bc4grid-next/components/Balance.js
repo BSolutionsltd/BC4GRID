@@ -68,7 +68,7 @@ const Balance = () => {
     };
 
     fetchAccountAndBalance();
-  }, [ethExplorer]); // Add ethExplorer to the dependency array
+  }, [ethExplorer, account]); // Add ethExplorer to the dependency array
 
   const handleAccountChange = async (e, { value }) => {
     setSelectedAccount(value);

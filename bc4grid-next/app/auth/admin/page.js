@@ -151,7 +151,7 @@ const AdminConsole = () => {
               {/* Add the Image component with the user's image */}             
               <Card.Content>
               {user.image ? (
-                  <Image floated="right" size="tiny" src={user.image} />
+                  <Image floated="right" size="tiny" src={user.image} alt=''/>
                 ) : (
                   <div style={initialsAvatarStyle}>
                     {getInitials(user.name || '')}
@@ -189,7 +189,7 @@ const AdminConsole = () => {
               {/* Add the Image component with the user's image */}             
               <Card.Content>
               {user.image ? (
-                  <Image floated="right" size="tiny" src={user.image} />
+                  <Image floated="right" size="tiny" src={user.image} alt='' />
                 ) : (
                   <div style={initialsAvatarStyle}>
                     {getInitials(user.name || '')}

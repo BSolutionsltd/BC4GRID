@@ -757,7 +757,7 @@ async function bc4grid() {
     await ethExplorer.getNetworkId();
 
     // initialize events
-    await ethExplorer.initSmartContractEvents();
+    //await ethExplorer.initSmartContractEvents();
 
     return ethExplorer;
 }  

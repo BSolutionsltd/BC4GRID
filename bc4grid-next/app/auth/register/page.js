@@ -34,7 +34,7 @@ const SignUp = () => {
         }
       };
       checkUserRegistered();
-    }, []);
+    }, [router]);
 
     const onChange = (e) => {
         setRegisterData({

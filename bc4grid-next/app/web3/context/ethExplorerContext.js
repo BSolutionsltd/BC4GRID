@@ -6,30 +6,37 @@ const EthExplorerContext = createContext(null);
 
 export const useEthExplorer = () => useContext(EthExplorerContext);
 
-export const EthExplorerProvider = ({ children }) => {
-  const [ethExplorer, setEthExplorer] = useState(null);
+let ethExplorerInstance = null; // This variable will hold the singleton instance
 
-  // Generate a unique identifier for this instance of the provider
-  const uniqueId = Math.random().toString(36).substring(2, 15);
+export const EthExplorerProvider = ({ children }) => {
+  const [ethExplorer, setEthExplorer] = useState(ethExplorerInstance);
 
   useEffect(() => {
-    const initEthExplorer = async () => {
-      const explorer = await bc4grid();
-      setEthExplorer(explorer);
+    if (!ethExplorer) {
+      // Only initialize if ethExplorer is not already set
+      const initEthExplorer = async () => {
+        if (!ethExplorerInstance) {
+          // Only create a new instance if one does not already exist
+          ethExplorerInstance = await bc4grid();
+          setEthExplorer(ethExplorerInstance);
+        } else {
+          // If an instance already exists, use it
+          setEthExplorer(ethExplorerInstance);
+        }
+      };
 
-      console.log(`EthExplorer initialized for provider ID: ${uniqueId}`);
+      initEthExplorer();
+    }
+
+    // Cleanup function to handle component unmounting
+    return () => {
+      // Perform any necessary cleanup, such as removing event listeners
     };
-
-    initEthExplorer();
-  }, []);
+  }, []); // Empty dependency array ensures this effect only runs once
 
   const value = {
     ethExplorer,
-    setEthExplorer,
   };
-
-  console.log('useEthExplorer is called ');
-
 
   return (
     <EthExplorerContext.Provider value={value}>
