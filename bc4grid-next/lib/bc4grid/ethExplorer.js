@@ -557,6 +557,26 @@ class bc4Grid extends EthereumExplorer {
             .on('receipt', receipt => console.log('Transaction Receipt:', receipt))
             .on('error', error => console.error('Transaction Error:', error));
     }
+
+    async sendEnergy(energyAmount) {
+        // Get the user's account address
+        const fromAddress = await this.getUserAccount();
+    
+        // Get the TokenDispenser contract instance
+        const tokenDispenserContract = this.contract('TokenDispenser');
+
+        // Prepare the transaction options
+        const options = {
+            from: fromAddress,
+            gas: 3000000 // Set an appropriate gas limit for the transaction
+        };
+
+        // Call the SendEnergy method from the TokenDispenser contract
+        return tokenDispenserContract.methods.SendEnergy(energyAmount).send(options)
+            .on('transactionHash', transactionHash => console.log('Transaction Hash:', transactionHash))
+            .on('receipt', receipt => console.log('Transaction Receipt:', receipt))
+            .on('error', error => console.error('Transaction Error:', error));
+    }
       
     // event handler
     async loadEventsFromLatestBlocks(fromBlockNumber) {        
