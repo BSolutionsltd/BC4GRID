@@ -43,7 +43,7 @@ const Balance = () => {
 
   const [account, setAccount] = useState([]);  
   const [balance, setBalance] = useState(''); // assuming balance is a string
-  const [power, setPower] = useState('1300'); // total power at disposal
+  const [power, setPower] = useState(''); // total power at disposal
 
   useEffect(() => {
     const fetchAccountAndBalance = async () => {
@@ -61,6 +61,9 @@ const Balance = () => {
         const fetchedBalance = await ethExplorer.getBalance(fetchedAccount);
         const balanceInEther = web3.utils.fromWei(fetchedBalance, 'ether');
         setBalance(balanceInEther); // You might need to convert this to kWh based on your logic
+
+        const tokenBalance = await ethExplorer.getTokenBalance(fetchedAccount);
+        setPower(tokenBalance);
       }
     };
 
