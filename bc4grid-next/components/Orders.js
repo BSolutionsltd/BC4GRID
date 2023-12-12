@@ -32,9 +32,14 @@ const Orders = ( { isBuyPage } ) => {
 // Fetch offer details from the smart contract
 useEffect(() => {
   const fetchOffers = async () => {
+
+    let offerDetails;
+    let fetchedAccount;
     try {
-      const offerDetails = await ethExplorer.getAllOfferDetails();
-      const fetchedAccount = await ethExplorer.getUserAccount();
+      if(ethExplorer){ 
+        offerDetails = await ethExplorer.getAllOfferDetails();
+        fetchedAccount = await ethExplorer.getUserAccount();
+    }
       // Transform the offer details to match the expected data structure
       let transformedData = [];
 

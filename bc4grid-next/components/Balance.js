@@ -53,7 +53,7 @@ const Balance = () => {
         return;
       }
 
-      console.log('ethExplorer: ', ethExplorer);
+      
       const fetchedAccount = await ethExplorer.getUserAccount();
       setAccount(fetchedAccount);
 

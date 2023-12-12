@@ -175,7 +175,7 @@ const OfferCreator = () => {
   useEffect(() => {
     const fetchAccount = async () => {
       try {
-          const fetchedAccount = await ethExplorer.getUserAAccount();
+          const fetchedAccount = await ethExplorer.getUserAccount();
           // Transform the offer details to match the expected data structure
           setAccount(fetchedAccount);
         

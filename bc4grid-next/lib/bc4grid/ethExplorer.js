@@ -405,6 +405,8 @@ class EthereumExplorer {
 
 class bc4Grid extends EthereumExplorer {
     constructor() {
+
+        console.log('Calling bc4grid contructor');
         super();
     }
 

@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 const withAuth = (WrappedComponent) => {
-  return function (props) {
+  const WithAuthComponent = (props) => {
     const { data: session, status } = useSession();
     const router = useRouter();
 
@@ -29,6 +29,11 @@ const withAuth = (WrappedComponent) => {
     // While waiting for session or if no session, return null or a loading indicator
     return null;
   };
+
+  // Assign a display name to the returned component for debugging purposes
+  WithAuthComponent.displayName = `WithAuth(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
+
+  return WithAuthComponent;
 };
 
 export default withAuth;
