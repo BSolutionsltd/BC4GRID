@@ -708,15 +708,18 @@ class bc4Grid extends EthereumExplorer {
         
     }
 
-    handleOfferCreated(event) {
-        console.log(`Event: OfferCreated. Offer Details:
-            ID: ${event.returnValues.id}
-            Seller: ${event.returnValues.seller}
-            Valid Until: ${event.returnValues.validUntil}
-            Price: ${event.returnValues.pricePerEnergyAmount}
-            Amount: ${event.returnValues.energyAmount}`);
-    }
-
+    handleOfferCreated(callback) {
+        return (event) => {
+          console.log(`Event: OfferCreated. Offer Details:
+              ID: ${event.returnValues.id}
+              Seller: ${event.returnValues.seller}
+              Valid Until: ${event.returnValues.validUntil}
+              Price: ${event.returnValues.pricePerEnergyAmount}
+              Amount: ${event.returnValues.energyAmount}`);
+          // Call the callback function to update the state with the new offer
+          callback(event.returnValues);
+        };
+      }
     handleOfferModified(event) {
         console.log(`Event: OfferModified. Offer Details:
             ID: ${event.returnValues.id}

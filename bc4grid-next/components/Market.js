@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Table, Segment, Checkbox, Input, Button, Dropdown, Grid } from "semantic-ui-react";
 
 import web3 from "web3";
@@ -14,8 +14,23 @@ import { useRouter } from 'next/navigation';
 
 
 const Market = ( { isBuyPage } ) => {
-  // ethExplorer
-  // const [ethExplorer, setEthExplorer] = useState(null);
+
+  // style 
+   // Define the CSS animation as a string
+   const flashAnimation = `
+   @keyframes flashAnimation {
+     0% { background-color: #0E6EB8; }
+     100% { background-color: transparent; }
+   }
+
+   .highlight-row {
+     animation: flashAnimation 6s; /* Run the animation for 6 seconds */
+   }
+ `;
+  
+  // routing
+  const router = useRouter()
+
   // use ethExplorer
   const { ethExplorer, setEthExplorer } = useEthExplorer();
   const { selectedOrders, setSelectedOrders } = useSelectedOrders();
@@ -25,6 +40,8 @@ const Market = ( { isBuyPage } ) => {
  
   // market data
   const [data, setData] = useState([]);
+  // new offer added
+  const [newOfferId, setNewOfferId] = useState(null);
   // selected items from market
   const [selectedItems, setSelectedItems] = useState([]);
   
@@ -32,8 +49,71 @@ const Market = ( { isBuyPage } ) => {
   const [searchColumn, setSearchColumn] = useState('account'); // Default search column
   const [searchQuery, setSearchQuery] = useState('');
 
-  // routing
-    const router = useRouter()
+
+  // Function to transform and filter offer data
+  const transformAndFilterData = (offer) => {
+
+    console.log('Offer before transformation: ', offer);
+    return {
+      key: Number(offer.id),
+      account: web3.utils.toChecksumAddress(offer.seller),
+      amount: Number(offer.energyAmount),
+      pricePerUnit: Number(offer.pricePerEnergyAmount),
+      validUntil: new Date(Number(offer.validUntil) * 1000).toLocaleDateString(),
+      totalPrice: Number(offer.energyAmount) * Number(offer.pricePerEnergyAmount),
+    };
+  };
+
+
+    // Ref to store the subscription object
+    const subscriptionRef = useRef(null);
+
+  // Subscribe to new offers
+  useEffect(() => {
+    if (!ethExplorer) {
+      console.log('ethExplorer is not initialized yet.');
+      return;
+    }
+
+    // Check if we already have an active subscription
+    if (subscriptionRef.current) {
+      console.log('Already subscribed to event.');
+      return;
+    }
+
+    const subscribeToEvents = async () => {
+      const blockNumber = await ethExplorer.getBlockNumber();
+      // Subscribe to the OfferCreated event
+      subscriptionRef.current = await ethExplorer.subscribeToContractEvent(
+        'Trading',
+        'OfferCreated',
+        blockNumber,
+        ethExplorer.handleOfferCreated((newOffer) => {
+          const transformedOffer = transformAndFilterData(newOffer);
+          // Update the state with the new offer after transforming and filtering
+          setData((prevData) => [...prevData, transformedOffer]);
+          // Set the new offer ID to highlight the row
+          setNewOfferId(transformedOffer.key);
+          // Set a timeout to remove the highlight after 2 seconds
+          setTimeout(() => {
+            setNewOfferId(null);
+          }, 2000);
+        })
+      );
+    };
+  
+    subscribeToEvents();
+
+    // Cleanup function to unsubscribe from events
+    return () => {
+      if (subscriptionRef.current) {
+        // Perform cleanup here, such as unsubscribing from the event
+        subscriptionRef.current.unsubscribe();
+        subscriptionRef.current = null;
+      }
+    };
+  }, [ethExplorer]); // Dependency array includes ethExplorer
+
 
   // Fetch offer details from the smart contract
   useEffect(() => {
@@ -121,6 +201,7 @@ const Market = ( { isBuyPage } ) => {
   return (
     
   <div style={{overflowX : 'auto'}}>
+     <style>{flashAnimation}</style>
       <Segment style={{ marginBottom: '200px', minHeight: '50vh'}}>
         <Header as="h2">Energy Market</Header>
       <Grid>
@@ -163,7 +244,10 @@ const Market = ( { isBuyPage } ) => {
         </Table.Header>
         <Table.Body>
           {filteredData.map((item) => (
-            <Table.Row key={item.key}>
+            <Table.Row 
+              key={item.key}
+              className={item.key === newOfferId ? 'highlight-row' : ''}
+            >
               <Table.Cell>{item.key}</Table.Cell>
               <Table.Cell>{item.account}</Table.Cell>
               <Table.Cell>{item.amount}</Table.Cell>
