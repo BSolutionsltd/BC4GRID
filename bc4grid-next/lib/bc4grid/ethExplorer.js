@@ -508,8 +508,8 @@ class bc4Grid extends EthereumExplorer {
         // Get the user's account address
         const fromAddress = await this.getUserAccount();
             
-        // Get the TokenDispenser contract instance
-        const tokenDispenserContract = this.contract('TokenDispenser');
+        // Get the Trading contract instance
+        const tradingContract = this.contract('Trading');
 
         // Prepare the transaction options
         const options = {
@@ -517,8 +517,8 @@ class bc4Grid extends EthereumExplorer {
             gas: 3000000 // Set an appropriate gas limit for the transaction
         };
 
-        // Call the RetrieveTokens method from the TokenDispenser contract
-        return tokenDispenserContract.methods.RetrieveTokens(offerId).send(options)
+        // Call the RetrieveTokens method from the Trading contract
+        return tradingContract.methods.RetrieveTokens(offerId).send(options)
             .on('transactionHash', transactionHash => console.log('Transaction Hash:', transactionHash))
             .on('receipt', receipt => console.log('Transaction Receipt:', receipt))
             .on('error', error => console.error('Transaction Error:', error));
@@ -602,75 +602,75 @@ class bc4Grid extends EthereumExplorer {
     }
 
     async initSmartContractEvents() {
-        // Subscribe to events from the `latest` block
-        for (let contractName in this.contractDetails) {
-            const subscription = await this.contract(contractName).events.allEvents({ fromBlock: 'latest' });
-
-            subscription.on('connected', subscriptionId => {
-                console.log({ on:'connected', subscriptionId });
-            });
-
-            subscription.on('data', event => {
-                console.log({ on:'data', event });
-                this.handleContractEvent(event);
-            });
-            
-            subscription.on('changed', event => {
-                console.log({ on:'changed', event });
-            });
-            
-            subscription.on('error', (error, receipt) => {
-                // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-                if (receipt) {
-                    console.log({ on:'error', receipt, error });
-                } else {
-                    console.log({ on:'error', error});
-                }
-            });
-        }
+        const blockNumber = await this.getBlockNumber();
+        await this.subscribeToContractEvent('Trading', 'OfferCreated', blockNumber, this.handleOfferCreated);
+        await this.subscribeToContractEvent('Trading', 'OfferModified', blockNumber, this.handleOfferModified);
+        await this.subscribeToContractEvent('Trading', 'OfferClosed', blockNumber, this.handleOfferClosed);
+        await this.subscribeToContractEvent('Trading', 'TokenRetrieved', blockNumber, this.handleTokenRetrieved);
     }
 
-    handleContractEvent(event) {
-        switch (event.event) {
-            case 'OfferCreated':
-                // this affects the market, propagate appropriately
-                console.log(`Event: OfferCreated. Offer Details:
-                    ID: ${event.returnValues.id}
-                    Seller: ${event.returnValues.seller}
-                    Valid Until: ${event.returnValues.validUntil}
-                    Price: ${event.returnValues.pricePerEnergyAmount}
-                    Amount: ${event.returnValues.energyAmount}`);
-                break;
-            case 'OfferModified':
-                // this affects the market, propagate appropriately
-                console.log(`Event: OfferModified. Offer Details:
-                    ID: ${event.returnValues.id}
-                    Seller: ${event.returnValues.seller}
-                    Valid Until: ${event.returnValues.validUntil}
-                    Price: ${event.returnValues.pricePerEnergyAmount}
-                    Amount: ${event.returnValues.energyAmount}
-                    Buyer: ${event.returnValues.buyer}`);
-                break;
-            case 'OfferClosed':
-                // this affects the market, propagate appropriately
-                console.log(`Event: OfferClosed. Offer Details:
-                    ID: ${event.returnValues.id}
-                    Seller: ${event.returnValues.seller}
-                    Valid Until: ${event.returnValues.validUntil}
-                    Price: ${event.returnValues.pricePerEnergyAmount}
-                    Amount: ${event.returnValues.energyAmount}
-                    Buyer: ${event.returnValues.buyer}`);
-                break;
-            case 'TokenRetrieved':
-                console.log(`Event: TokenRetrieved. Offer Details:
-                    ID: ${event.returnValues.id}
-                    Seller: ${event.returnValues.seller}`);
-                break;
-            default:
-                break;
+    async subscribeToContractEvent(contractName, eventName, blockNumber, callback) {
+        const contractInstance = this.contract(contractName);
+        const subscription = await contractInstance.events[eventName]({ fromBlock: blockNumber });
+        
+        subscription.on('connected', subscriptionId => {
+            console.log({ on:'connected', subscriptionId });
+        });
+        
+        subscription.on('data', event => {
+            console.log({ on:'data', event });
+            callback(event);
+        });
+        
+        subscription.on('changed', event => {
+            console.log({ on:'changed', event });
+        });
+        
+        subscription.on('error', (error, receipt) => {
+            // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
+            if (receipt) {
+                console.log({ on:'error', receipt, error });
+            } else {
+                console.log({ on:'error', error});
             }
+        });
+        
     }
-      
+
+    handleOfferCreated(event) {
+        console.log(`Event: OfferCreated. Offer Details:
+            ID: ${event.returnValues.id}
+            Seller: ${event.returnValues.seller}
+            Valid Until: ${event.returnValues.validUntil}
+            Price: ${event.returnValues.pricePerEnergyAmount}
+            Amount: ${event.returnValues.energyAmount}`);
+    }
+
+    handleOfferModified(event) {
+        console.log(`Event: OfferModified. Offer Details:
+            ID: ${event.returnValues.id}
+            Seller: ${event.returnValues.seller}
+            Valid Until: ${event.returnValues.validUntil}
+            Price: ${event.returnValues.pricePerEnergyAmount}
+            Amount: ${event.returnValues.energyAmount}
+            Buyer: ${event.returnValues.buyer}`);
+    }
+
+    handleOfferClosed(event) {
+        console.log(`Event: OfferClosed. Offer Details:
+            ID: ${event.returnValues.id}
+            Seller: ${event.returnValues.seller}
+            Valid Until: ${event.returnValues.validUntil}
+            Price: ${event.returnValues.pricePerEnergyAmount}
+            Amount: ${event.returnValues.energyAmount}
+            Buyer: ${event.returnValues.buyer}`);
+    }
+
+    handleTokenRetrieved(event) {
+        console.log(`Event: TokenRetrieved. Offer Details:
+            ID: ${event.returnValues.id}
+            Seller: ${event.returnValues.seller}`);
+    }      
 }
 
 async function bc4grid() {
