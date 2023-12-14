@@ -1,6 +1,7 @@
 
 "use client";
 import React, { useEffect, useState } from 'react';
+
 import Offers from '@/components/Offers';
 
 import { 
@@ -9,7 +10,9 @@ import {
   Table, 
   Form,   
   Button,   
-  Message } from 'semantic-ui-react';
+  Message,
+  Pagination
+} from 'semantic-ui-react';
 
 
 
@@ -71,6 +74,7 @@ const MakeOffer = ({ onCreateOffer }) => {
   const [validUntil, setValidUntil] = useState('');
   const [pricePerEnergyAmount, setPricePerEnergyAmount] = useState('');
   const [showAlert, setShowAlert] = useState(false);
+  
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -139,27 +143,45 @@ const MakeOffer = ({ onCreateOffer }) => {
 
 // OfferApproval component
 const OfferApproval = ({ offers, onFinalize, onDiscard }) => {
+  const [activePage, setActivePage] = useState(1);
+  const itemsPerPage = 3;
+  const totalPages = Math.ceil(offers.length / itemsPerPage);
+  const displayedOffers = offers.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
+
   return (
-<Segment style={{ minHeight: '20vh' }}>
-      <Header as="h2">Pending Offers</Header>
-      <Table>
-      {offers.length > 0 && <OffersHeader />}
-        <Table.Body>
-          {offers.map((offer) => (
-            <OffersRow
-              key={offer.id}
-              id={offer.id}
-              amount={offer.amount}
-              pricePerUnit={offer.pricePerUnit}
-              validUntil={offer.validUntil}
-              totalPrice={offer.totalPrice}
-              onFinalize={onFinalize}
-              onDiscard={onDiscard}
-              isFinalized={offer.isFinalized}
-            />
-          ))}
-        </Table.Body>
-      </Table>
+    <Segment disabled={offers.length === 0} style={{ minHeight: '40vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <div>
+        <Header as="h2">Pending Offers</Header>
+        <div style={{ maxHeight: '300px', overflow: 'auto' }}>
+          <Table>
+            {offers.length > 0 && <OffersHeader />}
+            <Table.Body>
+              {displayedOffers.map((offer) => (
+                <OffersRow
+                  key={offer.id}
+                  id={offer.id}
+                  amount={offer.amount}
+                  pricePerUnit={offer.pricePerUnit}
+                  validUntil={offer.validUntil}
+                  totalPrice={offer.totalPrice}
+                  onFinalize={onFinalize}
+                  onDiscard={onDiscard}
+                  isFinalized={offer.isFinalized}
+                />
+              ))}
+            </Table.Body>
+          </Table>
+        </div>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+        {offers.length >= itemsPerPage && (
+          <Pagination
+            activePage={activePage}
+            totalPages={totalPages}
+            onPageChange={(e, { activePage }) => setActivePage(activePage)}
+          />
+        )}
+      </div>
     </Segment>
   );
 };

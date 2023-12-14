@@ -1,14 +1,21 @@
 "use client";
-
-
 import React, { useState, useEffect } from "react";
-import { Table, Segment, Checkbox, Input, Button, Dropdown, Grid } from "semantic-ui-react";
+
+import { 
+  Table, 
+  Segment, 
+  Icon, 
+  Input, 
+  Button, 
+  Dropdown, 
+  Grid,
+  Modal,
+  Form 
+} from "semantic-ui-react";
 
 import web3 from "web3";
 
 import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
-
-
 
 const Offers = ( { isBuyPage } ) => {
   // ethExplorer
@@ -27,6 +34,25 @@ const Offers = ( { isBuyPage } ) => {
   const [searchColumn, setSearchColumn] = useState('totalPrice'); // Default search column
   const [searchQuery, setSearchQuery] = useState('');
 
+
+  // edit offer
+  const [open, setOpen] = useState(false);
+  const [editData, setEditData] = useState({ amount: '', pricePerUnit: '', validUntil: '' });
+
+  const handleOpen = (offer) => {
+    setEditData({ amount: offer.amount, pricePerUnit: offer.pricePerUnit, validUntil: offer.validUntil });
+    setOpen(true);
+  };
+  
+  const handleClose = () => {
+    setOpen(false);
+  };
+  
+  const handleSave = () => {
+    // Save the edited data
+    // ...
+    setOpen(false);
+  };
 
 
 // Fetch offer details from the smart contract
@@ -115,6 +141,12 @@ useEffect(() => {
   // ui elements
   const { Header, Row, HeaderCell, Body, Cell } = Table;
 
+  const options = [
+    { key: 'edit', icon: 'edit', text: 'Edit', value: 'edit' },
+    { key: 'cancel', icon: 'cancel', text: 'cancel', value: 'cancel' }
+    
+  ]
+
   return (
     
   <div style={{overflowX : 'auto'}}>
@@ -153,6 +185,7 @@ useEffect(() => {
             <Table.HeaderCell> Price per Unit </Table.HeaderCell>
             <Table.HeaderCell> Valid Until </Table.HeaderCell>
             <Table.HeaderCell>  Total Price  </Table.HeaderCell>
+            <Table.HeaderCell>  Actions?  </Table.HeaderCell>
             {isBuyPage ? (
               <Table.HeaderCell>Actions</Table.HeaderCell>
             ) : null}
@@ -166,15 +199,35 @@ useEffect(() => {
               <Table.Cell>{item.amount}</Table.Cell>
               <Table.Cell>{item.pricePerUnit}</Table.Cell>
               <Table.Cell>{item.validUntil}</Table.Cell>
-              <Table.Cell>{item.totalPrice}</Table.Cell>
-              {isBuyPage ? (
-                <Table.Cell>
-                  <Checkbox
-                    checked={selectedItems.includes(index)}
-                    onChange={(e, { checked }) => handleCheckboxChange(index, checked)}
-                  />
-                </Table.Cell>
-              ) : null}
+              <Table.Cell>{item.totalPrice}</Table.Cell>    
+              <Button.Group fluid  basic size='small'>
+              <Button icon='edit' onClick={() => handleOpen(item)} />
+              <Modal open={open} onClose={handleClose}>
+                  <Modal.Header>Edit Offer</Modal.Header>
+                  <Modal.Content>
+                    <Form>
+                      <Form.Field>
+                        <label>Amount</label>
+                        <input placeholder='Amount' value={editData.amount} onChange={(e) => setEditData({ ...editData, amount: e.target.value })} />
+                      </Form.Field>
+                      <Form.Field>
+                        <label>Price Per Unit</label>
+                        <input placeholder='Price Per Unit' value={editData.pricePerUnit} onChange={(e) => setEditData({ ...editData, pricePerUnit: e.target.value })} />
+                      </Form.Field>
+                      <Form.Field>
+                        <label>Valid Until</label>
+                        <input type='datetime-local' placeholder='Valid Until' value={editData.validUntil} onChange={(e) => setEditData({ ...editData, validUntil: e.target.value })} />
+                      </Form.Field>
+                    </Form>
+                  </Modal.Content>
+                  <Modal.Actions>
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={handleSave}>Save</Button>
+                  </Modal.Actions>
+                </Modal>
+
+              <Button icon='delete' onClick={() => {} } />
+              </Button.Group>          
             </Table.Row>
           ))}
         </Table.Body>
