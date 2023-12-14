@@ -81,14 +81,21 @@ const Market = ( { isBuyPage } ) => {
       return;
     }
 
-    const subscribeToEvents = async () => {
+    const subscribeToEvents = async () => {      
       const blockNumber = await ethExplorer.getBlockNumber();
+      console.log('Subscribe to events ...');      
+    const subscription = ethExplorer.getSubscription('OfferCreated');
+    if (subscription) {
+      console.log('Already subscribed to event.');
+      subscriptionRef.current = subscription;
+    }
       // Subscribe to the OfferCreated event
       subscriptionRef.current = await ethExplorer.subscribeToContractEvent(
         'Trading',
         'OfferCreated',
         blockNumber,
-        ethExplorer.handleOfferCreated((newOffer) => {
+        (event) => {
+          const newOffer = event.returnValues;
           const transformedOffer = transformAndFilterData(newOffer);
           // Update the state with the new offer after transforming and filtering
           setData((prevData) => [...prevData, transformedOffer]);
@@ -98,8 +105,7 @@ const Market = ( { isBuyPage } ) => {
           setTimeout(() => {
             setNewOfferId(null);
           }, 2000);
-        })
-      );
+        });
     };
   
     subscribeToEvents();

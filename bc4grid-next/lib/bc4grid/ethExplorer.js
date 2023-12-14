@@ -409,6 +409,7 @@ class bc4Grid extends EthereumExplorer {
 
         console.log('Calling bc4grid contructor');
         super();
+        this.subscriptions = {};
     }
 
     async createEnergyOffer(energyAmount, validUntil, pricePerEnergyAmount) {
@@ -705,8 +706,14 @@ class bc4Grid extends EthereumExplorer {
                 console.log({ on:'error', error});
             }
         });
-        
+
+        // Store the subscription in the subscriptions object
+        this.subscriptions[eventName] = subscription;        
     }
+
+    getSubscription(eventName) {
+        return this.subscriptions[eventName];
+      }
 
     handleOfferCreated(callback) {
         return (event) => {
