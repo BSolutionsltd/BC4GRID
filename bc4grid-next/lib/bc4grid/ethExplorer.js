@@ -711,6 +711,24 @@ class bc4Grid extends EthereumExplorer {
         this.subscriptions[eventName] = subscription;        
     }
 
+    // @domagoj: pretplacujes se na nove blokove da bi mogao proveriti isteklost ponude
+    async subscribeToNewBlockHead(callback) {
+        const subscription = await this.web3.eth.subscribe('newHeads');
+
+        subscription.on('data', async blockhead => {
+            console.log('New block header: ', blockhead);
+            // @domagoj: u callback f-ji uporedjujes blockHead.timestamp sa validUntil ponude
+            callback(blockhead);
+        });
+
+        subscription.on('error', error =>
+            console.log('Error when subscribing to New block header: ', error),
+        );
+
+        // Store the subscription in the subscriptions object
+        this.subscriptions['newHeads'] = subscription;   
+    }    
+
     getSubscription(eventName) {
         return this.subscriptions[eventName];
       }
@@ -768,6 +786,7 @@ async function bc4grid() {
 
     // initialize events
     //await ethExplorer.initSmartContractEvents();
+    // await ethExplorer.subscribeToNewBlockHead(toString);
 
     return ethExplorer;
 }  
