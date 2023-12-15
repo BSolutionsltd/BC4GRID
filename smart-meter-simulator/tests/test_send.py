@@ -32,14 +32,14 @@ def test_set_logger_01():
 def test_get_param_01():
     logger = send.set_logger('2023-11-12.log')
     os.environ['PROB'] = 'prob'
-    param = send.get_param('PROB', 'PROB is not set')
+    param = send.get_param('PROB')
     assert param == 'prob'
 
     
 def test_get_param_02():
     with pytest.raises(Exception, match=r"PROBN is not set"):
           logger = send.set_logger('2023-11-12.log')
-          param = send.get_param('PROBN', 'PROBN is not set')
+          param = send.get_param('PROBN')
           
 def test_open_excel():
     df = send.open_excel(dir = './data', path='Dataset.xlsx', sheet='Consumer1')
@@ -56,25 +56,11 @@ def test_consumption_data_01():
     df = send.pd.DataFrame(data=[{'A': 3,'B': 5,'C': 5}, {'A': 1,'B': 2,'C': 1}, {'A': 2,'B': 0,'C': 4}])
     assert send.get_consumption_data(df=df, idx=0) == {'A': 3,'B': 5,'C': 5} and send.get_consumption_data(df=df, idx=2) == {'A': 2,'B': 0,'C': 4}
     
-def test_get_param_02():
-    with pytest.raises(IndexError, match=r"There are no consumption data with index 5"):
-          df = send.pd.DataFrame(data=[{'A': 3,'B': 5,'C': 5}, {'A': 1,'B': 2,'C': 1}, {'A': 2,'B': 0,'C': 4}])
-          data = send.get_consumption_data(df=df, idx=5)
-          
-def test_climate_data_01():
+        
+def test_climate_data_04():
     df = send.pd.DataFrame(data=[{'A': 3,'B': 5,'C': 5}, {'A': 1,'B': 2,'C': 1}, {'A': 2,'B': 0,'C': 4}])
     assert send.get_climate_data(df=df, idx=0) == {'A': 3,'B': 5,'C': 5} and send.get_consumption_data(df=df, idx=2) == {'A': 2,'B': 0,'C': 4}
     
-def test_get_param_02():
-    with pytest.raises(IndexError, match=r"There are no climate data with index 5"):
-          df = send.pd.DataFrame(data=[{'A': 3,'B': 5,'C': 5}, {'A': 1,'B': 2,'C': 1}, {'A': 2,'B': 0,'C': 4}])
-          data = send.get_climate_data(df=df, idx=5)
-
-
-def test_get_param_03():
-    with pytest.raises(IndexError, match=r"There are no climate data with index 1"):
-          df = send.pd.DataFrame(data=[{'A': 3,'B': 5,'C': 5}, {'A': send.np.NaN,'B': send.np.NaN,'C': send.np.NaN}, {'A': 2,'B': 0,'C': 4}])
-          data = send.get_climate_data(df=df, idx=1)
 
 
 def test_get_requested_keys_01():

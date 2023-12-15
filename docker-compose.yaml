@@ -3,16 +3,16 @@ services:
     build:
       context: ./smart-meter-simulator
       dockerfile: ./Dockerfile
-    volumes:
-      - ./smart-meter-simulator:/app
     environment:
-      - SN=54FGX67K
+      - SN=HG6789DS
       - CONSUMER=Consumer1
       - SMART_COLLECTOR_BACKEND_URL=localhost:5000
       - DATA_DIR=./data
       - DATA_FILE=Dataset.xlsx
-      - DATA_KEYS=TemperatureC,Dish washer
-    entrypoint: /bin/bash
+      - DATA_KEYS=Total Production,Total Consumption,AC,Dish washer,Washing Machine,Dryer,Water heater,TV,Microwave,Kettle,Lighting,Refrigerator
+    volumes:
+      - ./smart-meter-simulator:/root
+    entrypoint: ["python", "./src/send.py"]
     tty: true
     user: root
     network_mode: host
@@ -22,19 +22,41 @@ services:
       context: ./smart-meter-simulator
       dockerfile: ./Dockerfile
     volumes:
-      - ./smart-meter-simulator:/app
+      - ./smart-meter-simulator:/root
     environment:
-      - SN=HG6789DS
+      - SN=HG678K5F
       - CONSUMER=Consumer2
-    entrypoint: /bin/bash
+      - SMART_COLLECTOR_BACKEND_URL=localhost:5000
+      - DATA_DIR=./data
+      - DATA_FILE=Dataset.xlsx
+      - DATA_KEYS=Total Production,Total Consumption,AC,Dish washer,Washing Machine,Dryer,Water heater,TV,Microwave,Kettle,Lighting,Refrigerator
+    entrypoint: ["python", "./src/send.py"]
     tty: true
     user: root
     network_mode: host
+  
   smart-data-collector:
-    build: .
+    build:
+      context: ./smart-meter-collector
+      dockerfile: ./Dockerfile
     volumes:
       - .:/app
     entrypoint: /bin/bash
     tty: true
     user: root
     network_mode: host
+
+  db:
+      image: postgres
+      volumes:
+        - postgres_data:/var/lib/postgresql/data/
+      expose:
+        - 5432
+      ports:
+        - 5432:5432
+      network_mode: host
+      environment:
+        - POSTGRES_PASSWORD=bc4grid
+
+volumes:
+  postgres_data:

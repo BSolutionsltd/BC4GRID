@@ -6,11 +6,16 @@ import numpy as np
 import logging
 import time
 import calendar
+import json
+import sys
+
+
+
 
 s = requests.Session()
 
-def get_logfile_name(tm: time.struct_time) -> str:
-    return f"{tm.tm_year}-{str(tm.tm_mon).zfill(2)}-{str(tm.tm_mday).zfill(2)}.log"
+def get_logfile_name(consumer: str, sn: str, tm: time.struct_time) -> str:
+    return f"{consumer}_{sn}_{tm.tm_year}-{str(tm.tm_mon).zfill(2)}-{str(tm.tm_mday).zfill(2)}.log"
 
 def set_logger(log_file: str) -> logging.Logger:
     
@@ -56,6 +61,12 @@ def get_consumption_data(df: pd.DataFrame, idx: int) -> dict:
         return df.iloc[idx, :].to_dict()
     else:
         return {}
+    
+def get_production_data(df: pd.DataFrame, idx: int) -> dict:
+    if idx in df.index:
+        return df.iloc[idx]
+    else:
+        return None
 
 def get_climate_data(df: pd.DataFrame, idx: int) -> dict:
    if (idx in df.index) and (~np.isnan(df.iloc[idx, 0])):
@@ -71,26 +82,21 @@ def get_requested_keys(data: dict, keys: str) -> dict:
     for k in data.keys():
         if k in ks:
             data_new[k] = data[k]
-    # for k in ks:
-    #     if k not in data:
-    #         raise Warning(f"Key {k} is not present in data.")
     return data_new
 
 def send_data(url: str, sn: str, data: dict) -> requests.Response:
-    
+        
     return s.post(
-        url=f"{url}/send/{sn}",
-        headers={'Accept': 'application/json'},
+        url=f"http://{url}/api/v1/smartmeter/{sn}/data",
+        headers={'Content-Type': 'application/json'},
         data=data
     )
+
+        
     
 
 if __name__== '__main__':
-    time_now = datetime.datetime.now().timetuple()
-    log_file = get_logfile_name(time_now)
-    logger = set_logger(
-        log_file=log_file
-    )
+
     try:
         consumer = get_param('CONSUMER')
         sn = get_param('SN')
@@ -99,50 +105,78 @@ if __name__== '__main__':
         data_file = get_param('DATA_FILE')
         data_keys = get_param('DATA_KEYS')
     except Exception as e:
-        logger.critical(e)
-        
+        logging.critical(e)
+        sys.exit(1)
+    
+    log_file = get_logfile_name(consumer, sn, datetime.datetime.now().timetuple())
+    logger = set_logger(
+        log_file=log_file
+    )
+    
+    
     
     try:
         df_climate = open_excel(data_dir, data_file, 'Weather')
         df_consumption = open_excel(data_dir, data_file, consumer)
+        df_production = open_excel(data_dir, data_file, 'Total Producers').iloc[:,int(consumer.replace('Consumer',''))-1]
     except Exception as e:
         logger.error(f"Simulation data file cannot be opened. Message: {str(e)}")
-
-    
-    try:
-        idx = get_time_table_index(tm=time_now)
-    except Exception as e:
-        logger.warning(e)
-     
-
-    data={}
-    data.update(get_climate_data(
-            df = df_climate,
-            idx = idx))
-    data.update(
-        get_consumption_data(
-            df = df_consumption,
-            idx = idx))
-
-    try:
-        data = get_requested_keys(
-            data=data,
-            keys=data_keys
-        )
-    except Exception as e:
-        logger.warning(e)
         
-        
-    print(data)
-    if data:
-        res = send_data(
-            url=backend_url,
-            sn=sn,
-            data=data
-        )
-        if res.status_code != 200:
-            logger.warning(f"Status code: {res.status_code}, Message: {res.text}")
-    else:
-        logger.warning('There is no data to send.')
     
+    while True:
+        
+        time_now = datetime.datetime.now().timetuple()
+        try:
+            idx = get_time_table_index(tm=time_now)
+        except Exception as e:
+            logger.warning(e)
+        
+        data={}
+        
+        data.update(get_climate_data(
+                df = df_climate,
+                idx = idx))
+        data.update(get_consumption_data(
+                df = df_consumption,
+                idx = idx))
+        
+        prod_d = get_production_data(
+                df = df_production,
+                idx = idx)
+        if prod_d is not None:
+            data['Total Production'] = prod_d
+        
+        try:
+            data = get_requested_keys(
+                data=data,
+                keys=data_keys
+            )
+        except Exception as e:
+            logger.warning(e)
+            
+        
+        if data:
+            try:
+                
+                logger.info({
+                        key.strip().lower().replace(' ','_'): value
+                        for key, value in data.items()
+                    })
+                res = send_data(
+                    url=backend_url,
+                    sn=sn,
+                    data=json.dumps({
+                        key.strip().lower().replace(' ','_'): value
+                        for key, value in data.items()
+                    })
+                )
+                if res.status_code != 200:
+                    logger.warning(f"Status code: {res.status_code}, Message: {res.text}")
+            except Exception as e:
+                logger.error(str(e))
+        else:
+            logger.warning('There is no data to send.')
+        
+        time.sleep(900)
+        
     s.close()
