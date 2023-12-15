@@ -3,15 +3,15 @@ import React, { useState, useEffect } from "react";
 
 import { 
   Table, 
-  Segment, 
-  Icon, 
+  Segment,    
   Input, 
   Button, 
   Dropdown, 
   Grid,
-  Modal,
-  Form 
+  
 } from "semantic-ui-react";
+
+import MakeOffer from "@/components/MakeOffer";
 
 import web3 from "web3";
 
@@ -200,32 +200,15 @@ useEffect(() => {
               <Table.Cell>{item.pricePerUnit}</Table.Cell>
               <Table.Cell>{item.validUntil}</Table.Cell>
               <Table.Cell>{item.totalPrice}</Table.Cell>    
-              <Button.Group fluid  basic size='small'>
-              <Button icon='edit' onClick={() => handleOpen(item)} />
-              <Modal open={open} onClose={handleClose}>
-                  <Modal.Header>Edit Offer</Modal.Header>
-                  <Modal.Content>
-                    <Form>
-                      <Form.Field>
-                        <label>Amount</label>
-                        <input placeholder='Amount' value={editData.amount} onChange={(e) => setEditData({ ...editData, amount: e.target.value })} />
-                      </Form.Field>
-                      <Form.Field>
-                        <label>Price Per Unit</label>
-                        <input placeholder='Price Per Unit' value={editData.pricePerUnit} onChange={(e) => setEditData({ ...editData, pricePerUnit: e.target.value })} />
-                      </Form.Field>
-                      <Form.Field>
-                        <label>Valid Until</label>
-                        <input type='datetime-local' placeholder='Valid Until' value={editData.validUntil} onChange={(e) => setEditData({ ...editData, validUntil: e.target.value })} />
-                      </Form.Field>
-                    </Form>
-                  </Modal.Content>
-                  <Modal.Actions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleSave}>Save</Button>
-                  </Modal.Actions>
-                </Modal>
-
+              <Button.Group fluid  basic size='small'>              
+              <MakeOffer 
+                    isEdit={true}
+                    onCreateOffer={() => {}} 
+                    trigger={
+                      <Button icon='edit' onClick={() => handleOpen(item)} />
+                    } 
+              /> 
+              
               <Button icon='delete' onClick={() => {} } />
               </Button.Group>          
             </Table.Row>

@@ -1,24 +1,20 @@
-
 "use client";
 import React, { useEffect, useState } from 'react';
 
+import MakeOffer from '@/components/MakeOffer';
 import Offers from '@/components/Offers';
 
-import { 
-  Header, 
+import {    
   Segment, 
   Table, 
-  Form,   
   Button,   
   Message,
-  Pagination
+  Pagination,  
 } from 'semantic-ui-react';
-
 
 
 // ethExplorer
 import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
-
 
 const messageStyles = {
   whiteSpace: 'nowrap', // Prevent text from wrapping to the next line
@@ -68,90 +64,18 @@ const OffersRow = ({ id, amount, pricePerUnit, validUntil, totalPrice, onFinaliz
   );
 };
 
-// MakeOffer component
-const MakeOffer = ({ onCreateOffer }) => {
-  const [energyAmount, setEnergyAmount] = useState('');
-  const [validUntil, setValidUntil] = useState('');
-  const [pricePerEnergyAmount, setPricePerEnergyAmount] = useState('');
-  const [showAlert, setShowAlert] = useState(false);
-  
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    //console.log('Values: ', energyAmount, validUntil, pricePerEnergyAmount);
-
-    const validateOffer = (...values) => {
-        return values.every(value => value !== '');
-    };
-
-    if (!validateOffer(energyAmount, validUntil, pricePerEnergyAmount)) {
-      setShowAlert(true);
-    }
-    else {
-      setShowAlert(false);
-      onCreateOffer(energyAmount, validUntil, pricePerEnergyAmount);
-    }
-
-    
-  };
-
-  return (
-<Segment style={{ minHeight: '35vh' }}>
-      <Header as="h2">Create Energy Offer</Header>
-      <Form onSubmit={handleSubmit}>
-        <Form.Field>
-          <label>Energy Amount</label>
-          <input
-            placeholder='Energy Amount'
-            value={energyAmount}
-            onChange={(e) => setEnergyAmount(e.target.value)}
-          />
-        </Form.Field>
-        <Form.Field>
-          <label>Valid Until</label>
-          <input
-            type="datetime-local"
-            placeholder='Valid Until'
-            value={validUntil}
-            onChange={(e) => setValidUntil(e.target.value)}
-          />
-        </Form.Field>
-        <Form.Field>
-          <label>Price Per Energy Amount (in Wei)</label>
-          <input
-            placeholder='Price Per Energy Amount'
-            value={pricePerEnergyAmount}
-            onChange={(e) => setPricePerEnergyAmount(e.target.value)}
-          />
-        </Form.Field>
-        <div style={{ textAlign: 'center' }}>
-        {showAlert ? (
-        <Message
-          negative
-          header="Please fill in all fields"
-          onDismiss={() => setShowAlert(false)}
-        />
-      ) : (
-        <Button primary type="submit" style={{marginTop:'10px'}}>Create Offer</Button>
-      )}   
-      </div>
-      </Form>     
-    </Segment>
-  );
-};
 
 // OfferApproval component
-const OfferApproval = ({ offers, onFinalize, onDiscard }) => {
+const OfferApproval = ({ children, offers, onFinalize, onDiscard }) => {
   const [activePage, setActivePage] = useState(1);
   const itemsPerPage = 3;
   const totalPages = Math.ceil(offers.length / itemsPerPage);
   const displayedOffers = offers.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
 
   return (
-    <Segment disabled={offers.length === 0} style={{ minHeight: '40vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-      <div>
-        <Header as="h2">Pending Offers</Header>
+    <Segment style={{ minHeight: '40vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <div>        
+        {children}
         <div style={{ maxHeight: '300px', overflow: 'auto' }}>
           <Table>
             {offers.length > 0 && <OffersHeader />}
@@ -263,9 +187,27 @@ return (
       </Message>
     )}
     {ethExplorer && (
-      <>
-        <MakeOffer onCreateOffer={handleCreateOffer} />
-        <OfferApproval offers={offers} onFinalize={handleFinalize} onDiscard={onDiscard}/>
+      <>        
+        <OfferApproval offers={offers} onFinalize={handleFinalize} onDiscard={onDiscard}>
+        <MakeOffer 
+            isEdit={false}
+            onCreateOffer={handleCreateOffer} 
+            trigger={
+              <Button 
+                primary 
+                style={{ 
+                  display: 'block',
+                  marginLeft: 'auto',
+                  marginRight: 'auto', 
+                  marginTop: '10px', 
+                  marginBottom: '10px' 
+                }}
+              >
+                Make Offer
+          </Button>
+        } 
+      />
+        </OfferApproval>
         <Offers />
       </>
     )}
