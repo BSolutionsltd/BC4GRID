@@ -8,16 +8,17 @@ import {
   Button, 
   Dropdown, 
   Grid,
+  Modal,
+  Form,
   
 } from "semantic-ui-react";
 
-import MakeOffer from "@/components/MakeOffer";
 
 import web3 from "web3";
 
 import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
 
-const Offers = ( { isBuyPage } ) => {
+const Offers = (  ) => {
   // ethExplorer
   // const [ethExplorer, setEthExplorer] = useState(null);
   // use ethExplorer
@@ -36,24 +37,35 @@ const Offers = ( { isBuyPage } ) => {
 
 
   // edit offer
-  const [open, setOpen] = useState(false);
-  const [editData, setEditData] = useState({ amount: '', pricePerUnit: '', validUntil: '' });
+  const [open, setOpen] = React.useState(false);
+  const [selectedOffer, setSelectedOffer] = React.useState(null);
 
-  const handleOpen = (offer) => {
-    setEditData({ amount: offer.amount, pricePerUnit: offer.pricePerUnit, validUntil: offer.validUntil });
+  const handleEditClick = (offer) => {
+    setSelectedOffer(offer);
     setOpen(true);
   };
-  
-  const handleClose = () => {
-    setOpen(false);
-  };
-  
-  const handleSave = () => {
-    // Save the edited data
-    // ...
+
+  const handleUpdateOffer = (event) => {
+    event.preventDefault();
+    // Update the offer here
+    console.log('Offer updated');
+    // Close the modal
     setOpen(false);
   };
 
+  const handleCloseModal = () => {
+    setSelectedOffer(null);
+    setOpen(false);
+  }
+
+  const handleDeleteClick = (offerKeyToDelete) => {
+    // Filter out the offer with the specified key
+    const updatedData = data.filter(offer => offer.key !== offerKeyToDelete);
+    setData(updatedData);
+  
+    // TODO: Delete the offer from the blockchain if necessary
+  };
+  
 
 // Fetch offer details from the smart contract
 useEffect(() => {
@@ -114,30 +126,14 @@ useEffect(() => {
   ];
   
 
-  const handleCheckboxChange = (index, checked) => {
-    const newSelectedItems = [...selectedItems];
-    if (newSelectedItems.includes(index)) {
-      const itemIndex = newSelectedItems.indexOf(index);
-      newSelectedItems.splice(itemIndex, 1);
-    } else {
-      newSelectedItems.push(index);
-    }
-    setSelectedItems(newSelectedItems);
-  };
-
+ 
   // Filter data based on search query and selected column
   const filteredData = searchQuery.length > 0 ? data.filter(item => {
     const itemValue = item[searchColumn]?.toString().toLowerCase() || '';
     return itemValue.includes(searchQuery.toLowerCase());
   }) : data;
 
-  const handleBuyClick = () => {
-    const itemsToBuy = selectedItems.map((index) => data[index]);
-    console.log(itemsToBuy);
-    // Process the items to buy
-  };
-
-
+  
   // ui elements
   const { Header, Row, HeaderCell, Body, Cell } = Table;
 
@@ -186,9 +182,7 @@ useEffect(() => {
             <Table.HeaderCell> Valid Until </Table.HeaderCell>
             <Table.HeaderCell>  Total Price  </Table.HeaderCell>
             <Table.HeaderCell>  Actions?  </Table.HeaderCell>
-            {isBuyPage ? (
-              <Table.HeaderCell>Actions</Table.HeaderCell>
-            ) : null}
+            
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -201,23 +195,45 @@ useEffect(() => {
               <Table.Cell>{item.validUntil}</Table.Cell>
               <Table.Cell>{item.totalPrice}</Table.Cell>    
               <Button.Group fluid  basic size='small'>              
-              <MakeOffer 
-                    isEdit={true}
-                    onCreateOffer={() => {}} 
-                    trigger={
-                      <Button icon='edit' onClick={() => handleOpen(item)} />
-                    } 
-              /> 
+              <Modal
+                  open={open}                  
+                  onClose={handleCloseModal}
+                  trigger={<Button icon='edit' onClick={() => handleEditClick(item)} />}
+                >
+          <Modal.Header>Update Offer</Modal.Header>
+          <Modal.Content>
+            <Form onSubmit={handleUpdateOffer} >
+            <Form.Field>
+              <label>ID</label>
+              <input placeholder='ID' defaultValue={selectedOffer?.key} disabled />
+            </Form.Field>
+              <Form.Field>
+                <label>Amount</label>
+                <input placeholder='Amount' defaultValue={selectedOffer?.amount} />
+              </Form.Field>
+              <Form.Field>
+                <label>Price Per Unit</label>
+                <input placeholder='Price Per Unit' defaultValue={selectedOffer?.pricePerUnit} />
+              </Form.Field>
+              <Form.Field>
+                <label>Valid Until</label>
+                <input type='date' placeholder='Valid Until' defaultValue={selectedOffer?.validUntil} />
+              </Form.Field>
               
-              <Button icon='delete' onClick={() => {} } />
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <Button type='submit' primary>Submit</Button>
+              </div>
+              
+            </Form>
+          </Modal.Content>
+        </Modal> 
+          <Button icon='delete' onClick={() => handleDeleteClick(item)} />
               </Button.Group>          
             </Table.Row>
           ))}
         </Table.Body>
       </Table>
-      {isBuyPage ? (
-        <Button primary onClick={handleBuyClick}>Buy Selected</Button>
-      ) : null}
+      
       </Segment>	
     </div>
   );
