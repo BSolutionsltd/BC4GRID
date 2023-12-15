@@ -5,8 +5,10 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /root
 
-RUN apt update
-
 COPY ./requirements.txt /root/requirements.txt
+
+
+RUN apt update
+RUN apt install cron -y
 RUN pip install --upgrade pip
-RUN pip install -r /root/requirements.txt
+RUN pip install -r requirements.txt

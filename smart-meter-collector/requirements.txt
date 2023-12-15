@@ -1,0 +1,8 @@
+flask
+sqlalchemy
+flask-sqlalchemy
+psycopg2
+python-dotenv
+flask-cors
+sqlalchemy-utils
+flask-migrate
