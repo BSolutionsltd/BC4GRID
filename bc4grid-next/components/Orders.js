@@ -39,7 +39,7 @@ useEffect(() => {
       if(ethExplorer){ 
         offerDetails = await ethExplorer.getAllOfferDetails();
         fetchedAccount = await ethExplorer.getUserAccount();
-    }
+    
       // Transform the offer details to match the expected data structure
       let transformedData = [];
 
@@ -63,7 +63,7 @@ useEffect(() => {
       }
       setData(transformedData);
       setAccount(fetchedAccount);
-
+      }
       //console.log('All Offers: ', transformedData);
     } catch (error) {
       console.error('Error fetching offer details:', error);

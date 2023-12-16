@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 
 import Orders from '@/components/Orders';
 
+import Cart from '@/components/Cart';
+
 import { 
   Header, 
   Segment, 
@@ -26,65 +28,6 @@ const messageStyles = {
 
 
 
-const Cart = ({ offers, onApprove }) => {
-  const { Header, Row, HeaderCell, Body, Cell } = Table;  
-  const CartHeader = () => (
-    <Header>
-      <Row>
-        <HeaderCell>ID</HeaderCell>
-        <HeaderCell>Account</HeaderCell>
-        <HeaderCell>Amount (KWh)</HeaderCell>
-        <HeaderCell>Price per Unit</HeaderCell>
-        <HeaderCell>Valid Until</HeaderCell>
-        <HeaderCell>Total Price</HeaderCell>
-        <HeaderCell>Approve?</HeaderCell>
-      </Row>
-    </Header>
-  );
-
-  const CartRow = ({ offer, onApprove }) => {
-    const { key, account, amount, pricePerUnit, validUntil, totalPrice } = offer;
-
-    return (
-      <Row key={key}>
-        <Cell>{key}</Cell>
-        <Cell>{account}</Cell>
-        <Cell>{amount}</Cell>
-        <Cell>{pricePerUnit}</Cell>
-        <Cell>{validUntil}</Cell>
-        <Cell>{totalPrice}</Cell>
-        <Cell>
-          <Button.Group>
-            <Button>✗</Button>
-            <Button.Or />
-            <Button onClick={() => onApprove(key)} primary>✓</Button>
-          </Button.Group>
-        </Cell>
-      </Row>
-    );
-  };
-
-  const renderRows = () => {
-    return offers.map((offer) => (
-      <CartRow
-        key={offer.key} // Use the offer's key as the key prop
-        offer={offer}
-        onApprove={onApprove}
-      />
-    ));
-  };
-
-  return (
-  <Segment style={{ minHeight: '20vh' }}>
-      <Header as="h2">Cart</Header>
-      <Table>
-      {offers.length > 0 && <CartHeader />}
-        <Body>{renderRows()}</Body>
-      </Table>
-    </Segment>
-  );
-};
-
 
 const BuyCreator = () => {
   const { ethExplorer } = useEthExplorer();
@@ -93,11 +36,70 @@ const BuyCreator = () => {
   const [account, setAccount] = useState(null);
 
 
+  useEffect(() => {
+    const fetchAccount = async () => {
+      try {
+          const fetchedAccount = await ethExplorer.getUserAccount();
+          // Transform the offer details to match the expected data structure
+          setAccount(fetchedAccount);
+        
+      } catch (error) {
+        console.error('Error fetching offer details:', error);
+      }
+    };
+  
+    fetchAccount();
+  }, [ethExplorer])
+  
 
-  const onApprove = (offerId) => {
-    console.log('Approving offer with ID:', offerId);
-    // Implement the approval logic here
-  };
+
+  const handleFinalize = async (offerId) => { 
+    try { 
+      // Find the offer to finalize 
+      console.log('Looking for offer id: ', offerId);
+      console.log('Offers: ', selectedOrders);
+      const offerToFinalize = selectedOrders.find(offer => offer.key === offerId); 
+      if (!offerToFinalize) { throw new Error('Offer not found'); 
+    }
+
+    
+     // Execute the createEnergyOffer function on the blockchain
+      const response = await ethExplorer.buyEnergyFromOffer(
+        offerToFinalize.key,
+        offerToFinalize.amount,
+        1000        
+      );
+      
+      // Log the transaction hash and receipt
+    console.log('Transaction Hash:', response.transactionHash);
+    console.log('Transaction Receipt:', response.receipt);
+
+    // Handle error if any
+    if (response.error) {
+      alert('Transaction Error in finalize:', response.error);
+       // Remove the offer from the list
+       const updatedOrders = selectedOrders.filter(offer => offer.key !== offerId);
+       setSelectedOrders(updatedOrders);
+       return;
+    }
+  
+    // Update the offer as finalized in the local state
+    const updatedOffers = selectedOrders.map(offer =>
+      offer.id === offerId ? { ...offer, isFinalized: true } : offer
+    );
+    setSelectedOrders(updatedOffers);
+
+    console.log('Energy offer finalized successfully!');
+  } catch (err) {
+    setError('Error finalizing energy offer: ' + err.message);
+  }
+};
+
+const onDiscard = (offerId) => {
+  // Filter out the offer with the specified id
+  const updatedOrders = selectedOrders.filter(offer => offer.key !== offerId);
+  setSelectedOrders(updatedOrders);
+};
 
   return (
     <>
@@ -107,7 +109,7 @@ const BuyCreator = () => {
           <p>{error}</p>
         </Message>
       )}
-      <Cart offers={selectedOrders} onApprove={onApprove} />
+      <Cart offers={selectedOrders} onFinalize={handleFinalize} onDiscard={onDiscard} />
       <Orders />
       
     </>

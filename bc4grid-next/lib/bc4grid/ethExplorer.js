@@ -492,6 +492,7 @@ class bc4Grid extends EthereumExplorer {
 
     async buyEnergyFromOffer(offerId, energyAmount, txValue) {
         // Get the user's account address
+        console.log('Called from buy energy!!!');
         const fromAddress = await this.getUserAccount();
     
         // Get the Trading contract instance

@@ -140,7 +140,7 @@ const OfferCreator = () => {
     };
   
     fetchAccount();
-  }, [ethExplorer, account]);
+  }, [ethExplorer]);
 
   // Callback function to handle local offer creation (not yet on blockchain)
   const handleCreateOffer = (energyAmount, validUntil, pricePerEnergyAmount) => {
@@ -186,9 +186,7 @@ const OfferCreator = () => {
        setOffers(updatedOffers);
        return;
     }
-
-
-  
+ 
   
     // Update the offer as finalized in the local state
     const updatedOffers = offers.map(offer =>
