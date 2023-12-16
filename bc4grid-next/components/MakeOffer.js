@@ -11,7 +11,7 @@ import {
 
 
 // ethExplorer
-const MakeOffer = ({ isEdit, trigger, onCreateOffer }) => {
+const MakeOffer = ({ trigger, onCreateOffer }) => {
     // state   
     const [energyAmount, setEnergyAmount] = useState('');
     const [validUntil, setValidUntil] = useState('');
@@ -48,12 +48,12 @@ const MakeOffer = ({ isEdit, trigger, onCreateOffer }) => {
   return (
     <>
       <Modal
-      onClose={() => setOpen(false)}
-      onOpen={() => setOpen(true)}
-      open={open}
-      trigger={ trigger }
+        onClose={() => setOpen(false)}
+        onOpen={() => setOpen(true)}
+        open={open}
+        trigger={ trigger }
     >
-      <Modal.Header>{isEdit ? 'Edit Offer' : 'Create a new offer'}</Modal.Header>
+      <Modal.Header>Create a new offer</Modal.Header>
       <Modal.Content>
       <Form onSubmit={handleSubmit}>
         <Form.Field>
@@ -89,7 +89,7 @@ const MakeOffer = ({ isEdit, trigger, onCreateOffer }) => {
           onDismiss={() => setShowAlert(false)}
         />
       ) : (
-    <Button primary type="submit" style={{marginTop:'10px'}} >{isEdit ? 'Edit Offer' : 'Create offer'}</Button>
+    <Button primary icon='add' type="submit" style={{marginTop:'10px'}} >Create offer</Button>
       )}   
       </div>
       </Form> 

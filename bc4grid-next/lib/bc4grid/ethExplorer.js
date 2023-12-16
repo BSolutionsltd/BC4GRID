@@ -427,11 +427,28 @@ class bc4Grid extends EthereumExplorer {
         };
     
         // Call the CreateEnergyOffer method from the Trading contract
-        return tradingContract.methods.CreateEnergyOffer(validUntil, pricePerEnergyAmount, energyAmount).send(options)
-          .on('transactionHash', transactionHash => console.log('Transaction Hash:', transactionHash))
-          .on('receipt', receipt => console.log('Transaction Receipt:', receipt))
-          .on('error', error => console.error('Transaction Error:', error));
-      }
+        return new Promise((resolve, reject) => {
+            let result = {};
+        
+            tradingContract.methods.CreateEnergyOffer(validUntil, pricePerEnergyAmount, energyAmount).send(options)
+              .on('transactionHash', transactionHash => {
+                //console.log('Transaction Hash:', transactionHash);
+                result.transactionHash = transactionHash;
+              })
+              .on('receipt', receipt => {
+                console.log('Transaction Receipt:', receipt);
+                result.receipt = receipt;
+                resolve(result);
+              })
+              .on('error', error => {
+                console.error('Transaction Error:', error);
+                result.error = error;
+                reject(result);
+              });
+          });
+        }
+
+      
 
     async modifyOffer(offerId, validUntil, pricePerEnergyAmount, energyAmount) {
         // Get the user's account address
@@ -486,12 +503,28 @@ class bc4Grid extends EthereumExplorer {
             gas: 3000000, // Set an appropriate gas limit for the transaction
             value: txValue
         };
-    
-        // Call the BuyEnergyFromOffer method from the Trading contract
-        return tradingContract.methods.BuyEnergyFromOffer(offerId, energyAmount).send(options)
-            .on('transactionHash', transactionHash => console.log('Transaction Hash:', transactionHash))
-            .on('receipt', receipt => console.log('Transaction Receipt:', receipt))
-            .on('error', error => console.error('Transaction Error:', error));
+
+        // Call the CreateEnergyOffer method from the Trading contract
+        return new Promise((resolve, reject) => {
+            let result = {};
+        
+            tradingContract.methods.BuyEnergyFromOffer(offerId, energyAmount).send(options)
+              .on('transactionHash', transactionHash => {
+                //console.log('Transaction Hash:', transactionHash);
+                result.transactionHash = transactionHash;
+              })
+              .on('receipt', receipt => {
+                console.log('Transaction Receipt:', receipt);
+                result.receipt = receipt;
+                resolve(result);
+              })
+              .on('error', error => {
+                console.error('Transaction Error:', error);
+                result.error = error;
+                reject(result);
+              });
+          });    
+       
     }
 
     async getAllOfferDetails() {
@@ -501,7 +534,7 @@ class bc4Grid extends EthereumExplorer {
         // Call the GetAllOfferDetails method from the Trading contract
         return tradingContract.methods.GetAllOfferDetails().call()
             .then(offerDetails => {
-                //console.log('Offer Details:', offerDetails);
+                console.log('Offer Details:', offerDetails);
                 return offerDetails;
             })
             .catch(error => console.error('Error fetching offer details:', error));

@@ -124,7 +124,7 @@ useEffect(() => {
     
   <div style={{overflowX : 'auto'}}>
       <Segment style={{ marginBottom: '200px', minHeight: '50vh'}}>
-        <Header as="h2">Deployed Orders</Header>
+        <Header as="h2">My Orders</Header>
       <Grid>
         <Grid.Row>
         <Grid.Column width={16} textAlign="center">
@@ -170,7 +170,7 @@ useEffect(() => {
               <Table.Cell>{item.account}</Table.Cell>
               <Table.Cell>{item.amount}</Table.Cell>
               <Table.Cell>{item.pricePerUnit}</Table.Cell>
-              <Table.Cell>{item.validUntil}</Table.Cell>
+              <Table.Cell>{new Date(item.validUntil).toLocaleString()}</Table.Cell>
               <Table.Cell>{item.totalPrice}</Table.Cell>
               {isBuyPage ? (
                 <Table.Cell>

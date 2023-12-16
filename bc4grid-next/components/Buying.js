@@ -90,16 +90,9 @@ const BuyCreator = () => {
   const { ethExplorer } = useEthExplorer();
   const { selectedOrders, setSelectedOrders } = useSelectedOrders();
   const [error, setError] = useState(null);
+  const [account, setAccount] = useState(null);
 
-  const handleCheckboxChange = (offer, checked) => {
-    setSelectedItems(prevSelectedItems => {
-      if (checked) {
-        return [...prevSelectedItems, offer];
-      } else {
-        return prevSelectedItems.filter(item => item.key !== offer.key);
-      }
-    });
-  };
+
 
   const onApprove = (offerId) => {
     console.log('Approving offer with ID:', offerId);

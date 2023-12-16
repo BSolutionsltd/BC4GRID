@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import { 
   Table, 
@@ -19,8 +19,21 @@ import web3 from "web3";
 import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
 
 const Offers = (  ) => {
-  // ethExplorer
-  // const [ethExplorer, setEthExplorer] = useState(null);
+  
+  // style
+  const flashAnimation = `
+   @keyframes flashAnimation {
+     0% { background-color: #0E6EB8; }
+     100% { background-color: transparent; }
+   }
+
+   .highlight-row {
+     animation: flashAnimation 6s; /* Run the animation for 6 seconds */
+   }
+ `;
+
+
+
   // use ethExplorer
   const { ethExplorer, setEthExplorer } = useEthExplorer();
   const [error, setError] = useState(null);
@@ -29,7 +42,8 @@ const Offers = (  ) => {
   // market data
   const [data, setData] = useState([]);
   // selected items from market
-  const [selectedItems, setSelectedItems] = useState([]);
+  // new offer added
+  const [newOfferId, setNewOfferId] = useState(null);
   
   // search state
   const [searchColumn, setSearchColumn] = useState('totalPrice'); // Default search column
@@ -40,7 +54,14 @@ const Offers = (  ) => {
   const [open, setOpen] = React.useState(false);
   const [selectedOffer, setSelectedOffer] = React.useState(null);
 
-  const handleEditClick = (offer) => {
+  // sorting data
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortDirection, setSortDirection] = useState(null);
+
+
+
+
+ const handleEditClick = (offer) => {
     setSelectedOffer(offer);
     setOpen(true);
   };
@@ -65,6 +86,77 @@ const Offers = (  ) => {
   
     // TODO: Delete the offer from the blockchain if necessary
   };
+
+  // handle data
+  const transformAndFilterData = (offer) => {
+
+    console.log('Offer before transformation: ', offer);
+    return {
+      key: Number(offer.id),
+      account: web3.utils.toChecksumAddress(offer.seller),
+      amount: Number(offer.energyAmount),
+      pricePerUnit: Number(offer.pricePerEnergyAmount),
+      validUntil: new Date(Number(offer.validUntil) * 1000).toLocaleDateString(),
+      totalPrice: Number(offer.energyAmount) * Number(offer.pricePerEnergyAmount),
+    };
+  };
+
+
+  // hooks
+  // Ref to store the subscription object
+  const subscriptionRef = useRef(null);
+
+  // Subscribe to new offers
+  useEffect(() => {
+    if (!ethExplorer) {
+      console.log('ethExplorer is not initialized yet.');
+      return;
+    }
+
+    // Check if we already have an active subscription
+    if (subscriptionRef.current) {
+      console.log('Already subscribed to event.');
+      return;
+    }
+
+    const subscribeToEvents = async () => {      
+      const blockNumber = await ethExplorer.getBlockNumber();
+      console.log('Subscribe to events ...');      
+    const subscription = ethExplorer.getSubscription('OfferCreated');
+    if (subscription) {
+      console.log('Already subscribed to event.');
+      subscriptionRef.current = subscription;
+    }
+      // Subscribe to the OfferCreated event
+      subscriptionRef.current = await ethExplorer.subscribeToContractEvent(
+        'Trading',
+        'OfferCreated',
+        blockNumber,
+        (event) => {
+          const newOffer = event.returnValues;
+          const transformedOffer = transformAndFilterData(newOffer);
+          // Update the state with the new offer after transforming and filtering
+          setData((prevData) => [...prevData, transformedOffer]);
+          // Set the new offer ID to highlight the row
+          setNewOfferId(transformedOffer.key);
+          // Set a timeout to remove the highlight after 2 seconds
+          setTimeout(() => {
+            setNewOfferId(null);
+          }, 2000);
+        });
+    };
+  
+    subscribeToEvents();
+
+    // Cleanup function to unsubscribe from events
+    return () => {
+      if (subscriptionRef.current) {
+        // Perform cleanup here, such as unsubscribing from the event
+        subscriptionRef.current.unsubscribe();
+        subscriptionRef.current = null;
+      }
+    };
+  }, [ethExplorer]); // Dependency array includes ethExplorer
   
 
 // Fetch offer details from the smart contract
@@ -143,9 +235,34 @@ useEffect(() => {
     
   ]
 
+  // filter data
+  const onSort = (newSortColumn) => {
+    if (sortColumn === newSortColumn && sortDirection === 'asc') {
+      setSortDirection('desc');
+    } else {
+      setSortColumn(newSortColumn);
+      setSortDirection('asc');
+    }
+  };
+  
+  const sortedData = [...filteredData].sort((a, b) => {
+    if (sortColumn) {
+      const aValue = a[sortColumn];
+      const bValue = b[sortColumn];
+  
+      if (sortDirection === 'asc') {
+        return aValue - bValue;
+      } else {
+        return bValue - aValue;
+      }
+    }
+    return 0;
+  });
+
   return (
     
   <div style={{overflowX : 'auto'}}>
+     <style>{flashAnimation}</style>
       <Segment style={{ marginBottom: '200px', minHeight: '50vh'}}>
         <Header as="h2">Your Offers</Header>
       <Grid>
@@ -172,24 +289,44 @@ useEffect(() => {
         </Grid.Column>
         </Grid.Row>
         </Grid>
-      <Table celled compact>
+      <Table fixed   sortable>
         <Table.Header>
-          <Table.Row>
-          <Table.HeaderCell>  ID  </Table.HeaderCell>
-          <Table.HeaderCell>  Account </Table.HeaderCell>
-           <Table.HeaderCell> Amount </Table.HeaderCell>
-            <Table.HeaderCell> Price per Unit </Table.HeaderCell>
-            <Table.HeaderCell> Valid Until </Table.HeaderCell>
-            <Table.HeaderCell>  Total Price  </Table.HeaderCell>
-            <Table.HeaderCell>  Actions?  </Table.HeaderCell>
-            
-          </Table.Row>
+        <Table.Row>
+    <Table.HeaderCell
+      onClick={() => onSort('key')}
+    >
+      ID {sortColumn === 'key' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
+    </Table.HeaderCell>
+    <Table.HeaderCell
+      onClick={() => onSort('amount')}
+    >
+      Amount {sortColumn === 'amount' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
+    </Table.HeaderCell>
+    <Table.HeaderCell
+      onClick={() => onSort('pricePerUnit')}
+    >
+      Price per Unit {sortColumn === 'pricePerUnit' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
+    </Table.HeaderCell>
+    <Table.HeaderCell
+      onClick={() => onSort('validUntil')}
+    >
+      Valid Until {sortColumn === 'validUntil' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
+    </Table.HeaderCell>
+    <Table.HeaderCell
+      onClick={() => onSort('totalPrice')}
+    >
+      Total Price {sortColumn === 'totalPrice' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
+    </Table.HeaderCell>
+    <Table.HeaderCell>Actions</Table.HeaderCell>
+  </Table.Row>
         </Table.Header>
         <Table.Body>
-          {filteredData.map((item, index) => (
-            <Table.Row key={item.key}>
+          {sortedData.map((item, index) => (
+            <Table.Row 
+            key={item.key}
+            className={item.key === newOfferId ? 'highlight-row' : ''}
+          >
               <Table.Cell>{item.key}</Table.Cell>
-              <Table.Cell>{item.account}</Table.Cell>
               <Table.Cell>{item.amount}</Table.Cell>
               <Table.Cell>{item.pricePerUnit}</Table.Cell>
               <Table.Cell>{item.validUntil}</Table.Cell>
@@ -198,7 +335,7 @@ useEffect(() => {
               <Modal
                   open={open}                  
                   onClose={handleCloseModal}
-                  trigger={<Button icon='edit' onClick={() => handleEditClick(item)} />}
+                  trigger={<Button title='edit offer' icon='edit' onClick={() => handleEditClick(item)} />}
                 >
           <Modal.Header>Update Offer</Modal.Header>
           <Modal.Content>

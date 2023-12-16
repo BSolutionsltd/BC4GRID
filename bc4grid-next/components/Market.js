@@ -1,13 +1,20 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Table, Segment, Checkbox, Input, Button, Dropdown, Grid } from "semantic-ui-react";
-
 import web3 from "web3";
 
 import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
-
 import { useSelectedOrders } from '@/app/(trading)/context/OrdersContext';
+
+import { 
+  Table, 
+  Segment, 
+  Checkbox, 
+  Input, 
+  Button, 
+  Dropdown,
+  Icon, 
+  Grid } from "semantic-ui-react";
 
 // routing
 import { useRouter } from 'next/navigation';
@@ -48,6 +55,23 @@ const Market = ( { isBuyPage } ) => {
   // search state
   const [searchColumn, setSearchColumn] = useState('account'); // Default search column
   const [searchQuery, setSearchQuery] = useState('');
+
+  // filtering
+  // Add these state variables for sorting
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortDirection, setSortDirection] = useState(null);
+
+  // Add this function to handle sorting
+  const onSort = (column) => {
+    if (sortColumn === column) {
+      // If the current sort column is clicked again, reverse the sort direction
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // If a different sort column is clicked, set the sort column and default the direction to ascending
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  };
 
 
   // Function to transform and filter offer data
@@ -192,6 +216,8 @@ const Market = ( { isBuyPage } ) => {
     return itemValue.includes(searchQuery.toLowerCase());
   }) : data;
 
+
+  // Function to handle buy button click
   const handleBuyClick = () => {
     // Pass the selected items to the context
     setSelectedOrders(selectedItems);
@@ -201,15 +227,41 @@ const Market = ( { isBuyPage } ) => {
   };
 
 
+  // filtering
+  const sortedData = [...filteredData].sort((a, b) => {
+    if (sortColumn) {
+      const aValue = a[sortColumn];
+      const bValue = b[sortColumn];
+  
+      if (sortDirection === 'asc') {
+        return aValue - bValue;
+      } else {
+        return bValue - aValue;
+      }
+    }
+    return 0;
+  });
+
+
   // ui elements
-  const { Header, Row, HeaderCell, Body, Cell } = Table;
+  const { Header } = Table;
 
   return (
     
-  <div style={{overflowX : 'auto'}}>
+  <div>
      <style>{flashAnimation}</style>
       <Segment style={{ marginBottom: '200px', minHeight: '50vh'}}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Header as="h2">Energy Market</Header>
+        {isBuyPage ? 
+        <Button primary title='Add to cart' size='medium' animated='vertical' onClick={handleBuyClick}>
+        <Button.Content hidden>Buy</Button.Content>
+        <Button.Content visible>
+          <Icon name='add to cart' />
+        </Button.Content>
+      </Button>        
+        : null}
+      </div>
       <Grid>
         <Grid.Row>
         <Grid.Column width={16} textAlign="center">
@@ -234,22 +286,34 @@ const Market = ( { isBuyPage } ) => {
         </Grid.Column>
         </Grid.Row>
         </Grid>
-      <Table celled compact>
+      <Table basic='very' compact='very' fixed selectable sortable>
         <Table.Header>
-          <Table.Row>
-          <Table.HeaderCell>  ID  </Table.HeaderCell>
-          <Table.HeaderCell>  Account </Table.HeaderCell>
-           <Table.HeaderCell> Amount </Table.HeaderCell>
-            <Table.HeaderCell> Price per Unit </Table.HeaderCell>
-            <Table.HeaderCell> Valid Until </Table.HeaderCell>
-            <Table.HeaderCell>  Total Price  </Table.HeaderCell>
-            {isBuyPage ? (
-              <Table.HeaderCell>Actions</Table.HeaderCell>
-            ) : null}
-          </Table.Row>
+        <Table.Row>
+    <Table.HeaderCell width={1} onClick={() => onSort('key')}>
+      ID {sortColumn === 'key' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
+    </Table.HeaderCell>
+    <Table.HeaderCell width={6} onClick={() => onSort('account')}>
+      Account {sortColumn === 'account' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
+    </Table.HeaderCell>
+    <Table.HeaderCell onClick={() => onSort('amount')}>
+      Amount {sortColumn === 'amount' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
+    </Table.HeaderCell>
+    <Table.HeaderCell onClick={() => onSort('pricePerUnit')}>
+      Price per Unit {sortColumn === 'pricePerUnit' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
+    </Table.HeaderCell>
+    <Table.HeaderCell onClick={() => onSort('validUntil')}>
+      Valid Until {sortColumn === 'validUntil' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
+    </Table.HeaderCell>
+    <Table.HeaderCell onClick={() => onSort('totalPrice')}>
+      Total Price {sortColumn === 'totalPrice' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
+    </Table.HeaderCell>
+    {isBuyPage ? (
+  <Table.HeaderCell>Select</Table.HeaderCell>
+    ) : null}
+  </Table.Row>
         </Table.Header>
         <Table.Body>
-          {filteredData.map((item) => (
+          {sortedData.map((item) => (
             <Table.Row 
               key={item.key}
               className={item.key === newOfferId ? 'highlight-row' : ''}
@@ -258,11 +322,11 @@ const Market = ( { isBuyPage } ) => {
               <Table.Cell>{item.account}</Table.Cell>
               <Table.Cell>{item.amount}</Table.Cell>
               <Table.Cell>{item.pricePerUnit}</Table.Cell>
-              <Table.Cell>{item.validUntil}</Table.Cell>
+              <Table.Cell>{new Date(item.validUntil).toLocaleString()}</Table.Cell>
               <Table.Cell>{item.totalPrice}</Table.Cell>
               {isBuyPage ? (
                 <Table.Cell>
-                  <Checkbox
+                  <Checkbox 
                     checked={selectedItems.some((selectedItem) => selectedItem.key === item.key)}
                     onChange={(e, { checked }) => handleCheckboxChange(item, checked)}
                   />
@@ -272,15 +336,7 @@ const Market = ( { isBuyPage } ) => {
           ))}
         </Table.Body>
       </Table>
-      <Grid>
-        <Grid.Row>
-      <Grid.Column width={16} textAlign="center">
-      {isBuyPage ? (       
-        <Button primary  onClick={handleBuyClick}>Add to Cart </Button>        
-      ) : null}
-      </Grid.Column>
-      </Grid.Row>
-      </Grid>
+      
       </Segment>	
     </div>
   );

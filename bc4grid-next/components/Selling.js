@@ -10,6 +10,8 @@ import {
   Button,   
   Message,
   Pagination,  
+  Icon,
+  Header
 } from 'semantic-ui-react';
 
 
@@ -27,8 +29,7 @@ const messageStyles = {
 const OffersHeader = () => {
   return (
     <Table.Header>
-      <Table.Row>
-        <Table.HeaderCell>ID</Table.HeaderCell>
+      <Table.Row>        
         <Table.HeaderCell>Amount (KWh)</Table.HeaderCell>
         <Table.HeaderCell>Price per Unit</Table.HeaderCell>
         <Table.HeaderCell>Valid until</Table.HeaderCell>
@@ -44,8 +45,7 @@ const OffersRow = ({ id, amount, pricePerUnit, validUntil, totalPrice, onFinaliz
 
   
   return (
-    <Table.Row>
-      <Table.Cell>{id}</Table.Cell>
+    <Table.Row>      
       <Table.Cell>{amount}</Table.Cell>
       <Table.Cell>{pricePerUnit}</Table.Cell>
       <Table.Cell>{new Date(validUntil).toLocaleString()}</Table.Cell>
@@ -58,7 +58,7 @@ const OffersRow = ({ id, amount, pricePerUnit, validUntil, totalPrice, onFinaliz
             <Button onClick={() => onFinalize(id)} primary>✓</Button>
           </Button.Group>
         )}
-        {isFinalized && <span>Finalized</span>}
+    {isFinalized && <Icon name='checkmark' color='green' />}
       </Table.Cell>
     </Table.Row>
   );
@@ -73,12 +73,20 @@ const OfferApproval = ({ children, offers, onFinalize, onDiscard }) => {
   const displayedOffers = offers.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
 
   return (
-    <Segment style={{ minHeight: '40vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-      <div>        
+    <Segment style={{ minHeight: '40vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+      <Header as="h2">Create new offers</Header>      
         {children}
-        <div style={{ maxHeight: '300px', overflow: 'auto' }}>
+        </div>
+        <div style={{ maxHeight: '300px', overflow: 'auto', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+     
+      {offers.length === 0 ? (
+        <div>
+          Currrently, there are no new offers.
+        </div>
+      ) : (
           <Table>
-            {offers.length > 0 && <OffersHeader />}
+            <OffersHeader />
             <Table.Body>
               {displayedOffers.map((offer) => (
                 <OffersRow
@@ -95,8 +103,9 @@ const OfferApproval = ({ children, offers, onFinalize, onDiscard }) => {
               ))}
             </Table.Body>
           </Table>
-        </div>
-      </div>
+      )}
+         </div>
+      
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
         {offers.length >= itemsPerPage && (
           <Pagination
@@ -135,14 +144,18 @@ const OfferCreator = () => {
 
   // Callback function to handle local offer creation (not yet on blockchain)
   const handleCreateOffer = (energyAmount, validUntil, pricePerEnergyAmount) => {
+
+
     const newOffer = {
       id: offers.length + 1, // This is a placeholder; you should use a unique identifier
       amount: energyAmount,
       pricePerUnit: pricePerEnergyAmount,
-      validUntil: new Date(validUntil).getTime(), // Convert to timestamp
+      validUntil: new Date(validUntil), // Convert to timestamp
       totalPrice: parseFloat(energyAmount) * parseFloat(pricePerEnergyAmount), // Calculate total price
     };
     setOffers([...offers, newOffer]);
+
+    
   };
 
   //finalization and blockchain transaction 
@@ -153,11 +166,28 @@ const OfferCreator = () => {
       if (!offerToFinalize) { throw new Error('Offer not found'); 
     }
     // Execute the createEnergyOffer function on the blockchain
-      await ethExplorer.createEnergyOffer(
+      const response = await ethExplorer.createEnergyOffer(
         offerToFinalize.amount,
         Math.floor(new Date(offerToFinalize.validUntil).getTime() / 1000),
         offerToFinalize.pricePerUnit
       );
+      // define transaction id as offer id      
+    // offerToFinalize.id = response.transactionHash;
+
+      // Log the transaction hash and receipt
+    console.log('Transaction Hash:', response.transactionHash);
+    console.log('Transaction Receipt:', response.receipt);
+
+    // Handle error if any
+    if (response.error) {
+      alert('Transaction Error in finalize:', response.error);
+       // Remove the offer from the list
+       const updatedOffers = offers.filter(offer => offer.id !== offerId);
+       setOffers(updatedOffers);
+       return;
+    }
+
+
   
   
     // Update the offer as finalized in the local state
@@ -166,7 +196,7 @@ const OfferCreator = () => {
     );
     setOffers(updatedOffers);
 
-    alert('Energy offer finalized successfully!');
+    console.log('Energy offer finalized successfully!');
   } catch (err) {
     setError('Error finalizing energy offer: ' + err.message);
   }
@@ -189,22 +219,14 @@ return (
     {ethExplorer && (
       <>        
         <OfferApproval offers={offers} onFinalize={handleFinalize} onDiscard={onDiscard}>
-        <MakeOffer 
-            isEdit={false}
+        <MakeOffer             
             onCreateOffer={handleCreateOffer} 
             trigger={
               <Button 
                 primary 
-                style={{ 
-                  display: 'block',
-                  marginLeft: 'auto',
-                  marginRight: 'auto', 
-                  marginTop: '10px', 
-                  marginBottom: '10px' 
-                }}
-              >
-                Make Offer
-          </Button>
+                icon='add'
+                title = 'create new energy offer' 
+              />
         } 
       />
         </OfferApproval>
