@@ -67,7 +67,7 @@ const BuyCreator = () => {
       const response = await ethExplorer.buyEnergyFromOffer(
         offerToFinalize.key,
         offerToFinalize.amount,
-        1000        
+        50000        
       );
       
       // Log the transaction hash and receipt
