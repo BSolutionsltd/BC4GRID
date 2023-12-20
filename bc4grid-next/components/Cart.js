@@ -1,5 +1,10 @@
 import React, { Component } from "react";
-import { Table, Button, Segment, Header } from "semantic-ui-react";
+import { 
+  Table, 
+  Button, 
+  Segment, 
+  Header, 
+  Icon } from "semantic-ui-react";
 
 
 const { Row, Cell, Body } = Table;
@@ -16,7 +21,7 @@ const CartHeader = () => {
               <HeaderCell>Price per Unit</HeaderCell>
               <HeaderCell>Valid Until</HeaderCell>
               <HeaderCell>Total Price </HeaderCell>
-              <HeaderCell>Approve?</HeaderCell>              
+              <HeaderCell>Approved</HeaderCell>              
             </Row>
           </Header>
         );

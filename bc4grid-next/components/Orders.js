@@ -1,77 +1,92 @@
 "use client";
-
+import localforage from 'localforage';
 
 import React, { useState, useEffect } from "react";
-import { Table, Segment, Checkbox, Input, Button, Dropdown, Grid } from "semantic-ui-react";
 
-import web3 from "web3";
+import { 
+  Table, 
+  Segment, 
+  Input, 
+  Dropdown,
+  Grid,
+  Button } from "semantic-ui-react";
 
 import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
 
 
 
-const Orders = ( { isBuyPage } ) => {
-  // ethExplorer
-  // const [ethExplorer, setEthExplorer] = useState(null);
+const Orders = ({orders}) => {
   // use ethExplorer
   const { ethExplorer, setEthExplorer } = useEthExplorer();
-  const [error, setError] = useState(null);
-  const [account, setAccount] = useState('');
+  const [error, setError] = useState(null);  
  
   // market data
   const [data, setData] = useState([]);
-  // selected items from market
-  const [selectedItems, setSelectedItems] = useState([]);
-  
+    
+    
   // search state
   const [searchColumn, setSearchColumn] = useState('totalPrice'); // Default search column
   const [searchQuery, setSearchQuery] = useState('');
 
+  const clearLocalForage = async () => {
+    try {
+      await localforage.clear();
+      console.log('Cleared localforage');
 
+      setData([]);
+    } catch (error) {
+      console.error('Error clearing localforage:', error);
+    }
+  };
+
+  
 
 // Fetch offer details from the smart contract
 useEffect(() => {
-  const fetchOffers = async () => {
-
-    let offerDetails;
-    let fetchedAccount;
+  // This function runs when the component mounts
+  const fetchOrders = async () => {
     try {
-      if(ethExplorer){ 
-        offerDetails = await ethExplorer.getAllOfferDetails();
-        fetchedAccount = await ethExplorer.getUserAccount();
-    
-      // Transform the offer details to match the expected data structure
-      let transformedData = [];
-
-      //console.log('offerDetails: ', offerDetails);
-      
-
-      for (const offer of offerDetails) {
-        // Convert the energy amount and price per energy amount to BigInt        
-        const transformedOffer = {
-          key: Number(offer.offerId),
-          account: web3.utils.toChecksumAddress(offer.sellerAddress),
-          amount: Number(offer.energyAmount),
-          pricePerUnit: Number(offer.pricePerEnergyAmount),
-          validUntil: new Date(Number(offer.validUntil) * 1000).toLocaleDateString(),
-          totalPrice: Number(offer.energyAmount) * Number(offer.pricePerEnergyAmount),
-        };
-
-        if (transformedOffer.account === fetchedAccount) {
-          transformedData.push(transformedOffer);
-        }
-      }
-      setData(transformedData);
-      setAccount(fetchedAccount);
-      }
-      //console.log('All Offers: ', transformedData);
+      const finalizedOrders = await localforage.getItem('finalizedOrders') || [];
+      setData(finalizedOrders);
+      console.log('Data from local storage: ', data);
     } catch (error) {
       console.error('Error fetching offer details:', error);
     }
   };
+  fetchOrders();
+ 
+}, []);
 
-  fetchOffers();
-}, [ethExplorer]);
+  // This useEffect hook runs whenever the data state variable changes
+  useEffect(() => {
+    const updateOrders = async () => {
+      try {
+        // Retrieve the current data
+        const currentData = await localforage.getItem('finalizedOrders') || [];
+    
+        // Get the ids of the current data
+        const currentDataIds = currentData.map(order => order.key);
+    
+        // Filter out the new orders that are already included in the current data
+        const newOrders = orders.filter((order) => !currentDataIds.includes(order.key));
+    
+        // Combine the current data with the new orders
+        const updatedData = [...currentData, ...newOrders];
+    
+        // Save the updated data back to localforage
+        await localforage.setItem('finalizedOrders', updatedData);
+    
+        // Set the data state variable with the updated data
+        setData(updatedData);
+    
+        console.log('Updated orders: ', updatedData);
+      } catch (error) {
+        console.error('Error updating orders:', error);
+      }
+    };
+    
+    updateOrders();
+  }, [orders]);
 
 
    
@@ -93,16 +108,6 @@ useEffect(() => {
   ];
   
 
-  const handleCheckboxChange = (index, checked) => {
-    const newSelectedItems = [...selectedItems];
-    if (newSelectedItems.includes(index)) {
-      const itemIndex = newSelectedItems.indexOf(index);
-      newSelectedItems.splice(itemIndex, 1);
-    } else {
-      newSelectedItems.push(index);
-    }
-    setSelectedItems(newSelectedItems);
-  };
 
   // Filter data based on search query and selected column
   const filteredData = searchQuery.length > 0 ? data.filter(item => {
@@ -110,15 +115,8 @@ useEffect(() => {
     return itemValue.includes(searchQuery.toLowerCase());
   }) : data;
 
-  const handleBuyClick = () => {
-    const itemsToBuy = selectedItems.map((index) => data[index]);
-    console.log(itemsToBuy);
-    // Process the items to buy
-  };
-
-
   // ui elements
-  const { Header, Row, HeaderCell, Body, Cell } = Table;
+  const { Header } = Table;
 
   return (
     
@@ -144,8 +142,8 @@ useEffect(() => {
           icon = 'search'
           iconPosition='left'
           value={searchQuery}
-          onChange={handleSearchChange}
-        />     
+          onChange={handleSearchChange} 
+    /> <Button icon='trash' onClick={clearLocalForage} />    
         </Grid.Column>
         </Grid.Row>
         </Grid>
@@ -153,14 +151,11 @@ useEffect(() => {
         <Table.Header>
           <Table.Row>
           <Table.HeaderCell>  ID  </Table.HeaderCell>
-          <Table.HeaderCell>  Account </Table.HeaderCell>
+          <Table.HeaderCell>  To </Table.HeaderCell>
            <Table.HeaderCell> Amount </Table.HeaderCell>
             <Table.HeaderCell> Price per Unit </Table.HeaderCell>
             <Table.HeaderCell> Valid Until </Table.HeaderCell>
-            <Table.HeaderCell>  Total Price  </Table.HeaderCell>
-            {isBuyPage ? (
-              <Table.HeaderCell>Actions</Table.HeaderCell>
-            ) : null}
+            <Table.HeaderCell>  Total Price  </Table.HeaderCell>            
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -171,22 +166,12 @@ useEffect(() => {
               <Table.Cell>{item.amount}</Table.Cell>
               <Table.Cell>{item.pricePerUnit}</Table.Cell>
               <Table.Cell>{new Date(item.validUntil).toLocaleString()}</Table.Cell>
-              <Table.Cell>{item.totalPrice}</Table.Cell>
-              {isBuyPage ? (
-                <Table.Cell>
-                  <Checkbox
-                    checked={selectedItems.includes(index)}
-                    onChange={(e, { checked }) => handleCheckboxChange(index, checked)}
-                  />
-                </Table.Cell>
-              ) : null}
+              <Table.Cell>{item.totalPrice}</Table.Cell>             
             </Table.Row>
           ))}
         </Table.Body>
       </Table>
-      {isBuyPage ? (
-        <Button primary onClick={handleBuyClick}>Buy Selected</Button>
-      ) : null}
+     
       </Segment>	
     </div>
   );

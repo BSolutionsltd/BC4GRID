@@ -1,22 +1,21 @@
 "use client";
+
+import localforage from 'localforage';
 import React, { useEffect, useState } from 'react';
 
-import Orders from '@/components/Orders';
-
-import Cart from '@/components/Cart';
-
-import { 
-  Header, 
-  Segment, 
-  Table,   
-  Button,   
-  Message } from 'semantic-ui-react';
 
 // ethExplorer
 import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
 
 // cart items
 import { useSelectedOrders } from '@/app/(trading)/context/OrdersContext';
+
+
+import Orders from '@/components/Orders';
+
+import Cart from '@/components/Cart';
+
+import { Message } from 'semantic-ui-react';
 
 
 const messageStyles = {
@@ -32,8 +31,12 @@ const messageStyles = {
 const BuyCreator = () => {
   const { ethExplorer } = useEthExplorer();
   const { selectedOrders, setSelectedOrders } = useSelectedOrders();
+  
+
   const [error, setError] = useState(null);
   const [account, setAccount] = useState(null);
+
+  const [finalizedOrders, setFinalizedOrders] = useState([]);
 
 
   useEffect(() => {
@@ -46,9 +49,9 @@ const BuyCreator = () => {
       } catch (error) {
         console.error('Error fetching offer details:', error);
       }
-    };
-  
+    };  
     fetchAccount();
+
   }, [ethExplorer])
   
 
@@ -56,12 +59,9 @@ const BuyCreator = () => {
   const handleFinalize = async (offerId) => { 
     try { 
       // Find the offer to finalize 
-      console.log('Looking for offer id: ', offerId);
-      console.log('Offers: ', selectedOrders);
       const offerToFinalize = selectedOrders.find(offer => offer.key === offerId); 
-      if (!offerToFinalize) { throw new Error('Offer not found'); 
-    }
-
+      if (!offerToFinalize) { throw new Error('Offer not found');   }    
+    
     
      // Execute the createEnergyOffer function on the blockchain
       const response = await ethExplorer.buyEnergyFromOffer(
@@ -82,18 +82,28 @@ const BuyCreator = () => {
        setSelectedOrders(updatedOrders);
        return;
     }
-  
+     
+
     // Update the offer as finalized in the local state
-    const updatedOffers = selectedOrders.map(offer =>
-      offer.id === offerId ? { ...offer, isFinalized: true } : offer
+    const updatedOffers = selectedOrders.map(offer => (
+      offer.key === offerId ? { ...offer, isFinalized: true} : offer       
+      )
     );
+
+    // update offers as state
     setSelectedOrders(updatedOffers);
 
-    console.log('Energy offer finalized successfully!');
-  } catch (err) {
-    setError('Error finalizing energy offer: ' + err.message);
-  }
-};
+    const finalizedOffers = updatedOffers.filter(offer => offer.isFinalized); 
+
+    setFinalizedOrders(finalizedOffers);
+
+    console.log('Finalized offers: ', finalizedOffers);
+        
+    } catch (err) {
+      setError('Error finalizing energy offer: ' + err.message);
+    }
+  };
+  
 
 const onDiscard = (offerId) => {
   // Filter out the offer with the specified id
@@ -110,7 +120,7 @@ const onDiscard = (offerId) => {
         </Message>
       )}
       <Cart offers={selectedOrders} onFinalize={handleFinalize} onDiscard={onDiscard} />
-      <Orders />
+      <Orders orders = {finalizedOrders}/>
       
     </>
   );
