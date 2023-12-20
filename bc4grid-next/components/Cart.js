@@ -1,10 +1,11 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import { 
   Table, 
   Button, 
   Segment, 
   Header, 
-  Icon } from "semantic-ui-react";
+  Icon,
+  Loader } from "semantic-ui-react";
 
 
 const { Row, Cell, Body } = Table;
@@ -28,12 +29,13 @@ const CartHeader = () => {
 }
 
 
-const CartRow = ({ id, account, amount, pricePerUnit, totalPrice, validUntil, isFinalized, onFinalize, onDiscard }) => {
-
+const CartRow = ({ offer, status, onFinalize, onDiscard }) => {
+    const { key, account, amount, pricePerUnit, validUntil, totalPrice, isFinalized } = offer;
+    console.log('Cart row:', offer);
   
   return (
     <Table.Row>      
-      <Table.Cell>{id}</Table.Cell>
+      <Table.Cell>{key}</Table.Cell>
       <Table.Cell>{account}</Table.Cell>
       <Table.Cell>{amount}</Table.Cell>
       <Table.Cell>{pricePerUnit}</Table.Cell>
@@ -42,9 +44,9 @@ const CartRow = ({ id, account, amount, pricePerUnit, totalPrice, validUntil, is
       <Table.Cell>
       {!isFinalized && (
           <Button.Group>                        
-            <Button onClick={() => onDiscard(id)}>✗</Button>
+            <Button onClick={() => onDiscard(key)}>✗</Button>
             <Button.Or />
-            <Button onClick={() => onFinalize(id)} primary>✓</Button>
+            <Button loading= {status} onClick={() => onFinalize(key)} primary>✓</Button>
           </Button.Group>
         )}
     {isFinalized && <Icon name='checkmark' color='green' />}
@@ -57,22 +59,31 @@ const CartRow = ({ id, account, amount, pricePerUnit, totalPrice, validUntil, is
 
 
 const Cart = ({ offers, onFinalize, onDiscard }) => {
-  const renderRows = (offers) => {
+  
+  const [finalizing, setFinalizing] = useState(false);
 
-    console.log('Offers: ', offers);
+  const finalizeOrder = async (offerId) => {
+    setFinalizing(true);
+    await onFinalize(offerId);
+    setFinalizing(false);
+  }
+
+  const finalizeDiscard = async (offerId) => {
+    setFinalizing(true);
+    await onDiscard(offerId);
+    setFinalizing(false);
+  }
+
+  const renderRows = (offers) => {
+    
     return offers.map((offer) => {
       return (
         <CartRow
           key={offer.key}
-          id={offer.key}
-          account={offer.account}
-          amount={offer.amount}
-          pricePerUnit={offer.pricePerUnit}
-          totalPrice={offer.totalPrice}
-          validUntil={offer.validUntil}
-          onFinalize={onFinalize}
-          onDiscard={onDiscard}
-          isFinalized={offer.isFinalized}
+          offer={offer}
+          status = {finalizing}
+          onFinalize={finalizeOrder}
+          onDiscard={finalizeDiscard}          
         />
       );
     });
@@ -89,7 +100,7 @@ const Cart = ({ offers, onFinalize, onDiscard }) => {
       </Table>
     ) : (
       <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <p>No offers available</p>
+        <p>You don't have any new orders</p>
       </div>
     )}
   </Segment>

@@ -60,7 +60,6 @@ const Offers = (  ) => {
 
 
 
-
  const handleEditClick = (offer) => {
     setSelectedOffer(offer);
     setOpen(true);
@@ -226,16 +225,8 @@ useEffect(() => {
   }) : data;
 
   
-  // ui elements
-  const { Header, Row, HeaderCell, Body, Cell } = Table;
-
-  const options = [
-    { key: 'edit', icon: 'edit', text: 'Edit', value: 'edit' },
-    { key: 'cancel', icon: 'cancel', text: 'cancel', value: 'cancel' }
-    
-  ]
-
-  // filter data
+ 
+  // sort filtered data
   const onSort = (newSortColumn) => {
     if (sortColumn === newSortColumn && sortDirection === 'asc') {
       setSortDirection('desc');
@@ -258,6 +249,15 @@ useEffect(() => {
     }
     return 0;
   });
+
+   // ui elements
+   const { Header  } = Table;
+
+   const options = [
+     { key: 'edit', icon: 'edit', text: 'Edit', value: 'edit' },
+     { key: 'cancel', icon: 'cancel', text: 'cancel', value: 'cancel' }
+     
+   ]
 
   return (
     

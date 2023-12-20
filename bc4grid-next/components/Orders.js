@@ -16,6 +16,9 @@ import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
 
 
 const Orders = ({orders}) => {
+
+
+    
   // use ethExplorer
   const { ethExplorer, setEthExplorer } = useEthExplorer();
   const [error, setError] = useState(null);  
@@ -27,6 +30,11 @@ const Orders = ({orders}) => {
   // search state
   const [searchColumn, setSearchColumn] = useState('totalPrice'); // Default search column
   const [searchQuery, setSearchQuery] = useState('');
+
+  // filter state
+  // sorting data
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortDirection, setSortDirection] = useState(null);
 
   const clearLocalForage = async () => {
     try {
@@ -115,6 +123,32 @@ useEffect(() => {
     return itemValue.includes(searchQuery.toLowerCase());
   }) : data;
 
+
+    // sort filtered data
+    const onSort = (newSortColumn) => {
+      if (sortColumn === newSortColumn && sortDirection === 'asc') {
+        setSortDirection('desc');
+      } else {
+        setSortColumn(newSortColumn);
+        setSortDirection('asc');
+      }
+    };
+    
+    const sortedData = [...filteredData].sort((a, b) => {
+      if (sortColumn) {
+        const aValue = a[sortColumn];
+        const bValue = b[sortColumn];
+    
+        if (sortDirection === 'asc') {
+          return aValue - bValue;
+        } else {
+          return bValue - aValue;
+        }
+      }
+      return 0;
+    });
+  
+
   // ui elements
   const { Header } = Table;
 
@@ -122,7 +156,7 @@ useEffect(() => {
     
   <div style={{overflowX : 'auto'}}>
       <Segment style={{ marginBottom: '200px', minHeight: '50vh'}}>
-        <Header as="h2">My Orders</Header>
+        <Header as="h2">Your Orders</Header>
       <Grid>
         <Grid.Row>
         <Grid.Column width={16} textAlign="center">
@@ -150,16 +184,40 @@ useEffect(() => {
       <Table celled compact>
         <Table.Header>
           <Table.Row>
-          <Table.HeaderCell>  ID  </Table.HeaderCell>
-          <Table.HeaderCell>  To </Table.HeaderCell>
-           <Table.HeaderCell> Amount </Table.HeaderCell>
-            <Table.HeaderCell> Price per Unit </Table.HeaderCell>
-            <Table.HeaderCell> Valid Until </Table.HeaderCell>
-            <Table.HeaderCell>  Total Price  </Table.HeaderCell>            
+        <Table.HeaderCell
+          onClick={() => onSort('key')}
+        >
+          ID {sortColumn === 'key' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
+        </Table.HeaderCell>
+        <Table.HeaderCell
+          onClick={() => onSort('account')}
+        >
+          Seller {sortColumn === 'account' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
+        </Table.HeaderCell>
+        <Table.HeaderCell
+          onClick={() => onSort('amount')}
+        >
+          Amount {sortColumn === 'amount' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
+        </Table.HeaderCell>
+        <Table.HeaderCell
+          onClick={() => onSort('pricePerUnit')}
+        >
+          Price per unit {sortColumn === 'pricePerUnit' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
+        </Table.HeaderCell>
+        <Table.HeaderCell
+          onClick={() => onSort('validUntil')}
+        >
+          Valid until {sortColumn === 'validUntil' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
+        </Table.HeaderCell>
+        <Table.HeaderCell
+          onClick={() => onSort('Total Price')}
+        >
+          Valid until {sortColumn === 'totalPrice' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
+        </Table.HeaderCell>        
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {filteredData.map((item, index) => (
+          {sortedData.map((item, index) => (
             <Table.Row key={item.key}>
               <Table.Cell>{item.key}</Table.Cell>
               <Table.Cell>{item.account}</Table.Cell>
