@@ -41,8 +41,22 @@ const OffersHeader = () => {
 };
 
 // OffersRow component
-const OffersRow = ({ id, amount, pricePerUnit, validUntil, totalPrice, onFinalize, onDiscard, isFinalized }) => {
+const OffersRow = ({ offer, onFinalize, onDiscard, isFinalized }) => {
 
+    const {id, amount, pricePerUnit, validUntil, totalPrice} = offer;
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleFinalize = async (id) => {
+      setIsLoading(true);
+      await onFinalize(id);
+      setIsLoading(false);
+    };
+  
+    const handleDiscard = async (id) => {
+      setIsLoading(true);
+      await onDiscard(id);
+      setIsLoading(false);
+    };
   
   return (
     <Table.Row>      
@@ -53,9 +67,9 @@ const OffersRow = ({ id, amount, pricePerUnit, validUntil, totalPrice, onFinaliz
       <Table.Cell>
       {!isFinalized && (
           <Button.Group>                        
-            <Button onClick={() => onDiscard(id)}>✗</Button>
+            <Button loading={isLoading} onClick={() => handleDiscard(id)}>✗</Button>
             <Button.Or />
-            <Button onClick={() => onFinalize(id)} primary>✓</Button>
+            <Button loading={isLoading} onClick={() => handleFinalize(id)} primary>✓</Button>
           </Button.Group>
         )}
     {isFinalized && <Icon name='checkmark' color='green' />}
@@ -90,12 +104,7 @@ const OfferApproval = ({ children, offers, onFinalize, onDiscard }) => {
             <Table.Body>
               {displayedOffers.map((offer) => (
                 <OffersRow
-                  key={offer.id}
-                  id={offer.id}
-                  amount={offer.amount}
-                  pricePerUnit={offer.pricePerUnit}
-                  validUntil={offer.validUntil}
-                  totalPrice={offer.totalPrice}
+                  offer = {offer}
                   onFinalize={onFinalize}
                   onDiscard={onDiscard}
                   isFinalized={offer.isFinalized}

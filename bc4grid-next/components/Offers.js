@@ -78,12 +78,21 @@ const Offers = (  ) => {
     setOpen(false);
   }
 
-  const handleDeleteClick = (offerKeyToDelete) => {
+  const handleDeleteClick = async (offerId) => {
     // Filter out the offer with the specified key
-    const updatedData = data.filter(offer => offer.key !== offerKeyToDelete);
-    setData(updatedData);
-  
-    // TODO: Delete the offer from the blockchain if necessary
+    const response = await ethExplorer.cancelOffer(offerId);
+
+    if (response.receipt) {
+
+      console.log('receipt: ', response.receipt);
+      console.log('Offer closed');
+
+      }
+
+    if (response.error) {
+      console.error('Error: ', response.error);
+    }
+
   };
 
   // handle data
@@ -101,62 +110,77 @@ const Offers = (  ) => {
   };
 
 
-  // hooks
-  // Ref to store the subscription object
-  const subscriptionRef = useRef(null);
-
-  // Subscribe to new offers
-  useEffect(() => {
-    if (!ethExplorer) {
-      console.log('ethExplorer is not initialized yet.');
-      return;
-    }
-
-    // Check if we already have an active subscription
-    if (subscriptionRef.current) {
-      console.log('Already subscribed to event.');
-      return;
-    }
-
-    const subscribeToEvents = async () => {      
-      const blockNumber = await ethExplorer.getBlockNumber();
-      console.log('Subscribe to events ...');      
-    const subscription = ethExplorer.getSubscription('OfferCreated');
-    if (subscription) {
-      console.log('Already subscribed to event.');
-      subscriptionRef.current = subscription;
-    }
-      // Subscribe to the OfferCreated event
-      subscriptionRef.current = await ethExplorer.subscribeToContractEvent(
-        'Trading',
-        'OfferCreated',
-        blockNumber,
-        (event) => {
-          const newOffer = event.returnValues;
-          const transformedOffer = transformAndFilterData(newOffer);
-          // Update the state with the new offer after transforming and filtering
-          setData((prevData) => [...prevData, transformedOffer]);
-          // Set the new offer ID to highlight the row
-          setNewOfferId(transformedOffer.key);
-          // Set a timeout to remove the highlight after 2 seconds
-          setTimeout(() => {
-            setNewOfferId(null);
-          }, 2000);
-        });
-    };
+  function useEventSubscription(eventName, eventHandler) {
+    const subscriptionRef = useRef(null);
   
-    subscribeToEvents();
-
-    // Cleanup function to unsubscribe from events
-    return () => {
-      if (subscriptionRef.current) {
-        // Perform cleanup here, such as unsubscribing from the event
-        subscriptionRef.current.unsubscribe();
-        subscriptionRef.current = null;
+    useEffect(() => {
+      if (!ethExplorer) {
+        console.log('ethExplorer is not initialized yet.');
+        return;
       }
-    };
-  }, [ethExplorer]); // Dependency array includes ethExplorer
   
+      // Check if we already have an active subscription
+      if (subscriptionRef.current) {
+        console.log('Already subscribed to event.');
+        return;
+      }
+  
+      const subscribeToEvents = async () => {
+        const blockNumber = await ethExplorer.getBlockNumber();
+        console.log('Subscribe to events ...');
+        const subscription = ethExplorer.getSubscription(eventName);
+        if (subscription) {
+          console.log('Already subscribed to event.');
+          subscriptionRef.current = subscription;
+        }
+        // Subscribe to the event
+        subscriptionRef.current = await ethExplorer.subscribeToContractEvent(
+          'Trading',
+          eventName,
+          blockNumber,
+          eventHandler
+        );
+      };
+  
+      subscribeToEvents();
+  
+      // Cleanup function to unsubscribe from events
+      return () => {
+        if (subscriptionRef.current) {
+          // Perform cleanup here, such as unsubscribing from the event
+          subscriptionRef.current.unsubscribe();
+          subscriptionRef.current = null;
+        }
+      };
+    }, [ ethExplorer]); // Dependency array includes eventName, eventHandler, and ethExplorer
+  }
+  
+
+  useEventSubscription('OfferCreated', (event) => {
+    const newOffer = event.returnValues;
+    const transformedOffer = transformAndFilterData(newOffer);
+    // Update the state with the new offer after transforming and filtering
+    setData((prevData) => [...prevData, transformedOffer]);
+    // Set the new offer ID to highlight the row
+    setNewOfferId(transformedOffer.key);
+    // Set a timeout to remove the highlight after 2 seconds
+    setTimeout(() => {
+      setNewOfferId(null);
+    }, 2000);
+  });
+
+  useEventSubscription('OfferClosed', (event) => {
+    const newOffer = event.returnValues;
+    const transformedOffer = transformAndFilterData(newOffer);
+    // Update the state with the new offer after transforming and filtering
+    setData((prevData) => [...prevData, transformedOffer]);
+    // Set the new offer ID to highlight the row
+    setNewOfferId(transformedOffer.key);
+    // Set a timeout to remove the highlight after 2 seconds
+    setTimeout(() => {
+      setNewOfferId(null);
+    }, 2000);
+  });
 
 // Fetch offer details from the smart contract
 useEffect(() => {
@@ -195,7 +219,7 @@ useEffect(() => {
   };
 
   fetchOffers();
-}, [ethExplorer]);
+}, []);
 
 
    
@@ -354,7 +378,7 @@ useEffect(() => {
               </Form.Field>
               <Form.Field>
                 <label>Valid Until</label>
-                <input type='date' placeholder='Valid Until' defaultValue={selectedOffer?.validUntil} />
+                <input type='datetime-local' placeholder='Valid Until' defaultValue={selectedOffer?.validUntil} />
               </Form.Field>
               
               <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -364,7 +388,7 @@ useEffect(() => {
             </Form>
           </Modal.Content>
         </Modal> 
-          <Button icon='delete' onClick={() => handleDeleteClick(item)} />
+          <Button icon='delete' onClick={() => handleDeleteClick(item.key)} />
               </Button.Group>          
             </Table.Row>
           ))}

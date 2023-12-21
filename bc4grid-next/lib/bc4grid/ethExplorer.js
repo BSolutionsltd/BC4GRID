@@ -463,11 +463,25 @@ class bc4Grid extends EthereumExplorer {
             gas: 3000000 // Set an appropriate gas limit for the transaction
         };
     
+        return new Promise((resolve, reject) => {
+            let result = {};
         // Call the ModifyOffer method from the Trading contract
         return tradingContract.methods.ModifyOffer(offerId, validUntil, pricePerEnergyAmount, energyAmount).send(options)
-            .on('transactionHash', transactionHash => console.log('Transaction Hash:', transactionHash))
-            .on('receipt', receipt => console.log('Transaction Receipt:', receipt))
-            .on('error', error => console.error('Transaction Error:', error));
+        .on('transactionHash', transactionHash => {
+            //console.log('Transaction Hash:', transactionHash);
+            result.transactionHash = transactionHash;
+          })
+          .on('receipt', receipt => {
+            console.log('Transaction Receipt:', receipt);
+            result.receipt = receipt;
+            resolve(result);
+          })
+          .on('error', error => {
+            console.error('Transaction Error:', error);
+            result.error = error;
+            reject(result);
+          });
+      });
     }
 
     async cancelOffer(offerId) {
@@ -482,13 +496,32 @@ class bc4Grid extends EthereumExplorer {
             from: fromAddress,
             gas: 3000000 // Set an appropriate gas limit for the transaction
         };
+
+        console.log('cancel function called ...');
+
+         // Call the CreateEnergyOffer method from the Trading contract
+         return new Promise((resolve, reject) => {
+            let result = {};
     
-        // Call the CancelOffer method from the Trading contract
-        return tradingContract.methods.CancelOffer(offerId).send(options)
-            .on('transactionHash', transactionHash => console.log('Transaction Hash:', transactionHash))
-            .on('receipt', receipt => console.log('Transaction Receipt:', receipt))
-            .on('error', error => console.error('Transaction Error:', error));
+            // Call the CancelOffer method from the Trading contract
+            return tradingContract.methods.CancelOffer(offerId).send(options)
+            .on('transactionHash', transactionHash => {
+                //console.log('Transaction Hash:', transactionHash);
+                result.transactionHash = transactionHash;
+            })
+            .on('receipt', receipt => {
+                console.log('Transaction Receipt:', receipt);
+                result.receipt = receipt;
+                resolve(result);
+            })
+            .on('error', error => {
+                console.error('Transaction Error:', error);
+                result.error = error;
+                reject(result);
+            });
+        });
     }
+    
 
     async buyEnergyFromOffer(offerId, energyAmount, txValue) {
         // Get the user's account address
@@ -779,6 +812,9 @@ class bc4Grid extends EthereumExplorer {
           callback(event.returnValues);
         };
       }
+
+    
+
     handleOfferModified(event) {
         console.log(`Event: OfferModified. Offer Details:
             ID: ${event.returnValues.id}
