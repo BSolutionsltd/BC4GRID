@@ -22,17 +22,24 @@ const Offers = (  ) => {
   
   // style
   const flashAnimation = `
-   @keyframes flashAnimation {
+   @keyframes addOfferAnimation {
      0% { background-color: #0E6EB8; }
      100% { background-color: transparent; }
    }
 
-   .highlight-row {
-     animation: flashAnimation 6s; /* Run the animation for 6 seconds */
+   @keyframes closeOfferAnimation {
+    0% { background-color: #B03060; }
+    100% { background-color: transparent; }
+  }
+
+   .new-offer {
+     animation: addOfferAnimation 2s; /* Run the animation for 6 seconds */
    }
+
+   .removed-offer {
+    animation: closeOfferAnimation 2s; /* Run the animation for 6 seconds */
+  }
  `;
-
-
 
   // use ethExplorer
   const { ethExplorer, setEthExplorer } = useEthExplorer();
@@ -42,8 +49,11 @@ const Offers = (  ) => {
   // market data
   const [data, setData] = useState([]);
   // selected items from market
-  // new offer added
+  
+  // states for added and removed offers
   const [newOfferId, setNewOfferId] = useState(null);
+  const [removedOfferIds, setRemovedOfferIds] = useState([]);
+  const [loading, setLoading] = useState([]);
   
   // search state
   const [searchColumn, setSearchColumn] = useState('totalPrice'); // Default search column
@@ -79,22 +89,20 @@ const Offers = (  ) => {
   }
 
   const handleDeleteClick = async (offerId) => {
+    setLoading(prevLoading => ({ ...prevLoading, [offerId]: true }));
     // Filter out the offer with the specified key
     const response = await ethExplorer.cancelOffer(offerId);
 
     if (response.receipt) {
-
       console.log('receipt: ', response.receipt);
       console.log('Offer closed');
-
+      setLoading(prevLoading => ({ ...prevLoading, [offerId]: false }));
       }
 
     if (response.error) {
       console.error('Error: ', response.error);
     }
-
   };
-
   // handle data
   const transformAndFilterData = (offer) => {
 
@@ -108,8 +116,6 @@ const Offers = (  ) => {
       totalPrice: Number(offer.energyAmount) * Number(offer.pricePerEnergyAmount),
     };
   };
-
-
   function useEventSubscription(eventName, eventHandler) {
     const subscriptionRef = useRef(null);
   
@@ -152,10 +158,8 @@ const Offers = (  ) => {
           subscriptionRef.current = null;
         }
       };
-    }, [ ethExplorer]); // Dependency array includes eventName, eventHandler, and ethExplorer
+    }, [ ]); // Dependency array includes ethExplorer
   }
-  
-
   useEventSubscription('OfferCreated', (event) => {
     const newOffer = event.returnValues;
     const transformedOffer = transformAndFilterData(newOffer);
@@ -170,19 +174,12 @@ const Offers = (  ) => {
   });
 
   useEventSubscription('OfferClosed', (event) => {
-    const newOffer = event.returnValues;
-    const transformedOffer = transformAndFilterData(newOffer);
-    // Update the state with the new offer after transforming and filtering
-    setData((prevData) => [...prevData, transformedOffer]);
-    // Set the new offer ID to highlight the row
-    setNewOfferId(transformedOffer.key);
-    // Set a timeout to remove the highlight after 2 seconds
-    setTimeout(() => {
-      setNewOfferId(null);
-    }, 2000);
+    const closedOffer = event.returnValues;
+    const transformedOffer = transformAndFilterData(closedOffer);
+    setRemovedOfferIds((prevKeys) => [...prevKeys, transformedOffer.key]);
   });
 
-// Fetch offer details from the smart contract
+  // Fetch offer details from the smart contract
 useEffect(() => {
   const fetchOffers = async () => {
     try {
@@ -220,8 +217,17 @@ useEffect(() => {
 
   fetchOffers();
 }, []);
+  
+useEffect(() => {
+  if (removedOfferIds.length > 0) {
+    const timer = setTimeout(() => {
+      setData((prevData) => prevData.filter(offer => !removedOfferIds.includes(offer.key)));
+      setRemovedOfferIds([]);
+    }, 2000);
 
-
+    return () => clearTimeout(timer); // Clean up on unmount or if removedOfferIds changes
+  }
+}, [removedOfferIds, setData, setRemovedOfferIds]);
    
   // search bar ops
   const handleSearchChange = (e) => {
@@ -348,7 +354,7 @@ useEffect(() => {
           {sortedData.map((item, index) => (
             <Table.Row 
             key={item.key}
-            className={item.key === newOfferId ? 'highlight-row' : ''}
+            className={item.key === newOfferId ? 'new-offer' : removedOfferIds.includes(item.key) ? 'removed-offer' : ''}
           >
               <Table.Cell>{item.key}</Table.Cell>
               <Table.Cell>{item.amount}</Table.Cell>
@@ -388,7 +394,7 @@ useEffect(() => {
             </Form>
           </Modal.Content>
         </Modal> 
-          <Button icon='delete' onClick={() => handleDeleteClick(item.key)} />
+          <Button icon='delete' loading={loading[item.key]} onClick={() => handleDeleteClick(item.key)} />
               </Button.Group>          
             </Table.Row>
           ))}
