@@ -573,7 +573,16 @@ class bc4Grid extends EthereumExplorer {
             })
             .catch(error => console.error('Error fetching offer details:', error));
     }
-      
+
+    async getOrdersForBuyer(userAddress) {
+        // Get the Trading contract instance
+        const tradingContract = this.contract('Trading');
+
+        tradingContract.getPastEvents('TokensBought', { filter: { buyer: userAddress }, fromBlock: 0, toBlock: 'latest'})
+        .then(events => { return events })
+        .catch(error => console.error('Error getting past events:', error));
+    }
+
     async retrieveTokens(offerId) {
         // Get the user's account address
         const fromAddress = await this.getUserAccount();
@@ -746,11 +755,12 @@ class bc4Grid extends EthereumExplorer {
         await this.subscribeToContractEvent('Trading', 'OfferModified', blockNumber, this.handleOfferModified);
         await this.subscribeToContractEvent('Trading', 'OfferClosed', blockNumber, this.handleOfferClosed);
         await this.subscribeToContractEvent('Trading', 'TokenRetrieved', blockNumber, this.handleTokenRetrieved);
+        await this.subscribeToContractEvent('Trading', 'TokensBought', blockNumber, this.handleTokensBought, {buyer: await this.getUserAccount()});
     }
 
-    async subscribeToContractEvent(contractName, eventName, blockNumber, callback) {
+    async subscribeToContractEvent(contractName, eventName, blockNumber, callback, filterOptions) {
         const contractInstance = this.contract(contractName);
-        const subscription = await contractInstance.events[eventName]({ fromBlock: blockNumber });
+        const subscription = await contractInstance.events[eventName]({ fromBlock: blockNumber, filter: filterOptions});
         
         subscription.on('connected', subscriptionId => {
             console.log({ on:'connected', subscriptionId });
@@ -839,7 +849,18 @@ class bc4Grid extends EthereumExplorer {
         console.log(`Event: TokenRetrieved. Offer Details:
             ID: ${event.returnValues.id}
             Seller: ${event.returnValues.seller}`);
-    }      
+    }
+    
+    handleTokensBought(event) {
+        console.log(`Event: TokensBought. Order Details:
+        ID: ${event.returnValues.id}
+        Buyer: ${event.returnValues.buyer}
+        Seller: ${event.returnValues.seller}
+        Price: ${event.returnValues.pricePerEnergyAmount}
+        Amount: ${event.returnValues.energyBought}
+        Total Price: ${event.returnValues.totalValue}
+        Completed: ${event.returnValues.when}`);
+    }
 }
 
 async function bc4grid() {
@@ -855,8 +876,9 @@ async function bc4grid() {
     await ethExplorer.getNetworkId();
 
     // initialize events
-    //await ethExplorer.initSmartContractEvents();
+    // await ethExplorer.initSmartContractEvents();
     // await ethExplorer.subscribeToNewBlockHead(toString);
+    // await ethExplorer.getOrdersForBuyer(await ethExplorer.getUserAccount());
 
     return ethExplorer;
 }  
