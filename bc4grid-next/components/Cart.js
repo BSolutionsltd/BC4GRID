@@ -31,7 +31,21 @@ const CartHeader = () => {
 
 const CartRow = ({ offer, status, onFinalize, onDiscard }) => {
     const { key, account, amount, pricePerUnit, validUntil, totalPrice, isFinalized } = offer;
-    console.log('Cart row:', offer);
+    
+    
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleFinalize = async (id) => {
+      setIsLoading(true);
+      await onFinalize(id);
+      setIsLoading(false);
+    };
+  
+    const handleDiscard = async (id) => {
+      setIsLoading(true);
+      await onDiscard(id);
+      setIsLoading(false);
+    };
 
     
   
@@ -46,9 +60,9 @@ const CartRow = ({ offer, status, onFinalize, onDiscard }) => {
       <Table.Cell>
       {!isFinalized && (
           <Button.Group>                        
-            <Button onClick={() => onDiscard(key)}>✗</Button>
+            <Button onClick={() => handleDiscard(key)}>✗</Button>
             <Button.Or />
-            <Button loading= {status} onClick={() => onFinalize(key)} primary>✓</Button>
+            <Button loading= {status} onClick={() => handleFinalize(key)} primary>✓</Button>
           </Button.Group>
         )}
     {isFinalized && <Icon name='checkmark' color='green' />}

@@ -342,7 +342,7 @@ useEffect(() => {
         </Grid.Column>
         </Grid.Row>
         </Grid>
-      <Table  sortable compact>
+      <Table  sortable compact selectable>
         <Table.Header>
         <Table.Row>
     <Table.HeaderCell
@@ -389,7 +389,7 @@ useEffect(() => {
                   open={open}                  
                   onClose={handleCloseModal}
                   trigger={
-                    <Button 
+                    <Button                    
                     title='edit offer' 
                     icon='edit'                     
                     onClick={() => handleEditClick(item)} 
@@ -427,7 +427,7 @@ useEffect(() => {
             </Modal> 
               <Button 
                 icon='delete' 
-                title='delete offer'
+                title='delete offer'                
                 loading={loading[item.key]} 
                 onClick={() => handleDeleteClick(item.key)} 
                 />
