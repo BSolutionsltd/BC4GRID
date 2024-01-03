@@ -181,7 +181,7 @@ useEffect(() => {
         </Grid.Column>
         </Grid.Row>
         </Grid>
-      <Table celled compact>
+      <Table celled selectable compact sortable>
         <Table.Header>
           <Table.Row>
         <Table.HeaderCell

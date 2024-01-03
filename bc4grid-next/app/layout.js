@@ -16,6 +16,8 @@ import { EthExplorerProvider } from "@/app/web3/context/ethExplorerContext";
 import { Container }  from 'semantic-ui-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import ScrollToTopButton from '@/components/ui/scrollToTopButton';
+
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -36,10 +38,11 @@ export default async function RootLayout({ children }) {
           <EthExplorerProvider>
             <Header />        
               {children}        
-              <Footer />
-        </EthExplorerProvider>
-        </Container>
+            <Footer />          
+        </EthExplorerProvider>        
+        </Container>        
         </Provider>
+        <ScrollToTopButton />
         </body>
     </html>
   )

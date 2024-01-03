@@ -54,6 +54,7 @@ const Offers = (  ) => {
   const [newOfferId, setNewOfferId] = useState(null);
   const [removedOfferIds, setRemovedOfferIds] = useState([]);
   const [loading, setLoading] = useState([]);
+
   
   // search state
   const [searchColumn, setSearchColumn] = useState('totalPrice'); // Default search column
@@ -61,8 +62,9 @@ const Offers = (  ) => {
 
 
   // edit offer
-  const [open, setOpen] = React.useState(false);
-  const [selectedOffer, setSelectedOffer] = React.useState(null);
+  const [open, setOpen] = useState(false);
+  const [selectedOffer, setSelectedOffer] = useState(null);
+    
 
   // sorting data
   const [sortColumn, setSortColumn] = useState(null);
@@ -72,15 +74,36 @@ const Offers = (  ) => {
 
  const handleEditClick = (offer) => {
     setSelectedOffer(offer);
+    setLoading(prevLoading => ({ ...prevLoading, [offer.key]: true }));
     setOpen(true);
   };
 
-  const handleUpdateOffer = (event) => {
+  const handleUpdateOffer = async (event) => {
     event.preventDefault();
-    // Update the offer here
-    console.log('Offer updated');
+    // Update the offer here        
+    console.log('Offer to update:', selectedOffer);
+
     // Close the modal
     setOpen(false);
+
+    const response = await ethExplorer.modifyOffer(
+      selectedOffer.key,
+      Math.floor(new Date(selectedOffer.validUntil).getTime() / 1000),      
+      selectedOffer.pricePerUnit, 
+      selectedOffer.amount);
+
+
+    if (response.receipt) {
+      console.log('receipt: ', response.receipt);
+      console.log('Offer closed');
+      setLoading(prevLoading => ({ ...prevLoading, [selectedOffer.key]: false }));      
+      
+      }
+
+    if (response.error) {
+      console.error('Error: ', response.error);
+    }
+    
   };
 
   const handleCloseModal = () => {
@@ -319,7 +342,7 @@ useEffect(() => {
         </Grid.Column>
         </Grid.Row>
         </Grid>
-      <Table fixed   sortable>
+      <Table  sortable compact>
         <Table.Header>
         <Table.Row>
     <Table.HeaderCell
@@ -347,7 +370,7 @@ useEffect(() => {
     >
       Total Price {sortColumn === 'totalPrice' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
     </Table.HeaderCell>
-    <Table.HeaderCell>Actions</Table.HeaderCell>
+    <Table.HeaderCell collapsing>Actions</Table.HeaderCell>
   </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -361,41 +384,54 @@ useEffect(() => {
               <Table.Cell>{item.pricePerUnit}</Table.Cell>
               <Table.Cell>{item.validUntil}</Table.Cell>
               <Table.Cell>{item.totalPrice}</Table.Cell>    
-              <Button.Group fluid  basic size='small'>              
+              <Button.Group basic>              
               <Modal
                   open={open}                  
                   onClose={handleCloseModal}
-                  trigger={<Button title='edit offer' icon='edit' onClick={() => handleEditClick(item)} />}
+                  trigger={
+                    <Button 
+                    title='edit offer' 
+                    icon='edit'                     
+                    onClick={() => handleEditClick(item)} 
+                    loading={loading[item.key]}
+                    />
+                  }
+                    
                 >
-          <Modal.Header>Update Offer</Modal.Header>
-          <Modal.Content>
-            <Form onSubmit={handleUpdateOffer} >
-            <Form.Field>
-              <label>ID</label>
-              <input placeholder='ID' defaultValue={selectedOffer?.key} disabled />
-            </Form.Field>
-              <Form.Field>
-                <label>Amount</label>
-                <input placeholder='Amount' defaultValue={selectedOffer?.amount} />
-              </Form.Field>
-              <Form.Field>
-                <label>Price Per Unit</label>
-                <input placeholder='Price Per Unit' defaultValue={selectedOffer?.pricePerUnit} />
-              </Form.Field>
-              <Form.Field>
-                <label>Valid Until</label>
-                <input type='datetime-local' placeholder='Valid Until' defaultValue={selectedOffer?.validUntil} />
-              </Form.Field>
-              
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <Button type='submit' primary>Submit</Button>
-              </div>
-              
-            </Form>
-          </Modal.Content>
-        </Modal> 
-          <Button icon='delete' loading={loading[item.key]} onClick={() => handleDeleteClick(item.key)} />
-              </Button.Group>          
+              <Modal.Header>Update Offer</Modal.Header>
+              <Modal.Content>
+                <Form onSubmit={handleUpdateOffer} >
+                <Form.Field>
+                  <label>ID</label>
+                  <input placeholder='ID' defaultValue={selectedOffer?.key} disabled />
+                </Form.Field>
+                  <Form.Field>
+                    <label>Amount</label>
+                    <input placeholder='Amount' defaultValue={selectedOffer?.amount} />
+                  </Form.Field>
+                  <Form.Field>
+                    <label>Price Per Unit</label>
+                    <input placeholder='Price Per Unit' defaultValue={selectedOffer?.pricePerUnit} />
+                  </Form.Field>
+                  <Form.Field>
+                    <label>Valid Until</label>
+                    <input type='datetime-local' placeholder='Valid Until' defaultValue={selectedOffer?.validUntil} />
+                  </Form.Field>
+                  
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Button type='submit' primary>Submit</Button>
+                  </div>
+                  
+                </Form>
+              </Modal.Content>
+            </Modal> 
+              <Button 
+                icon='delete' 
+                title='delete offer'
+                loading={loading[item.key]} 
+                onClick={() => handleDeleteClick(item.key)} 
+                />
+            </Button.Group>          
             </Table.Row>
           ))}
         </Table.Body>

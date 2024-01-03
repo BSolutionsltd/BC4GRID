@@ -134,7 +134,7 @@ const AdminConsole = () => {
   const registeredUsers = users.filter(user => !user.isVerified);
 
   return (
-    <div>
+<div>
   <Header as="h1" textAlign='center'>Admin Console</Header>
       
       {loading ? (
@@ -181,7 +181,7 @@ const AdminConsole = () => {
         </Segment>
 
 { registeredUsers && registeredUsers.length > 0 &&
-<Segment style={{ marginBottom: '5vh' }}>
+<Segment style={{ marginBottom: '15vh' }}>
     <h2>Users pending for approval</h2>
     <Card.Group stackable>
           {registeredUsers.map((user) => (

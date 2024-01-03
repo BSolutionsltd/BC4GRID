@@ -32,6 +32,8 @@ const CartHeader = () => {
 const CartRow = ({ offer, status, onFinalize, onDiscard }) => {
     const { key, account, amount, pricePerUnit, validUntil, totalPrice, isFinalized } = offer;
     console.log('Cart row:', offer);
+
+    
   
   return (
     <Table.Row>      
