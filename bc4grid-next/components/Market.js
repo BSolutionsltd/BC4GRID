@@ -57,7 +57,6 @@ const Market = ( { isBuyPage } ) => {
   
   // routing
   const router = useRouter()
-
   
   // use ethExplorer
   const { ethExplorer, setEthExplorer } = useEthExplorer();
@@ -66,18 +65,36 @@ const Market = ( { isBuyPage } ) => {
   // errors
   const [error, setError] = useState(null);
  
-  // market data
-  // const [data, setData] = useState([]);
-  // new offer added
-  const [newOfferIds, setNewOfferIds] = useState([]);
-  // offers deleted
-  const [deletedOfferIds, setDeletedOfferIds] = useState([]);
-  // offers modified
-  const [modifiedOfferIds, setModifiedOfferIds] = useState([]);
-  
+    
+  // offer status
+  const [offerStatus, setOfferStatus] = useState({});  
+    
   // selected items from market
   const [selectedItems, setSelectedItems] = useState([]);
   
+  
+  // state reducer
+  const offerReducer = (state, action) => {
+    switch (action.type) {
+      case 'ADD_OFFER':
+        return state.some((offer) => offer.key === action.offer.key) 
+          ? state 
+          : [...state, action.offer];
+      case 'DELETE_OFFER':
+        return state.filter((offer) => offer.key !== action.key);
+      case 'MODIFY_OFFER':
+        return state.map((offer) => 
+          offer.key === action.offer.key ? action.offer : offer
+        );
+      default:
+        throw new Error(`Unhandled action type: ${action.type}`);
+    }
+  };
+  
+  // data to maintain
+  const [data, dispatch] = useReducer(offerReducer, []);
+
+
   // search state
   const [searchColumn, setSearchColumn] = useState('account'); // Default search column
   const [searchQuery, setSearchQuery] = useState('');
@@ -98,25 +115,6 @@ const Market = ( { isBuyPage } ) => {
       setSortDirection('asc');
     }
   };
-  // state reducer
-  const offerReducer = (state, action) => {
-    switch (action.type) {
-      case 'ADD_OFFER':
-        return state.some((offer) => offer.key === action.offer.key) 
-          ? state 
-          : [...state, action.offer];
-      case 'DELETE_OFFER':
-        return state.filter((offer) => offer.key !== action.key);
-      case 'MODIFY_OFFER':
-        return state.map((offer) => 
-          offer.key === action.offer.key ? action.offer : offer
-        );
-      default:
-        throw new Error(`Unhandled action type: ${action.type}`);
-    }
-  };
-  
-  const [data, dispatch] = useReducer(offerReducer, []);
 
 
   // Function to transform and filter offer data
@@ -140,38 +138,62 @@ const Market = ( { isBuyPage } ) => {
     // Dispatch an action to add the new offer
     dispatch({ type: 'ADD_OFFER', offer: transformedOffer });
      // Add the new offer ID to the array
-    setNewOfferIds((prevIds) => [...prevIds, transformedOffer.key]);
-    // Remove the new offer ID from the array after 2 seconds
-    setTimeout(() => {
-      setNewOfferIds((prevIds) => prevIds.filter((id) => id !== transformedOffer.key));
-  }, 2000);
-});
+     // Update the offerStatuses state to indicate that this offer was added
+     setOfferStatus((prevStatus) => ({
+       ...prevStatus,
+       [transformedOffer.key]: 'added',
+     }));
+   
+     // After 2 seconds, remove the offer's ID from offerStatuses
+     setTimeout(() => {
+       setOfferStatus((prevStatus) => {
+         const { [transformedOffer.key]: _, ...rest } = prevStatus;
+         return rest;
+       });
+     }, 2000);
+   });
 
 useEventSubscription('OfferClosed', (event) => {
   const closedOffer = event.returnValues;
   const transformedOffer = transformAndFilterData(closedOffer);
 
-  setDeletedOfferIds((prevIds) => [...prevIds, transformedOffer.key]);
+  // Update the offerStatuses state to indicate that this offer was closed
+  setOfferStatus((prevStatus) => ({
+    ...prevStatus,
+    [transformedOffer.key]: 'deleted',
+  }));
 
   setTimeout(() => {
     dispatch({ type: 'DELETE_OFFER', key: transformedOffer.key });
-    setDeletedOfferIds((prevIds) => prevIds.filter((id) => id !== transformedOffer.key));
+    setOfferStatus((prevStatus) => {
+      const { [transformedOffer.key]: _, ...rest } = prevStatus;
+      return rest;
+    });
   }, 2000);
 });
 
 
-  useEventSubscription('OfferModified', (event) => {
-    const modifiedOffer = event.returnValues;
-    const transformedOffer = transformAndFilterData(modifiedOffer);
+useEventSubscription('OfferModified', (event) => {
+  const modifiedOffer = event.returnValues;
+  const transformedOffer = transformAndFilterData(modifiedOffer);
 
-    dispatch({ type: 'MODIFY_OFFER', offer: transformedOffer });
+  // Dispatch an action to modify the offer
+  dispatch({ type: 'MODIFY_OFFER', offer: transformedOffer });
 
-    setModifiedOfferIds((prevIds) => [...prevIds, transformedOffer.key]);
+  // Update the offerStatuses state to indicate that this offer was modified
+  setOfferStatus((prevStatus) => ({
+    ...prevStatus,
+    [transformedOffer.key]: 'modified',
+  }));
 
-    setTimeout(() => {
-      setModifiedOfferIds((prevIds) => prevIds.filter((id) => id !== transformedOffer.key));
-    }, 2000);
-  });
+  // After 2 seconds, remove the offer's ID from offerStatuses
+  setTimeout(() => {
+    setOfferStatus((prevStatus) => {
+      const { [transformedOffer.key]: _, ...rest } = prevStatus;
+      return rest;
+    });
+  }, 2000);
+});
 
 
   // Fetch offer details from the smart contract
@@ -347,9 +369,9 @@ useEventSubscription('OfferClosed', (event) => {
             <Table.Row 
               key={item.key}
               className={
-                newOfferIds.includes(item.key) ? 'new-offer' :
-                deletedOfferIds.includes(item.key) ? 'removed-offer' :
-                modifiedOfferIds.includes(item.key) ? 'modified-offer' :
+                offerStatus[item.key] === 'added' ? 'new-offer' :
+                offerStatus[item.key] === 'deleted' ? 'removed-offer' :
+                offerStatus[item.key] === 'modified' ? 'modified-offer' :
                 ''
               }
             >

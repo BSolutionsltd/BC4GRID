@@ -35,32 +35,33 @@ class EthereumExplorer {
      * Initialize Web3.js
      */
     async bootWeb3() {
-    let web3Provider = null;
-
-    if (typeof window !== 'undefined' && window.ethereum !== "undefined") {
-        // Modern dapp browsers...
-        web3Provider = window.ethereum;
-
-        //window.ethereum.on('accountsChanged', handleAccountsChanged);
-
-        try {
-            // Request account access
-            await window.ethereum.request({ method: 'eth_requestAccounts' });             
-        } catch (error) {
-            // User denied account access...
-            throw error;
+        let web3Provider = null;
+      
+        if (typeof window !== 'undefined') {
+          if (window.ethereum) {
+            // Modern dapp browsers...
+            web3Provider = window.ethereum;
+      
+            try {
+              // Request account access
+              await window.ethereum.request({ method: 'eth_requestAccounts' });             
+            } catch (error) {
+              // User denied account access...
+              throw error;
+            }
+          } else if (window.web3) {
+            // Legacy dapp browsers...
+            web3Provider = window.web3.currentProvider;
+          } else {
+            // If no injected web3 instance is detected, fall back to Sepolia testnet
+            web3Provider = new Web3.providers.HttpProvider('https://sepolia.gateway.tenderly.co');
+          }
+          this.web3 = new Web3(web3Provider);
+        } else {
+          throw new Error('Non-Ethereum browser detected. You should consider trying MetaMask!');
         }
-    } else if (typeof window !== 'undefined' && window.web3) {
-        // Legacy dapp browsers...
-        web3Provider = window.web3.currentProvider;
-    } else {
-        // If no injected web3 instance is detected, fall back to Sepolia testnet
-        web3Provider = new Web3.providers.HttpProvider('https://sepolia.gateway.tenderly.co');
-    }
-    
-    
-    this.web3 = new Web3(web3Provider);
-}
+       
+      }
 
     /**
      * Load into the EthereumExplorer object all the details of a smart contract.

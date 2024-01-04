@@ -333,7 +333,7 @@ useEffect(() => {
               <Table.Cell>{item.key}</Table.Cell>
               <Table.Cell>{item.amount}</Table.Cell>
               <Table.Cell>{item.pricePerUnit}</Table.Cell>
-              <Table.Cell>{item.validUntil}</Table.Cell>
+              <Table.Cell>{new Date(item.validUntil).toLocaleString()}</Table.Cell>
               <Table.Cell>{item.totalPrice}</Table.Cell>    
               <Button.Group basic>              
               <Modal
