@@ -15,11 +15,12 @@ import {
 
 
 import web3 from "web3";
+import useEventSubscription from "@/app/web3/subscriptions/eventSubscription";
 
 import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
 
-const Offers = (  ) => {
-  
+
+const Offers = (  ) => {  
   // style
   const flashAnimation = `
    @keyframes addOfferAnimation {
@@ -43,8 +44,7 @@ const Offers = (  ) => {
 
   // use ethExplorer
   const { ethExplorer, setEthExplorer } = useEthExplorer();
-  const [error, setError] = useState(null);
-  const [account, setAccount] = useState('');
+  const [error, setError] = useState(null);  
  
   // market data
   const [data, setData] = useState([]);
@@ -81,8 +81,7 @@ const Offers = (  ) => {
   const handleUpdateOffer = async (event) => {
     event.preventDefault();
     // Update the offer here        
-    console.log('Offer to update:', selectedOffer);
-
+    
     // Close the modal
     setOpen(false);
 
@@ -93,9 +92,7 @@ const Offers = (  ) => {
       selectedOffer.amount);
 
 
-    if (response.receipt) {
-      console.log('receipt: ', response.receipt);
-      console.log('Offer closed');
+    if (response.receipt) {      
       setLoading(prevLoading => ({ ...prevLoading, [selectedOffer.key]: false }));      
       
       }
@@ -116,9 +113,7 @@ const Offers = (  ) => {
     // Filter out the offer with the specified key
     const response = await ethExplorer.cancelOffer(offerId);
 
-    if (response.receipt) {
-      console.log('receipt: ', response.receipt);
-      console.log('Offer closed');
+    if (response.receipt) {      
       setLoading(prevLoading => ({ ...prevLoading, [offerId]: false }));
       }
 
@@ -128,8 +123,7 @@ const Offers = (  ) => {
   };
   // handle data
   const transformAndFilterData = (offer) => {
-
-    console.log('Offer before transformation: ', offer);
+    
     return {
       key: Number(offer.id),
       account: web3.utils.toChecksumAddress(offer.seller),
@@ -139,50 +133,7 @@ const Offers = (  ) => {
       totalPrice: Number(offer.energyAmount) * Number(offer.pricePerEnergyAmount),
     };
   };
-  function useEventSubscription(eventName, eventHandler) {
-    const subscriptionRef = useRef(null);
   
-    useEffect(() => {
-      if (!ethExplorer) {
-        console.log('ethExplorer is not initialized yet.');
-        return;
-      }
-  
-      // Check if we already have an active subscription
-      if (subscriptionRef.current) {
-        console.log('Already subscribed to event.');
-        return;
-      }
-  
-      const subscribeToEvents = async () => {
-        const blockNumber = await ethExplorer.getBlockNumber();
-        console.log('Subscribe to events ...');
-        const subscription = ethExplorer.getSubscription(eventName);
-        if (subscription) {
-          console.log('Already subscribed to event.');
-          subscriptionRef.current = subscription;
-        }
-        // Subscribe to the event
-        subscriptionRef.current = await ethExplorer.subscribeToContractEvent(
-          'Trading',
-          eventName,
-          blockNumber,
-          eventHandler
-        );
-      };
-  
-      subscribeToEvents();
-  
-      // Cleanup function to unsubscribe from events
-      return () => {
-        if (subscriptionRef.current) {
-          // Perform cleanup here, such as unsubscribing from the event
-          subscriptionRef.current.unsubscribe();
-          subscriptionRef.current = null;
-        }
-      };
-    }, [ ]); // Dependency array includes ethExplorer
-  }
   useEventSubscription('OfferCreated', (event) => {
     const newOffer = event.returnValues;
     const transformedOffer = transformAndFilterData(newOffer);
@@ -230,7 +181,7 @@ useEffect(() => {
         }
       }
       setData(transformedData);
-      setAccount(fetchedAccount);
+      
 
       //console.log('All Offers: ', transformedData);
     } catch (error) {
@@ -314,7 +265,7 @@ useEffect(() => {
 
   return (
     
-  <div style={{overflowX : 'auto'}}>
+  <div>
      <style>{flashAnimation}</style>
       <Segment style={{ marginBottom: '200px', minHeight: '50vh'}}>
         <Header as="h2">Your Offers</Header>
@@ -382,7 +333,7 @@ useEffect(() => {
               <Table.Cell>{item.key}</Table.Cell>
               <Table.Cell>{item.amount}</Table.Cell>
               <Table.Cell>{item.pricePerUnit}</Table.Cell>
-              <Table.Cell>{item.validUntil}</Table.Cell>
+              <Table.Cell>{new Date(item.validUntil).toLocaleString()}</Table.Cell>
               <Table.Cell>{item.totalPrice}</Table.Cell>    
               <Button.Group basic>              
               <Modal

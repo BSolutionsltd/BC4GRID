@@ -183,10 +183,6 @@ const OfferCreator = () => {
       // define transaction id as offer id      
     // offerToFinalize.id = response.transactionHash;
 
-      // Log the transaction hash and receipt
-    console.log('Transaction Hash:', response.transactionHash);
-    console.log('Transaction Receipt:', response.receipt);
-
     // Handle error if any
     if (response.error) {
       alert('Transaction Error in finalize:', response.error);
@@ -202,8 +198,7 @@ const OfferCreator = () => {
       offer.id === offerId ? { ...offer, isFinalized: true } : offer
     );
     setOffers(updatedOffers);
-
-    console.log('Energy offer finalized successfully!');
+    
   } catch (err) {
     setError('Error finalizing energy offer: ' + err.message);
   }
@@ -214,6 +209,9 @@ const onDiscard = (offerId) => {
   const updatedOffers = offers.filter(offer => offer.id !== offerId);
   setOffers(updatedOffers);
 };
+
+
+
 
 return (
   <>

@@ -63,6 +63,14 @@ const MakeOffer = ({ trigger, onCreateOffer }) => {
             value={energyAmount}
             onChange={(e) => setEnergyAmount(e.target.value)}
           />
+        </Form.Field>        
+        <Form.Field>
+          <label>Price Per Energy Amount (in Wei)</label>
+          <input
+            placeholder='Price Per Energy Amount'
+            value={pricePerEnergyAmount}
+            onChange={(e) => setPricePerEnergyAmount(e.target.value)}
+          />
         </Form.Field>
         <Form.Field>
           <label>Valid Until</label>
@@ -71,14 +79,6 @@ const MakeOffer = ({ trigger, onCreateOffer }) => {
             placeholder='Valid Until'
             value={validUntil}
             onChange={(e) => setValidUntil(e.target.value)}
-          />
-        </Form.Field>
-        <Form.Field>
-          <label>Price Per Energy Amount (in Wei)</label>
-          <input
-            placeholder='Price Per Energy Amount'
-            value={pricePerEnergyAmount}
-            onChange={(e) => setPricePerEnergyAmount(e.target.value)}
           />
         </Form.Field>
         <div style={{ textAlign: 'center' }}>

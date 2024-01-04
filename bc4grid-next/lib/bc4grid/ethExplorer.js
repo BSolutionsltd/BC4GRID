@@ -35,32 +35,33 @@ class EthereumExplorer {
      * Initialize Web3.js
      */
     async bootWeb3() {
-    let web3Provider = null;
-
-    if (typeof window !== 'undefined' && window.ethereum !== "undefined") {
-        // Modern dapp browsers...
-        web3Provider = window.ethereum;
-
-        //window.ethereum.on('accountsChanged', handleAccountsChanged);
-
-        try {
-            // Request account access
-            await window.ethereum.request({ method: 'eth_requestAccounts' });             
-        } catch (error) {
-            // User denied account access...
-            throw error;
+        let web3Provider = null;
+      
+        if (typeof window !== 'undefined') {
+          if (window.ethereum) {
+            // Modern dapp browsers...
+            web3Provider = window.ethereum;
+      
+            try {
+              // Request account access
+              await window.ethereum.request({ method: 'eth_requestAccounts' });             
+            } catch (error) {
+              // User denied account access...
+              throw error;
+            }
+          } else if (window.web3) {
+            // Legacy dapp browsers...
+            web3Provider = window.web3.currentProvider;
+          } else {
+            // If no injected web3 instance is detected, fall back to Sepolia testnet
+            web3Provider = new Web3.providers.HttpProvider('https://sepolia.gateway.tenderly.co');
+          }
+          this.web3 = new Web3(web3Provider);
+        } else {
+          throw new Error('Non-Ethereum browser detected. You should consider trying MetaMask!');
         }
-    } else if (typeof window !== 'undefined' && window.web3) {
-        // Legacy dapp browsers...
-        web3Provider = window.web3.currentProvider;
-    } else {
-        // If no injected web3 instance is detected, fall back to Sepolia testnet
-        web3Provider = new Web3.providers.HttpProvider('https://sepolia.gateway.tenderly.co');
-    }
-    
-    
-    this.web3 = new Web3(web3Provider);
-}
+       
+      }
 
     /**
      * Load into the EthereumExplorer object all the details of a smart contract.
@@ -435,13 +436,11 @@ class bc4Grid extends EthereumExplorer {
                 //console.log('Transaction Hash:', transactionHash);
                 result.transactionHash = transactionHash;
               })
-              .on('receipt', receipt => {
-                console.log('Transaction Receipt:', receipt);
+              .on('receipt', receipt => {                
                 result.receipt = receipt;
                 resolve(result);
               })
               .on('error', error => {
-                console.error('Transaction Error:', error);
                 result.error = error;
                 reject(result);
               });
@@ -509,13 +508,11 @@ class bc4Grid extends EthereumExplorer {
                 //console.log('Transaction Hash:', transactionHash);
                 result.transactionHash = transactionHash;
             })
-            .on('receipt', receipt => {
-                console.log('Transaction Receipt:', receipt);
+            .on('receipt', receipt => {                
                 result.receipt = receipt;
                 resolve(result);
             })
-            .on('error', error => {
-                console.error('Transaction Error:', error);
+            .on('error', error => {                
                 result.error = error;
                 reject(result);
             });
@@ -567,8 +564,7 @@ class bc4Grid extends EthereumExplorer {
 
         // Call the GetAllOfferDetails method from the Trading contract
         return tradingContract.methods.GetAllOfferDetails().call()
-            .then(offerDetails => {
-                console.log('Offer Details:', offerDetails);
+            .then(offerDetails => {                
                 return offerDetails;
             })
             .catch(error => console.error('Error fetching offer details:', error));
@@ -875,10 +871,6 @@ async function bc4grid() {
     await ethExplorer.getUserAccount();
     await ethExplorer.getNetworkId();
 
-    // initialize events
-    // await ethExplorer.initSmartContractEvents();
-    // await ethExplorer.subscribeToNewBlockHead(toString);
-    // await ethExplorer.getOrdersForBuyer(await ethExplorer.getUserAccount());
 
     return ethExplorer;
 }  
