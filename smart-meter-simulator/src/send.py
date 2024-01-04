@@ -69,7 +69,7 @@ def get_production_data(df: pd.DataFrame, idx: int) -> dict:
         return None
 
 def get_climate_data(df: pd.DataFrame, idx: int) -> dict:
-   if (idx in df.index) and (~np.isnan(df.iloc[idx, 0])):
+   if (idx in df.index):
        return df.iloc[idx,:].to_dict()
    else:
        return {}

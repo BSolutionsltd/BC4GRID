@@ -39,24 +39,32 @@ services:
     build:
       context: ./smart-meter-collector
       dockerfile: ./Dockerfile
+    working_dir: /app/smart-meter-collector/src
     volumes:
       - .:/app
-    entrypoint: /bin/bash
+    ports:
+      - 5000:5000
+    expose:
+      - 5000
+    entrypoint: ["flask", "run"]
     tty: true
     user: root
     network_mode: host
+
+    
 
   db:
       image: postgres
       volumes:
         - postgres_data:/var/lib/postgresql/data/
-      expose:
-        - 5432
       ports:
         - 5432:5432
+      expose:
+        - 5432
       network_mode: host
       environment:
         - POSTGRES_PASSWORD=bc4grid
+
 
 volumes:
   postgres_data:
