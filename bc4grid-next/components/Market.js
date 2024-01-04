@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import web3 from "web3";
 
 import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
 import { useSelectedOrders } from '@/app/(trading)/context/OrdersContext';
+
+import  useEventSubscription  from '@/app/web3/subscriptions/eventSubscription';
 
 import { 
   Table, 
@@ -24,20 +26,39 @@ const Market = ( { isBuyPage } ) => {
 
   // style 
    // Define the CSS animation as a string
-   const flashAnimation = `
-   @keyframes flashAnimation {
-     0% { background-color: #0E6EB8; }
-     100% { background-color: transparent; }
-   }
+   const highlightAnimation = `
+      @keyframes addOfferAnimation {
+        0% { background-color: #0E6EB8; }
+        100% { background-color: transparent; }
+      }   
 
-   .highlight-row {
-     animation: flashAnimation 6s; /* Run the animation for 6 seconds */
-   }
- `;
+      @keyframes closeOfferAnimation {
+        0% { background-color: #B03060; }
+        100% { background-color: transparent; }
+      }
+
+      @keyframes modifyOfferAnimation {
+        0% { background-color: #008080; }
+        100% { background-color: transparent; }
+      }
+
+      .new-offer {
+        animation: addOfferAnimation 2s; /* Run the animation for 6 seconds */
+      }
+
+      .modified-offer {
+        animation: modifyOfferAnimation 2s; /* Run the animation for 6 seconds */
+      }
+
+      .removed-offer {
+        animation: closeOfferAnimation 2s; /* Run the animation for 6 seconds */
+      }
+    `;
   
   // routing
   const router = useRouter()
 
+  
   // use ethExplorer
   const { ethExplorer, setEthExplorer } = useEthExplorer();
   const { selectedOrders, setSelectedOrders } = useSelectedOrders();
@@ -46,9 +67,14 @@ const Market = ( { isBuyPage } ) => {
   const [error, setError] = useState(null);
  
   // market data
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
   // new offer added
-  const [newOfferId, setNewOfferId] = useState(null);
+  const [newOfferIds, setNewOfferIds] = useState([]);
+  // offers deleted
+  const [deletedOfferIds, setDeletedOfferIds] = useState([]);
+  // offers modified
+  const [modifiedOfferIds, setModifiedOfferIds] = useState([]);
+  
   // selected items from market
   const [selectedItems, setSelectedItems] = useState([]);
   
@@ -72,12 +98,30 @@ const Market = ( { isBuyPage } ) => {
       setSortDirection('asc');
     }
   };
+  // state reducer
+  const offerReducer = (state, action) => {
+    switch (action.type) {
+      case 'ADD_OFFER':
+        return state.some((offer) => offer.key === action.offer.key) 
+          ? state 
+          : [...state, action.offer];
+      case 'DELETE_OFFER':
+        return state.filter((offer) => offer.key !== action.key);
+      case 'MODIFY_OFFER':
+        return state.map((offer) => 
+          offer.key === action.offer.key ? action.offer : offer
+        );
+      default:
+        throw new Error(`Unhandled action type: ${action.type}`);
+    }
+  };
+  
+  const [data, dispatch] = useReducer(offerReducer, []);
 
 
   // Function to transform and filter offer data
   const transformAndFilterData = (offer) => {
-
-    console.log('Offer before transformation: ', offer);
+    
     return {
       key: Number(offer.id),
       account: web3.utils.toChecksumAddress(offer.seller),
@@ -89,60 +133,45 @@ const Market = ( { isBuyPage } ) => {
   };
 
 
-    // Ref to store the subscription object
-    const subscriptionRef = useRef(null);
+  useEventSubscription('OfferCreated', (event) => {
+    const newOffer = event.returnValues;
+    const transformedOffer = transformAndFilterData(newOffer);
+    // Update the state with the new offer after transforming and filtering
+    // Dispatch an action to add the new offer
+    dispatch({ type: 'ADD_OFFER', offer: transformedOffer });
+     // Add the new offer ID to the array
+    setNewOfferIds((prevIds) => [...prevIds, transformedOffer.key]);
+    // Remove the new offer ID from the array after 2 seconds
+    setTimeout(() => {
+      setNewOfferIds((prevIds) => prevIds.filter((id) => id !== transformedOffer.key));
+  }, 2000);
+});
 
-  // Subscribe to new offers
-  useEffect(() => {
-    if (!ethExplorer) {
-      console.log('ethExplorer is not initialized yet.');
-      return;
-    }
+useEventSubscription('OfferClosed', (event) => {
+  const closedOffer = event.returnValues;
+  const transformedOffer = transformAndFilterData(closedOffer);
 
-    // Check if we already have an active subscription
-    if (subscriptionRef.current) {
-      console.log('Already subscribed to event.');
-      return;
-    }
+  setDeletedOfferIds((prevIds) => [...prevIds, transformedOffer.key]);
 
-    const subscribeToEvents = async () => {      
-      const blockNumber = await ethExplorer.getBlockNumber();
-      console.log('Subscribe to events ...');      
-    const subscription = ethExplorer.getSubscription('OfferCreated');
-    if (subscription) {
-      console.log('Already subscribed to event.');
-      subscriptionRef.current = subscription;
-    }
-      // Subscribe to the OfferCreated event
-      subscriptionRef.current = await ethExplorer.subscribeToContractEvent(
-        'Trading',
-        'OfferCreated',
-        blockNumber,
-        (event) => {
-          const newOffer = event.returnValues;
-          const transformedOffer = transformAndFilterData(newOffer);
-          // Update the state with the new offer after transforming and filtering
-          setData((prevData) => [...prevData, transformedOffer]);
-          // Set the new offer ID to highlight the row
-          setNewOfferId(transformedOffer.key);
-          // Set a timeout to remove the highlight after 2 seconds
-          setTimeout(() => {
-            setNewOfferId(null);
-          }, 2000);
-        });
-    };
-  
-    subscribeToEvents();
+  setTimeout(() => {
+    dispatch({ type: 'DELETE_OFFER', key: transformedOffer.key });
+    setDeletedOfferIds((prevIds) => prevIds.filter((id) => id !== transformedOffer.key));
+  }, 2000);
+});
 
-    // Cleanup function to unsubscribe from events
-    return () => {
-      if (subscriptionRef.current) {
-        // Perform cleanup here, such as unsubscribing from the event
-        subscriptionRef.current.unsubscribe();
-        subscriptionRef.current = null;
-      }
-    };
-  }, [ethExplorer]); // Dependency array includes ethExplorer
+
+  useEventSubscription('OfferModified', (event) => {
+    const modifiedOffer = event.returnValues;
+    const transformedOffer = transformAndFilterData(modifiedOffer);
+
+    dispatch({ type: 'MODIFY_OFFER', offer: transformedOffer });
+
+    setModifiedOfferIds((prevIds) => [...prevIds, transformedOffer.key]);
+
+    setTimeout(() => {
+      setModifiedOfferIds((prevIds) => prevIds.filter((id) => id !== transformedOffer.key));
+    }, 2000);
+  });
 
 
   // Fetch offer details from the smart contract
@@ -158,17 +187,18 @@ const Market = ( { isBuyPage } ) => {
 
         for (const offer of offerDetails) {
           // Convert the energy amount and price per energy amount to BigInt        
-          transformedData.push({
+          const newOffer = {
             key: Number(offer.offerId),
             account: web3.utils.toChecksumAddress(offer.sellerAddress),
             amount: Number(offer.energyAmount),
             pricePerUnit: Number(offer.pricePerEnergyAmount),
             validUntil: new Date(Number(offer.validUntil) * 1000).toLocaleDateString(),
-            totalPrice: Number(offer.energyAmount) * Number(offer.pricePerEnergyAmount),
-            
-          });
+            totalPrice: Number(offer.energyAmount) * Number(offer.pricePerEnergyAmount),            
+          };
+
+          dispatch({ type: 'ADD_OFFER', offer: newOffer });          
         }
-        setData(transformedData);
+        //setData(transformedData);
 
         //console.log('All Offers: ', transformedData);
       } catch (error) {
@@ -249,7 +279,7 @@ const Market = ( { isBuyPage } ) => {
   return (
     
   <div>
-     <style>{flashAnimation}</style>
+     <style>{highlightAnimation}</style>
       <Segment style={{ marginBottom: '200px', minHeight: '50vh'}}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Header as="h2">Energy Market</Header>
@@ -316,7 +346,12 @@ const Market = ( { isBuyPage } ) => {
           {sortedData.map((item) => (
             <Table.Row 
               key={item.key}
-              className={item.key === newOfferId ? 'highlight-row' : ''}
+              className={
+                newOfferIds.includes(item.key) ? 'new-offer' :
+                deletedOfferIds.includes(item.key) ? 'removed-offer' :
+                modifiedOfferIds.includes(item.key) ? 'modified-offer' :
+                ''
+              }
             >
               <Table.Cell>{item.key}</Table.Cell>
               <Table.Cell>{item.account}</Table.Cell>

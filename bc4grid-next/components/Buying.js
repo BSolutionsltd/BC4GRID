@@ -70,9 +70,7 @@ const BuyCreator = () => {
         50000        
       );
       
-      // Log the transaction hash and receipt
-    console.log('Transaction Hash:', response.transactionHash);
-    console.log('Transaction Receipt:', response.receipt);
+    
 
     // Handle error if any
     if (response.error) {

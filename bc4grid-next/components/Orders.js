@@ -55,8 +55,7 @@ useEffect(() => {
   const fetchOrders = async () => {
     try {
       const finalizedOrders = await localforage.getItem('finalizedOrders') || [];
-      setData(finalizedOrders);
-      console.log('Data from local storage: ', data);
+      setData(finalizedOrders);      
     } catch (error) {
       console.error('Error fetching offer details:', error);
     }
@@ -86,8 +85,7 @@ useEffect(() => {
     
         // Set the data state variable with the updated data
         setData(updatedData);
-    
-        console.log('Updated orders: ', updatedData);
+            
       } catch (error) {
         console.error('Error updating orders:', error);
       }

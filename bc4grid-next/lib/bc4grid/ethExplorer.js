@@ -435,13 +435,11 @@ class bc4Grid extends EthereumExplorer {
                 //console.log('Transaction Hash:', transactionHash);
                 result.transactionHash = transactionHash;
               })
-              .on('receipt', receipt => {
-                console.log('Transaction Receipt:', receipt);
+              .on('receipt', receipt => {                
                 result.receipt = receipt;
                 resolve(result);
               })
               .on('error', error => {
-                console.error('Transaction Error:', error);
                 result.error = error;
                 reject(result);
               });
@@ -509,13 +507,11 @@ class bc4Grid extends EthereumExplorer {
                 //console.log('Transaction Hash:', transactionHash);
                 result.transactionHash = transactionHash;
             })
-            .on('receipt', receipt => {
-                console.log('Transaction Receipt:', receipt);
+            .on('receipt', receipt => {                
                 result.receipt = receipt;
                 resolve(result);
             })
-            .on('error', error => {
-                console.error('Transaction Error:', error);
+            .on('error', error => {                
                 result.error = error;
                 reject(result);
             });
@@ -567,8 +563,7 @@ class bc4Grid extends EthereumExplorer {
 
         // Call the GetAllOfferDetails method from the Trading contract
         return tradingContract.methods.GetAllOfferDetails().call()
-            .then(offerDetails => {
-                console.log('Offer Details:', offerDetails);
+            .then(offerDetails => {                
                 return offerDetails;
             })
             .catch(error => console.error('Error fetching offer details:', error));
@@ -875,10 +870,6 @@ async function bc4grid() {
     await ethExplorer.getUserAccount();
     await ethExplorer.getNetworkId();
 
-    // initialize events
-    // await ethExplorer.initSmartContractEvents();
-    // await ethExplorer.subscribeToNewBlockHead(toString);
-    // await ethExplorer.getOrdersForBuyer(await ethExplorer.getUserAccount());
 
     return ethExplorer;
 }  
