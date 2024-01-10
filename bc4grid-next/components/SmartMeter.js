@@ -61,11 +61,11 @@ function SmartMeter() {
             <Header as='h3'>Current</Header>                            
               <Statistic size='tiny'>                
                 <Statistic.Label>Production</Statistic.Label>
-                <Statistic.Value>{`${(data.total_production).toFixed(2)}  KWh`}</Statistic.Value>
+                <Statistic.Value>{data.total_consumption ? `${(data.total_production).toFixed(2)}  KWh` : 'N/A'}</Statistic.Value>
               </Statistic>
               <Statistic size='tiny'>
                 <Statistic.Label>Consumption</Statistic.Label>
-                <Statistic.Value>{`${(data.total_consumption).toFixed(2)}  KWh`}</Statistic.Value>
+                <Statistic.Value>{data.total_consumption ? `${(data.total_consumption).toFixed(2)}  KWh` : 'N/A'}</Statistic.Value>
               </Statistic>
             </Grid.Column>
           </Grid.Row>
