@@ -55,13 +55,14 @@ class EthereumExplorer {
           } else {
             // If no injected web3 instance is detected, fall back to Sepolia testnet
             web3Provider = new Web3.providers.HttpProvider('https://sepolia.gateway.tenderly.co');
+            console.log('Using Sepolia!!!');
           }
-          this.web3 = new Web3(web3Provider);
+          
         } else {
           throw new Error('Non-Ethereum browser detected. You should consider trying MetaMask!');
         }
-       
-      }
+        this.web3 = new Web3(web3Provider);
+    }
 
     /**
      * Load into the EthereumExplorer object all the details of a smart contract.
@@ -370,6 +371,8 @@ class EthereumExplorer {
         const accounts = await this.web3.eth.getAccounts();
 
         this.userAccount = accounts[0];
+
+        console.log('User account: ' + this.userAccount);
 
         return this.userAccount;
     }
@@ -861,7 +864,12 @@ class bc4Grid extends EthereumExplorer {
 
 async function bc4grid() {
     const ethExplorer = new bc4Grid();
-    await ethExplorer.bootWeb3();
+    try {
+        await ethExplorer.bootWeb3();
+      } catch (error) {
+        console.error("Failed to boot Web3: ", error);
+        return null;
+      }
   
     // Load contracts directly using the imported JSON files
     await ethExplorer.loadContractFromJson(TokenDispenser, 'TokenDispenser');
