@@ -35,7 +35,7 @@ export const EthExplorerProvider = ({ children }) => {
   }, []); // Empty dependency array ensures this effect only runs once
 
   const value = {
-    ethExplorer,
+    ethExplorer     
   };
 
   return (

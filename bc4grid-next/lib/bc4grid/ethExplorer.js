@@ -413,7 +413,7 @@ class bc4Grid extends EthereumExplorer {
 
         console.log('Calling bc4grid contructor');
         super();
-        this.subscriptions = {};
+        this.subscriptions = {};        
     }
 
     async createEnergyOffer(energyAmount, validUntil, pricePerEnergyAmount) {
@@ -702,7 +702,8 @@ class bc4Grid extends EthereumExplorer {
         return tokenDispenserContract.methods.SendEnergy(energyAmount).send(options)
             .on('transactionHash', transactionHash => console.log('Transaction Hash:', transactionHash))
             .on('receipt', receipt => console.log('Transaction Receipt:', receipt))
-            .on('error', error => console.error('Transaction Error:', error));
+            .on('error', error => console.error('Transaction Error:', error))
+            .then(receipt => receipt); // Return the receipt when the Promise is resolved
     }
       
     // event handler

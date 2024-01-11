@@ -13,7 +13,7 @@ class Dashboard extends Component {
     return (    
       <>  
       <Balance />
-       <SmartMeter />
+       <SmartMeter  />
       </>
       
     );

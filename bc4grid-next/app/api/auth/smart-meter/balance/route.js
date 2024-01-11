@@ -17,17 +17,16 @@ export async function GET(req) {
   }
 
   try {
-    async function getProsumerData(userId) {
+    async function getProsumerData(userId,delta=1) {
       const url = new URL(`http://localhost:5000/api/v1/smartmeter/${userId}/balance`);
       const endTime = new Date();
-      const startTime = new Date(endTime.getTime() - 15 * 60 * 1000);
+      const startTime = new Date(endTime.getTime() - delta * 60 * 1000);
       
       
       url.searchParams.append("from", formatDateTime(startTime));
       url.searchParams.append("to", formatDateTime(endTime));
 
-      console.log('url: ', url);
-
+      
       const res = await fetch(url, {
         method: "GET",
         headers: {

@@ -11,7 +11,7 @@ import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
 const ShowAccount = ({ account }) => {
     
   return (
-    <div>
+    <div style={{ wordBreak: 'break-all' }}>
       <Header as="h3" textAlign="center" >Address: {account}</Header>
     </div>
   );
@@ -25,10 +25,10 @@ const BalanceInfo = ({ balance, power }) => {
       <Grid columns={2} relaxed="very" stackable textAlign="center">
         <Grid.Row>
           <Grid.Column>
-          <Statistic label='Balance (eth)' value={Number(balance).toFixed(2)} /> 
+          <Statistic size='mini' label='Balance (eth)' value={Number(balance).toFixed(2)} /> 
           </Grid.Column>
           <Grid.Column>
-          <Statistic label='Tokens (ENT)' value={power} /> 
+          <Statistic size='mini' label='Tokens (ENT)' value={power} /> 
           </Grid.Column>
         </Grid.Row>
       </Grid>
@@ -70,12 +70,7 @@ const Balance = () => {
     fetchAccountAndBalance();
   }, [ethExplorer, account]); // Add ethExplorer to the dependency array
 
-  const handleAccountChange = async (e, { value }) => {
-    setSelectedAccount(value);
-    const fetchedBalance = await web3.eth.getBalance(value);
-    const balanceInEther = web3.utils.fromWei(fetchedBalance, 'ether');
-        setBalance(balanceInEther); // You might need to convert this to kWh based on your logic
-  };
+
 
   return (
 
