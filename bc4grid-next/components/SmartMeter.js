@@ -92,7 +92,7 @@ function SmartMeter() {
         </Grid>       
       </Segment>
       <Segment style = {{marginBottom: '20vh' }}>
-      <EnergyGraph data={data} />
+      <EnergyGraph />
       </Segment>    
 
     </>

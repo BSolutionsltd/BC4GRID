@@ -5,48 +5,64 @@ import formatDateTime from "@/lib/timeFormat";
 import 'chartjs-adapter-date-fns';
 import { Line } from 'react-chartjs-2';
 
-import { Chart as ChartJS, LineElement, CategoryScale, PointElement, LinearScale, Title, TimeScale } from 'chart.js';
+import { 
+  Chart as ChartJS, 
+  LineElement, 
+  CategoryScale, 
+  PointElement, 
+  LinearScale, 
+  Title, 
+  TimeScale } from 'chart.js';
+  
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, TimeScale, Title);
 
 
-import { Header } from 'semantic-ui-react';
+import { Header, Button } from 'semantic-ui-react';
 
-function EnergyGraph({ refreshInterval = 10 * 1000 }) {
+function EnergyGraph({ refreshInterval = 10 * 60 * 1000 }) {
+  let past;
+  let now;
   
   const [data, setData] = useState({});  
-  const [dataPoints, setDataPoints] = useState([]);
+
+  // Get dataPoints from Local Storage or set to an empty array if not available
+  const [dataPoints, setDataPoints] = useState(() => {
+    const savedDataPoints = localStorage.getItem('dataPoints');
+    return savedDataPoints ? JSON.parse(savedDataPoints) : [];
+  });
  
 
   useEffect(() => {
     const fetchData = () => {
       // Get the current time
-      const now = formatDateTime(new Date());
-      const past = "2024-01-01 00:00:00";  
+      now = new Date()
+      past = new Date(now.getTime() - 15 * 60 * 1000);
+       
     // Create a new URL object
     const url = new URL('/api/auth/smart-meter/history', window.location.origin);
 
     // Create a new URLSearchParams object
     const params = new URLSearchParams({
-      from: past,
-      to: now
+      from: formatDateTime(past),
+      to: formatDateTime(now)
     });
 
-  // Set the search parameters of the URL
-  url.search = params.toString();
-  // Set the search parameters of the URL
-  url.search = params.toString();
+    // Set the search parameters of the URL
+    url.search = params.toString();
+    // Set the search parameters of the URL
+    url.search = params.toString();
   
-// Make the fetch call
-fetch(url)
-  .then(response => response.json())
-  .then(data => {    
-    setData(data);
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    // Handle the error
-  });
+    // Make the fetch call
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {    
+        setData(data);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        // Handle the error
+      });
       };
 
     fetchData();  
@@ -54,6 +70,11 @@ fetch(url)
     const intervalId = setInterval(fetchData, refreshInterval);
     return () => clearInterval(intervalId);
   }, []);
+
+  // Save dataPoints to Local Storage when it changes
+  useEffect(() => {
+    localStorage.setItem('dataPoints', JSON.stringify(dataPoints));
+  }, [dataPoints]);
 
   useEffect(() => {
     if (data.total_production != null && data.total_consumption != null) {
@@ -97,8 +118,9 @@ fetch(url)
     scales: {
       x: {
         type: 'time',
-        time: {
-          unit: 'minute'
+        time: {          
+          min: past,
+          max: now,
         },
         title: {
           display: true,
@@ -124,7 +146,10 @@ fetch(url)
  
   return (
     <div>
-      <Header as="h2"> Energy Production and Consumption</Header>
+       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Header as='h3'>Energy Production and Consumption</Header>
+      <Button onClick={() => setDataPoints([])}>Clear</Button>
+    </div>
       <Line data={chartData} options={options} />
     </div>
   );
