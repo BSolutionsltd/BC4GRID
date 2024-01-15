@@ -12,13 +12,17 @@ import {
 
 import { useRouter } from 'next/navigation';
 
+import { useSession } from 'next-auth/react';
+
 
 const LandingPage = () => {
 
+  const { data: session } = useSession();
   const router = useRouter()
 
   const handleClick = () => {
-    router.push('/auth/login');
+    if (session?.user) router.push('/dashboard');
+    else router.push('/auth/login');
   };
   return (
   <div>
@@ -39,7 +43,7 @@ const LandingPage = () => {
             
           </Grid.Column>
           <Grid.Column floated='right' width={6}>
-            <Image bordered rounded size='large' src='images/hero/bc4grid.png' />
+            <Image alt='' bordered rounded size='large' src='images/hero/bc4grid.png' />
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>

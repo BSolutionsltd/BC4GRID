@@ -5,5 +5,6 @@ matcher: [
     "/auth/profile",
     "/buy/:path*",
     "/sell/:path*",
+    "/dashboard/:path*",
     //"/web3/:path*",
 ] }
