@@ -116,7 +116,7 @@ const Cart = ({ offers, onFinalize, onDiscard }) => {
       </Table>
     ) : (
       <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <p>You don't have any new orders</p>
+        <p>You do not have any new orders</p>
       </div>
     )}
   </Segment>

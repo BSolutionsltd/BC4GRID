@@ -29,3 +29,4 @@ _minted-technical_documentation
 **/.venv/
 **/data/
 **logs/
+**smart-meter-simulator/.gnupg/

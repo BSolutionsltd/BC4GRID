@@ -6,7 +6,6 @@ const TradeMenu = dynamic(() => import('@/components/TradeMenu'), { ssr: false }
 
 import {SelectedOrdersProvider}  from '@/app/(trading)/context/OrdersContext';
 
-//import  TradeMenu from "@/components/TradeMenu";
 
 const Trading = ({ children }) => {
     return (

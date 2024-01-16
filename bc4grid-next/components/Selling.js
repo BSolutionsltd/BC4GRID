@@ -104,6 +104,7 @@ const OfferApproval = ({ children, offers, onFinalize, onDiscard }) => {
             <Table.Body>
               {displayedOffers.map((offer) => (
                 <OffersRow
+                key={offer.id}
                   offer = {offer}
                   onFinalize={onFinalize}
                   onDiscard={onDiscard}

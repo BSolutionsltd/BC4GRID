@@ -210,7 +210,7 @@ useEffect(() => {
         <Table.HeaderCell
           onClick={() => onSort('Total Price')}
         >
-          Valid until {sortColumn === 'totalPrice' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
+          Total price {sortColumn === 'totalPrice' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
         </Table.HeaderCell>        
           </Table.Row>
         </Table.Header>

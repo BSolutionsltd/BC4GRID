@@ -33,14 +33,14 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Provider session={session}>
-        <Container  >
+        <Provider session={session}>        
           <EthExplorerProvider>
+          <Container  >
             <Header />        
               {children}        
             <Footer />          
-        </EthExplorerProvider>        
-        </Container>        
+            </Container>        
+        </EthExplorerProvider>
         </Provider>
         <ScrollToTopButton />
         </body>

@@ -34,7 +34,7 @@ class EthereumExplorer {
     /**
      * Initialize Web3.js
      */
-    async bootWeb3() {
+    async bootWeb3(userAddress) {
         let web3Provider = null;
       
         if (typeof window !== 'undefined') {
@@ -42,12 +42,20 @@ class EthereumExplorer {
             // Modern dapp browsers...
             web3Provider = window.ethereum;
       
-            try {
-              // Request account access
-              await window.ethereum.request({ method: 'eth_requestAccounts' });             
-            } catch (error) {
-              // User denied account access...
-              throw error;
+            let accounts = await this.getConnectedAccounts(userAddress);
+            if (accounts.length === 0) {
+                try{
+                    // Request account access
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    accounts = await this.getConnectedAccounts();
+                } catch (error) {
+                    // User denied account access
+                    throw error;
+                }
+            }
+            const accountsUpperCase = accounts.map(account => account.toUpperCase());
+            if(!accountsUpperCase.includes(userAddress.toUpperCase())) {
+                throw new Error(`Please ensure that the account ${userAddress} is added to your MetaMask wallet and connected to the dApp`);
             }
           } else if (window.web3) {
             // Legacy dapp browsers...
@@ -55,13 +63,21 @@ class EthereumExplorer {
           } else {
             // If no injected web3 instance is detected, fall back to Sepolia testnet
             web3Provider = new Web3.providers.HttpProvider('https://sepolia.gateway.tenderly.co');
+            console.log('Using Sepolia!!!');
           }
-          this.web3 = new Web3(web3Provider);
+          
         } else {
           throw new Error('Non-Ethereum browser detected. You should consider trying MetaMask!');
         }
-       
-      }
+        this.web3 = new Web3(web3Provider);
+        this.userAccount = userAddress;
+    }
+
+    async getConnectedAccounts() {
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        return accounts;
+    }
+    
 
     /**
      * Load into the EthereumExplorer object all the details of a smart contract.
@@ -365,11 +381,13 @@ class EthereumExplorer {
      * @return  {string}  The user's wallet address.
      */
     async getUserAccount() {
-        if (this.userAccount) return this.userAccount;
+        // if (this.userAccount) return this.userAccount;
 
-        const accounts = await this.web3.eth.getAccounts();
+        // const accounts = await this.web3.eth.getAccounts();
 
-        this.userAccount = accounts[0];
+        // this.userAccount = accounts[0];
+
+        // console.log('User account: ' + this.userAccount);
 
         return this.userAccount;
     }
@@ -410,7 +428,7 @@ class bc4Grid extends EthereumExplorer {
 
         console.log('Calling bc4grid contructor');
         super();
-        this.subscriptions = {};
+        this.subscriptions = {};        
     }
 
     async createEnergyOffer(energyAmount, validUntil, pricePerEnergyAmount) {
@@ -699,7 +717,8 @@ class bc4Grid extends EthereumExplorer {
         return tokenDispenserContract.methods.SendEnergy(energyAmount).send(options)
             .on('transactionHash', transactionHash => console.log('Transaction Hash:', transactionHash))
             .on('receipt', receipt => console.log('Transaction Receipt:', receipt))
-            .on('error', error => console.error('Transaction Error:', error));
+            .on('error', error => console.error('Transaction Error:', error))
+            .then(receipt => receipt); // Return the receipt when the Promise is resolved
     }
       
     // event handler
@@ -859,10 +878,16 @@ class bc4Grid extends EthereumExplorer {
     }
 }
 
-async function bc4grid() {
+async function bc4grid(userAddress = '0x38767fba4a43C0D61b8B701FbE3E6B217990E67F') {
     const ethExplorer = new bc4Grid();
-    await ethExplorer.bootWeb3();
-  
+    // try {
+    //     await ethExplorer.bootWeb3(userAddress);
+    //   } catch (error) {
+    //     console.error("Failed to boot Web3: ", error);
+    //     return null;
+    //   }
+    await ethExplorer.bootWeb3(userAddress);
+
     // Load contracts directly using the imported JSON files
     await ethExplorer.loadContractFromJson(TokenDispenser, 'TokenDispenser');
     await ethExplorer.loadContractFromJson(Trading, 'Trading');
