@@ -11,6 +11,7 @@ from sqlalchemy import Time, cast
 from psycopg2.errors import UniqueViolation
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:bc4grid@localhost/smart-meter-collector"
+from flask import jsonify
 
 db = SQLAlchemy(app)
 cors = CORS(app)
@@ -22,6 +23,14 @@ if not database_exists(engine.url):
     create_database(engine.url)
 
 Base.metadata.create_all(engine)
+
+
+def row2dict(row):
+    d = {}
+    for column in row.__table__.columns:
+        d[column.name] = str(getattr(row, column.name))
+
+    return d
 
 def formatUserData(user: User):
     return {
@@ -99,6 +108,18 @@ def userBalance(id):
             'total_production': d.total_production
         } for d in userdata
     ]
+
+@app.route('/api/v1/smartmeter/<id>', methods = ['GET'])
+def smartMeterData(id):
+    
+    from_time = request.args.get('from')
+    to_time = request.args.get('to')
+
+    smartmeterdata = db.session.query(SmartMeterData).filter(SmartMeterData.smartmeter_id == id,cast(SmartMeterData.time, Time) >= cast(datetime.strptime(from_time,'%Y-%m-%d %H:%M:%S'),Time),cast(SmartMeterData.time, Time) <= cast(datetime.strptime(to_time,'%Y-%m-%d %H:%M:%S'),Time)).all()
+
+    return [formatSmartMeterData(d) for d in smartmeterdata], 200
+
+
 
 @app.route('/api/v1/user', methods=['POST'])
 def addUser():

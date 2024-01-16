@@ -36,3 +36,6 @@ Content-Type: application/json
 
 GET http://localhost:5000/api/v1/smartmeter/1/balance?from=2024-01-04 08:45:00&to=2024-01-04 09:00:00 HTTP/1.1
 Content-Type: application/json
+
+GET http://localhost:5000/api/v1/smartmeter/1?from=2024-01-04 08:45:00&to=2024-01-04 09:00:00 HTTP/1.1
+Content-Type: application/json
