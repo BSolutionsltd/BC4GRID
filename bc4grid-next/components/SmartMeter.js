@@ -1,17 +1,21 @@
 import React, { useState, useEffect, useContext } from 'react';
 
+// layout components
 import { Grid, Item, Icon, Header, Segment, Statistic } from 'semantic-ui-react';
 
-import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
+// global contexts
+import { useEnergyData } from '@/app/energy/context/EnergyDataProvider';
 
-import EnergyGraph from '@/components/EnergyGraph';
+// energy monitor component
+import EnergyMonitor from '@/components/EnergyMonitor';
+import EnergyTokenizer from '@/components/EnergyTokenizer';
+
 
 
 function SmartMeter() {
 
-  const refreshInterval = 1 * 60 * 1000; // 1 minute
-
-  const { ethExplorer } = useEthExplorer();
+  const [ dataPoints, setDataPoints ] = useEnergyData();
+  
   const [meter, setMeter] = useState({});
   const [data, setData] = useState({});
   const [timestamp, setTimestamp] = useState('');
@@ -26,38 +30,14 @@ function SmartMeter() {
   }, []);
 
   useEffect(() => {
-    const fetchData = () => {
-      const now = new Date();
-      setTimestamp(now.toISOString());
+    if (dataPoints) setData(dataPoints[dataPoints.length - 1]);
+  }, [dataPoints]);
 
-      fetch('/api/auth/smart-meter/balance')
-        .then(response => response.json())
-        .then(data => {
-          console.log('smart-meter data:', data);
-          setData(data);
-        } );
-        console.log('fetching data: ', data);
-    };
-
-    fetchData();
   
-    
-    const intervalId = setInterval(fetchData, refreshInterval);
-    return () => clearInterval(intervalId);
-  }, []);
-
-  // send energy to blockchain
-  useEffect(() => {
-    if (data && data.total_production != null) {
-      // Convert to a whole number by multiplying by 10^18 (similar to how Ether is converted to Wei in Ethereum)
-      const totalProductionWatts = BigInt(Math.round(data.total_production * 1000));
-      ethExplorer.sendEnergy(totalProductionWatts);
-    }
-  }, [data && data.total_production]);
 
   return (
     <>
-      <Header as='h2' attached='top'> Smart Meters </Header>
+      <Header as='h2' attached='top'> Smart Meter </Header>
       <Segment attached>
         <Grid columns={2} divided>
           <Grid.Row>
@@ -78,21 +58,26 @@ function SmartMeter() {
               </Item.Group>
             </Grid.Column>
             <Grid.Column  textAlign='center' verticalAlign='middle'>
-               <Statistic size='tiny'>                
+               <Statistic size='tiny' color='green'>                
                 <Statistic.Label>Production</Statistic.Label>
-                <Statistic.Value>{data.total_consumption ? `${(data.total_production).toFixed(2)}  KWh` : 'N/A'}</Statistic.Value>
+                <Statistic.Value>{data?.total_consumption ? `${(data.total_production).toFixed(2)}  KWh` : 'N/A'}</Statistic.Value>
               </Statistic>
-              <Statistic size='tiny'>
+              <Statistic size='tiny' color='red'>
                 <Statistic.Label>Consumption</Statistic.Label>
-                <Statistic.Value>{data.total_consumption ? `${(data.total_consumption).toFixed(2)}  KWh` : 'N/A'}</Statistic.Value>
+                <Statistic.Value>{data?.total_consumption ? `${(data.total_consumption).toFixed(2)}  KWh` : 'N/A'}</Statistic.Value>
               </Statistic>
-              <p>last update: {new Date(timestamp).toLocaleString()}</p>
+              <p>last update: {new Date(data?.timestamp).toLocaleString()}</p>
             </Grid.Column>
           </Grid.Row>
         </Grid>       
       </Segment>
+
+      <Segment>
+        <EnergyTokenizer />
+      </Segment>
+
       <Segment style = {{marginBottom: '20vh' }}>
-      <EnergyGraph />
+      <EnergyMonitor />
       </Segment>    
 
     </>

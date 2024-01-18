@@ -11,6 +11,9 @@ import { authOptions } from './api/auth/[...nextauth]/route';
 // context manager for ethereum
 import { EthExplorerProvider } from "@/app/web3/context/ethExplorerContext";
 
+// context manager for energy data
+import { EnergyDataProvider } from "@/app/energy/context/EnergyDataProvider";
+
 
 // components
 import { Container }  from 'semantic-ui-react';
@@ -35,11 +38,13 @@ export default async function RootLayout({ children }) {
       <body className={inter.className}>
         <Provider session={session}>        
           <EthExplorerProvider>
-          <Container  >
-            <Header />        
-              {children}        
-            <Footer />          
-            </Container>        
+            <EnergyDataProvider>
+              <Container  >
+                <Header />        
+                  {children}        
+                <Footer />          
+                </Container> 
+              </EnergyDataProvider>
         </EthExplorerProvider>
         </Provider>
         <ScrollToTopButton />

@@ -1,57 +1,29 @@
+
 // API endpoint for user login
 
-
 // import prisma client
+import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
+
 export async function GET(req) {
+
+
+  async function getAccumulatedData(req) { 
+    let id = req.nextUrl.searchParams.get('userId');    
+    const profile = await prisma.user.findUnique({
+      where : {id}
+    }) 
   
-  function formatDateTime(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  }
-
-  try {
-    async function getProsumerData(userId,delta=1) {
-      const url = new URL(`http://localhost:5000/api/v1/smartmeter/${userId}/balance`);
-      const endTime = new Date();
-      const startTime = new Date(endTime.getTime() - delta * 60 * 1000);
-      
-      
-      url.searchParams.append("from", formatDateTime(startTime));
-      url.searchParams.append("to", formatDateTime(endTime));
-
-      
-      const res = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-
-      if (!res.ok) {
-        // This will activate the closest `error.js` Error Boundary
-        throw new Error('Failed to fetch data');
-      }
-
-      const data = await res.json();
-
-      console.log('data: ', data);
-
-      return NextResponse.json(data[0], { status: 200 });
+    try {
+    return NextResponse.json({ profile }, { status: 200 }); // Use 200 for available resources
+    } catch (error) {
+      console.error(error);
+      return NextResponse.json({ message: "Failed to fetch profile data" }, {status: 500});
     }
-    const userId = 1;
-    const prosumerData = await getProsumerData(userId);    
-    return prosumerData;
-    
-  } catch (error) {
-    console.error(error);
-    // Return an error response
-    return NextResponse.json({ message: "Failed to fetch smartmeter balance" }, { status: 500 });
   }
+  
+  return await getAccumulatedData(req);
 }
+
+

@@ -36,7 +36,7 @@ const User = () => {
     <div ref={sidebarRef}>
       {session ? (
         <div style={{ float: 'right' }}>
-          <span style={{ marginRight: '10px' }}>Hello, <strong>{session.user.name}</strong></span>
+          <span style={{ marginRight: '10px' }}><strong>{session.user.name}</strong></span>
           <Image
             avatar
             size="mini"
