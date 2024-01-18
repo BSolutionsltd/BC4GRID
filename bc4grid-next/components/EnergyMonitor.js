@@ -83,7 +83,7 @@ function EnergyGraph() {
     <div>
        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <Header as='h3'>Energy Production and Consumption</Header>
-      <Button onClick={() => setDataPoints([])}>Clear</Button>
+      <Button basic icon='trash' onClick={() => setDataPoints([])} />
     </div>
       <Line data={chartData} options={options} />
     </div>

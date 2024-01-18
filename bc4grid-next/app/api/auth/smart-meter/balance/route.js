@@ -23,8 +23,6 @@ async function getAccumulatedData(req) {
       return new NextResponse().json({ message: "User not found" }).status(404);
     }
 
-    console.log('++++++  data: ', data)
-
     // Generate the current timestamp
     const timestamp = new Date().toISOString();
     const payload = {
@@ -46,20 +44,22 @@ async function updateAccumulatedEnergy(req) {
   const body = await req.json();
   const { userId, accumulatedEnergy } = body;
  
+  console.log('userId: ', userId);
+  console.log('accumulatedEnergy: ', accumulatedEnergy);
 
   if (!userId || accumulatedEnergy === undefined) {
-    return new NextResponse().json({ message: "Invalid inputs" }).status(400);
+    return NextResponse.json({ message: "Invalid inputs" }, {status : 400});
   }
 
   try {
-    const updatedUser = await prisma.user.update({
+    const data = await prisma.user.update({
       where: { id: userId },
       data: { accumulatedEnergy: accumulatedEnergy }
     });
 
-    return new NextResponse().json(updatedUser).status(200);
+    return NextResponse.json(data, {status: 200});
   } catch (error) {
     console.error(error);
-    return new NextResponse().json({ message: "Failed to update energy" }).status(500);
+    return NextResponse.json({ message: "Failed to update energy" }, {status : 500});
   }
 }

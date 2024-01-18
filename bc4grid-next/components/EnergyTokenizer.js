@@ -3,7 +3,7 @@ import { useEnergyData } from '@/app/energy/context/EnergyDataProvider';
 
 import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
 import { useSession } from 'next-auth/react';
-import { Grid, Header, Segment, Statistic, Button } from 'semantic-ui-react';
+import { Grid, Icon, Segment, Statistic, Button, ButtonContent } from 'semantic-ui-react';
 
 function EnergyTokenizer() {
 
@@ -18,12 +18,10 @@ function EnergyTokenizer() {
  useEffect(() => {
   const fetchData = async () => {
     if (session) {
-      const userId = session.user.id; // Assuming the user object has an id property
-      console.log('session user id: ', session.user.id);
+      const userId = session.user.id; // Assuming the user object has an id property      
       fetch(`/api/auth/smart-meter/balance?userId=${userId}`)
       .then(response => response.json())
-      .then(data => {
-        console.log('data: ', data);
+      .then(data => {        
         setAccumulatedData(data.accumulatedEnergy);
       })
     }
@@ -34,16 +32,14 @@ function EnergyTokenizer() {
 , [session]);
 
   useEffect(() => {
-    console.log('dataPoints: ', dataPoints);
-    // Accumulate the data points
     
+    // Accumulate the data points    
     const accumulatedValue = dataPoints.reduce((accumulator, dataPoint) => accumulator + dataPoint.total_production, 0);
-
-    console.log('accumulatedValue: ', accumulatedValue);
+    
     setAccumulatedData(accumulatedValue); 
     
     // Update accumulated energy in the database
-    fetch('/api/auth/balance', {
+    fetch('/api/auth/smart-meter/balance', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -74,7 +70,7 @@ function EnergyTokenizer() {
     ethExplorer.sendEnergy(totalProductionWatts)
       .then((receipt) => {
         // Update accumulated energy in the database
-        fetch('/api/auth/balance', {
+        fetch('/api/auth/smart-meter/balance', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -85,7 +81,7 @@ function EnergyTokenizer() {
           }),
         })
         .then(response => response.json())
-        .then(data => {
+        .then(data => {          
           setAccumulatedData(0);
           setLoading(false); // Set loading state to false when sendEnergy returns receipt
         })
@@ -114,8 +110,11 @@ function EnergyTokenizer() {
             </Grid.Column>
             <Grid.Column>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <Button onClick={handleTokenize} color='blue' loading={loading} disabled={! (accumulatedData > 0)}>
-                  Tokenize
+                 <Button animated onClick={handleTokenize} color='blue' loading={loading} >
+                <ButtonContent visible>Tokenize</ButtonContent>
+                <ButtonContent hidden>
+                <Icon name='bitcoin' />
+              </ButtonContent>
                 </Button>
               </div>
             </Grid.Column>
