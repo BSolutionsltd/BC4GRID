@@ -13,9 +13,7 @@ export async function GET(req) {
       const url = new URL(`http://localhost:5000/api/v1/smartmeter/${userId}/balance`);
       
       url.searchParams.append("from", from);
-      url.searchParams.append("to", to);
-
-      console.log('url on server: ', url);
+      url.searchParams.append("to", to);      
 
       const res = await fetch(url, {
         method: "GET",
@@ -31,8 +29,7 @@ export async function GET(req) {
 
       const data = await res.json();
 
-      console.log('data: ', data);
-
+      
       return NextResponse.json(data[0], { status: 200 });
     }
     const userId = 1;

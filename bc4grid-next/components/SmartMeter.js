@@ -37,8 +37,7 @@ function SmartMeter() {
 
   return (
     <>
-      <Header as='h2' attached='top'> Smart Meter </Header>
-      <Segment attached>
+       <Segment attached>
         <Grid columns={2} divided>
           <Grid.Row>
             <Grid.Column>
