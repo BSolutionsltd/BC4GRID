@@ -59,12 +59,14 @@ const Market = ( { isBuyPage } ) => {
   const router = useRouter()
   
   // use ethExplorer
-  const { ethExplorer, setEthExplorer } = useEthExplorer();
+  const { ethExplorer, setEthExplorer } = useEthExplorer();  
   const { selectedOrders, setSelectedOrders } = useSelectedOrders();
 
   // errors
   const [error, setError] = useState(null);
  
+  // my account
+  const [account, setAccount] = useState([]);
     
   // offer status
   const [offerStatus, setOfferStatus] = useState({});  
@@ -195,9 +197,30 @@ useEventSubscription('OfferModified', (event) => {
   }, 2000);
 });
 
+  useEffect(() => { 
+    if (ethExplorer) {
+      // Fetch the account address from the smart contract
+      const fetchAccount = async () => {
+        try {
+          const fetchedAccount = await ethExplorer.getUserAccount();
+          setAccount(fetchedAccount);
+          console.log('Fetched account: ', fetchedAccount) ;
+
+          
+        } catch (error) {
+          console.error('Error fetching account:', error);
+        }       
+      };
+      fetchAccount();
+    }
+  }, [ethExplorer]);
+
+  
 
   // Fetch offer details from the smart contract
   useEffect(() => {
+
+    console.log('My account: ', account)
     const fetchOffers = async () => {
       try {
         const offerDetails = await ethExplorer.getAllOfferDetails();
@@ -384,7 +407,8 @@ useEventSubscription('OfferModified', (event) => {
               {isBuyPage ? (
                 <Table.Cell>
                   <Checkbox 
-                    checked={selectedItems.some((selectedItem) => selectedItem.key === item.key)}
+                    checked={selectedItems.some((selectedItem) => selectedItem.key === item.key)}                    
+                    disabled={item.account === account}
                     onChange={(e, { checked }) => handleCheckboxChange(item, checked)}
                   />
                 </Table.Cell>

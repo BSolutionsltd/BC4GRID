@@ -32,8 +32,7 @@ function SmartMeter() {
   useEffect(() => {
     if (dataPoints) setData(dataPoints[dataPoints.length - 1]);
   }, [dataPoints]);
-
-  
+ 
 
   return (
     <>
