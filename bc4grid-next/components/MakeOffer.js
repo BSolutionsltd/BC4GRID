@@ -24,7 +24,7 @@ const MakeOffer = ({ trigger, onCreateOffer }) => {
     const handleSubmit = (event) => {
       event.preventDefault();
   
-      //console.log('Values: ', energyAmount, validUntil, pricePerEnergyAmount);
+      console.log('Values: ', energyAmount, validUntil, pricePerEnergyAmount);
   
       const validateOffer = (...values) => {
           return values.every(value => value !== '');

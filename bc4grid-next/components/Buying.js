@@ -1,6 +1,5 @@
 "use client";
 
-import localforage from 'localforage';
 import React, { useEffect, useState } from 'react';
 
 

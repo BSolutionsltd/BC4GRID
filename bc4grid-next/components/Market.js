@@ -219,8 +219,7 @@ useEventSubscription('OfferModified', (event) => {
 
   // Fetch offer details from the smart contract
   useEffect(() => {
-
-    console.log('My account: ', account)
+    
     const fetchOffers = async () => {
       try {
         const offerDetails = await ethExplorer.getAllOfferDetails();
@@ -237,7 +236,7 @@ useEventSubscription('OfferModified', (event) => {
             account: web3.utils.toChecksumAddress(offer.sellerAddress),
             amount: Number(offer.energyAmount),
             pricePerUnit: Number(offer.pricePerEnergyAmount),
-            validUntil: new Date(Number(offer.validUntil) * 1000).toLocaleDateString(),
+            validUntil: new Date(Number(offer.validUntil) * 1000).toLocaleString(),
             totalPrice: Number(offer.energyAmount) * Number(offer.pricePerEnergyAmount),            
           };
 

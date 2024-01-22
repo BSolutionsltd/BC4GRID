@@ -129,7 +129,7 @@ const Offers = (  ) => {
       account: web3.utils.toChecksumAddress(offer.seller),
       amount: Number(offer.energyAmount),
       pricePerUnit: Number(offer.pricePerEnergyAmount),
-      validUntil: new Date(Number(offer.validUntil) * 1000).toLocaleDateString(),
+      validUntil: new Date(Number(offer.validUntil) * 1000).toLocaleString(),
       totalPrice: Number(offer.energyAmount) * Number(offer.pricePerEnergyAmount),
     };
   };
@@ -172,13 +172,15 @@ useEffect(() => {
           account: web3.utils.toChecksumAddress(offer.sellerAddress),
           amount: Number(offer.energyAmount),
           pricePerUnit: Number(offer.pricePerEnergyAmount),
-          validUntil: new Date(Number(offer.validUntil) * 1000).toLocaleDateString(),
+          validUntil: new Date(Number(offer.validUntil) * 1000).toLocaleString(),
           totalPrice: Number(offer.energyAmount) * Number(offer.pricePerEnergyAmount),
         };
 
         if (transformedOffer.account === fetchedAccount) {
           transformedData.push(transformedOffer);
         }
+
+        console.log('transformedOffer: ', transformedOffer);
       }
       setData(transformedData);
       
