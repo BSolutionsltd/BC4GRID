@@ -479,11 +479,19 @@ class bc4Grid extends EthereumExplorer {
             from: fromAddress,
             gas: 3000000 // Set an appropriate gas limit for the transaction
         };
+
+        console.log('params: ', offerId, validUntil, pricePerEnergyAmount, energyAmount);
     
         return new Promise((resolve, reject) => {
             let result = {};
         // Call the ModifyOffer method from the Trading contract
-        return tradingContract.methods.ModifyOffer(offerId, validUntil, pricePerEnergyAmount, energyAmount).send(options)
+        return tradingContract.methods.ModifyOffer(
+            offerId,
+            fromAddress, 
+            validUntil, 
+            pricePerEnergyAmount, 
+            energyAmount)
+        .send(options)
         .on('transactionHash', transactionHash => {
             //console.log('Transaction Hash:', transactionHash);
             result.transactionHash = transactionHash;

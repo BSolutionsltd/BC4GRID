@@ -87,7 +87,7 @@ const Market = ( { isBuyPage } ) => {
       case 'MODIFY_OFFER':
         return state.map((offer) => 
           offer.key === action.offer.key ? action.offer : offer
-        );
+        );        
       default:
         throw new Error(`Unhandled action type: ${action.type}`);
     }
@@ -122,12 +122,13 @@ const Market = ( { isBuyPage } ) => {
   // Function to transform and filter offer data
   const transformAndFilterData = (offer) => {
     
+    console.log('Offer to be transformed: ', offer);
     return {
       key: Number(offer.id),
       account: web3.utils.toChecksumAddress(offer.seller),
       amount: Number(offer.energyAmount),
       pricePerUnit: Number(offer.pricePerEnergyAmount),
-      validUntil: new Date(Number(offer.validUntil) * 1000).toLocaleDateString(),
+      validUntil: new Date(Number(offer.validUntil) * 1000).toLocaleString(),
       totalPrice: Number(offer.energyAmount) * Number(offer.pricePerEnergyAmount),
     };
   };
@@ -177,6 +178,9 @@ useEventSubscription('OfferClosed', (event) => {
 
 useEventSubscription('OfferModified', (event) => {
   const modifiedOffer = event.returnValues;
+
+  console.log('Modified offer: ', modifiedOffer);
+
   const transformedOffer = transformAndFilterData(modifiedOffer);
 
   // Dispatch an action to modify the offer
@@ -197,6 +201,7 @@ useEventSubscription('OfferModified', (event) => {
   }, 2000);
 });
 
+
   useEffect(() => { 
     if (ethExplorer) {
       // Fetch the account address from the smart contract
@@ -214,7 +219,6 @@ useEventSubscription('OfferModified', (event) => {
       fetchAccount();
     }
   }, [ethExplorer]);
-
   
 
   // Fetch offer details from the smart contract
@@ -222,14 +226,10 @@ useEventSubscription('OfferModified', (event) => {
     
     const fetchOffers = async () => {
       try {
-        const offerDetails = await ethExplorer.getAllOfferDetails();
-        // Transform the offer details to match the expected data structure
-        let transformedData = [];
+        const offers = await ethExplorer.getAllOfferDetails();
+        // Transform the offer details to match the expected data structure            
 
-        //console.log('offerDetails: ', offerDetails);
-        
-
-        for (const offer of offerDetails) {
+        for (const offer of offers) {
           // Convert the energy amount and price per energy amount to BigInt        
           const newOffer = {
             key: Number(offer.offerId),
@@ -242,15 +242,14 @@ useEventSubscription('OfferModified', (event) => {
 
           dispatch({ type: 'ADD_OFFER', offer: newOffer });          
         }
-        //setData(transformedData);
-
-        //console.log('All Offers: ', transformedData);
+        
       } catch (error) {
         console.error('Error fetching offer details:', error);
       }
     };
 
     fetchOffers();
+
   }, [ethExplorer]);
 
 

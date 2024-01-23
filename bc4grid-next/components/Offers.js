@@ -20,6 +20,7 @@ import useEventSubscription from "@/app/web3/subscriptions/eventSubscription";
 import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
 
 
+
 const Offers = (  ) => {  
   // style
   const flashAnimation = `
@@ -43,7 +44,7 @@ const Offers = (  ) => {
  `;
 
   // use ethExplorer
-  const { ethExplorer, setEthExplorer } = useEthExplorer();
+  const { ethExplorer, setEthExplorer } = useEthExplorer();  
   const [error, setError] = useState(null);  
  
   // market data
@@ -79,11 +80,11 @@ const Offers = (  ) => {
   };
 
   const handleUpdateOffer = async (event) => {
-    event.preventDefault();
-    // Update the offer here        
-    
+    event.preventDefault();        
     // Close the modal
     setOpen(false);
+
+    console.log('selectedOffer: ', selectedOffer);
 
     const response = await ethExplorer.modifyOffer(
       selectedOffer.key,
@@ -134,36 +135,40 @@ const Offers = (  ) => {
     };
   };
   
-  useEventSubscription('OfferCreated', (event) => {
-    const newOffer = event.returnValues;
-    const transformedOffer = transformAndFilterData(newOffer);
-    // Update the state with the new offer after transforming and filtering
-    setData((prevData) => [...prevData, transformedOffer]);
-    // Set the new offer ID to highlight the row
-    setNewOfferId(transformedOffer.key);
-    // Set a timeout to remove the highlight after 2 seconds
-    setTimeout(() => {
-      setNewOfferId(null);
-    }, 2000);
+  useEventSubscription('OfferCreated', async (event) => {
+    const newOffer = event.returnValues;        
+    const account = await ethExplorer.getUserAccount();
+    if (newOffer.seller === account) {
+      const transformedOffer = transformAndFilterData(newOffer);
+      // Update the state with the new offer after transforming and filtering
+      setData((prevData) => [...prevData, transformedOffer]);
+      // Set the new offer ID to highlight the row
+      setNewOfferId(transformedOffer.key);
+      // Set a timeout to remove the highlight after 2 seconds
+      setTimeout(() => {
+        setNewOfferId(null);
+      }, 2000);
+  }
   });
 
-  useEventSubscription('OfferClosed', (event) => {
+  useEventSubscription('OfferClosed', async (event) => {
     const closedOffer = event.returnValues;
-    const transformedOffer = transformAndFilterData(closedOffer);
-    setRemovedOfferIds((prevKeys) => [...prevKeys, transformedOffer.key]);
-  });
+    const account = await ethExplorer.getUserAccount();
+    if (closedOffer.seller === account) {
+      const transformedOffer = transformAndFilterData(closedOffer);
+      setRemovedOfferIds((prevKeys) => [...prevKeys, transformedOffer.key]);
+    }
+  });      
 
+  
   // Fetch offer details from the smart contract
 useEffect(() => {
   const fetchOffers = async () => {
     try {
       const offerDetails = await ethExplorer.getAllOfferDetails();
-      const fetchedAccount = await ethExplorer.getUserAccount();
+      const fetchedAccount = await ethExplorer.getUserAccount();      
       // Transform the offer details to match the expected data structure
-      let transformedData = [];
-
-      //console.log('offerDetails: ', offerDetails);
-      
+      let transformedData = [];           
 
       for (const offer of offerDetails) {
         // Convert the energy amount and price per energy amount to BigInt        
@@ -179,18 +184,14 @@ useEffect(() => {
         if (transformedOffer.account === fetchedAccount) {
           transformedData.push(transformedOffer);
         }
-
-        console.log('transformedOffer: ', transformedOffer);
+        
       }
-      setData(transformedData);
+      setData(transformedData);     
       
-
-      //console.log('All Offers: ', transformedData);
     } catch (error) {
       console.error('Error fetching offer details:', error);
     }
   };
-
   fetchOffers();
 }, []);
   

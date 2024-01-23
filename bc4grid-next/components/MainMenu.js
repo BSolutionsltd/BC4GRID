@@ -8,10 +8,20 @@ const MainMenu = () => {
   const { data: session } = useSession();
   
   const [menuVisible, setMenuVisible] = useState(false);
+  const [activeItem, setActiveItem] = useState(null); 
+  
   const sidebarRef = useRef(null);
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
+  };
+
+  const handleMouseEnter = (name) => {
+    setActiveItem(name);
+  };
+
+  const handleMouseLeave = () => {
+    setActiveItem(null);
   };
 
   useEffect(() => {
@@ -49,20 +59,40 @@ const MainMenu = () => {
         {session ? (
           <>
             <Link href="/dashboard" passHref>
-              <Menu.Item name="trading" />
+              <Menu.Item 
+                name="trading" 
+                active={activeItem === 'trading'}
+                onMouseEnter={() => handleMouseEnter('trading')}
+                onMouseLeave={handleMouseLeave}              
+              />
             </Link>
             <Link href="/history" passHref>
-              <Menu.Item  name="history" />
+            <Menu.Item 
+                name="history" 
+                active={activeItem === 'history'}
+                onMouseEnter={() => handleMouseEnter('history')}
+                onMouseLeave={handleMouseLeave}              
+              />
             </Link>
             <Link href="/statistics" passHref>
-              <Menu.Item name="statistics" />
+            <Menu.Item 
+                name="statistics" 
+                active={activeItem === 'statistics'}
+                onMouseEnter={() => handleMouseEnter('statistics')}
+                onMouseLeave={handleMouseLeave}              
+              />
             </Link>
           </>
-        ) : (
-          <Link href="/about" passHref>
-            <Menu.Item  name="about">About</Menu.Item>
+        ) : (null)}
+
+      <Link href="/about" passHref>
+            <Menu.Item 
+                name="about" 
+                active={activeItem === 'about'}
+                onMouseEnter={() => handleMouseEnter('about')}
+                onMouseLeave={handleMouseLeave}              
+              />
           </Link>
-        )}
       </Sidebar>
     </div>
   );

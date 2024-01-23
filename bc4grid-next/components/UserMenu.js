@@ -12,11 +12,24 @@ import { useSession, signOut } from 'next-auth/react';
 const User = () => {
   const [menuVisible, setMenuVisible] = useState(false);
   const sidebarRef = useRef(null);
+
+  // session management
   const { data: session } = useSession();
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
   };
+
+  const [activeItem, setActiveItem] = useState(null);
+
+  const handleMouseEnter = (name) => {
+    setActiveItem(name);
+  };
+
+  const handleMouseLeave = () => {
+    setActiveItem(null);
+  };
+
 
   useEffect(() => {
     const closeSidebar = (event) => {
@@ -68,24 +81,44 @@ const User = () => {
         {session ? (
           <>
             <Link href="/auth/profile" passHref>
-              <Menu.Item name="profile" />
+            <Menu.Item
+                name="profile"
+                active={activeItem === 'profile'}
+                onMouseEnter={() => handleMouseEnter('profile')}
+                onMouseLeave={handleMouseLeave}
+              />
             </Link>
             {/* Conditionally render the Administration menu item */}
             {session.user.isAdmin && (
-              <Link href="/auth/admin" passHref>
-                <Menu.Item name="administration" />
-              </Link>
+               <Link href="/auth/admin" passHref>
+               <Menu.Item
+                 name="administration"
+                 active={activeItem === 'administration'}
+                 onMouseEnter={() => handleMouseEnter('administration')}
+                 onMouseLeave={handleMouseLeave}
+               />
+             </Link>
             )}
             <Menu.Item name="logout" onClick={() => signOut({ callbackUrl: '/' })} />
           </>
         ) : (
           <>
             <Link href="/auth/login" passHref>
-              <Menu.Item name="login" />
+              <Menu.Item
+                name="login"
+                active={activeItem === 'login'}
+                onMouseEnter={() => handleMouseEnter('login')}
+                onMouseLeave={handleMouseLeave}
+              />
             </Link>
             <Link href="/auth/register" passHref>
-              <Menu.Item name="register" />
-            </Link>
+              <Menu.Item
+                name="register"
+                active={activeItem === 'register'}
+                onMouseEnter={() => handleMouseEnter('register')}
+                onMouseLeave={handleMouseLeave}
+              />
+          </Link>
           </>
         )}
       </Sidebar>
