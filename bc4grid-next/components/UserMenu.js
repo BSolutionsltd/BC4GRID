@@ -49,7 +49,7 @@ const User = () => {
     <div ref={sidebarRef}>
       {session ? (
         <div style={{ float: 'right' }}>
-          <span style={{ marginRight: '10px' }}><strong>{session.user.name}</strong></span>
+            <span style={{ marginRight: '10px' }}><strong>{session.user.name || ' '}</strong></span>
           <Image
             avatar
             size="mini"
@@ -60,6 +60,8 @@ const User = () => {
           />
         </div>
       ) : (
+        <div style={{ float: 'right' }}>
+            <span style={{ marginRight: '10px' }}><strong>{' '}</strong></span>
         <Icon
           circular
           size="large"
@@ -67,6 +69,7 @@ const User = () => {
           style={{ cursor: 'pointer' }}
           onClick={toggleMenu}
         />
+        </div>
       )}
 
       <Sidebar

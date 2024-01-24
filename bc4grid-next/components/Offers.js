@@ -209,8 +209,7 @@ const Offers = (  ) => {
       dispatch({ type: 'MODIFY_OFFER', offer: selectedOffer });
 
     if (response.receipt) {      
-      setLoading(prevLoading => ({ ...prevLoading, [selectedOffer.key]: false }));      
-      
+      setLoading(prevLoading => ({ ...prevLoading, [selectedOffer.key]: false }));     
       }
 
     if (response.error) {
