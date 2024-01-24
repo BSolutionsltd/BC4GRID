@@ -23,25 +23,34 @@ import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
 
 const Offers = (  ) => {  
   // style
-  const flashAnimation = `
-   @keyframes addOfferAnimation {
-     0% { background-color: #0E6EB8; }
-     100% { background-color: transparent; }
-   }
+  const highlightAnimation = `
+      @keyframes addOfferAnimation {
+        0% { background-color: #0E6EB8; }
+        100% { background-color: transparent; }
+      }   
 
-   @keyframes closeOfferAnimation {
-    0% { background-color: #B03060; }
-    100% { background-color: transparent; }
-  }
+      @keyframes closeOfferAnimation {
+        0% { background-color: #B03060; }
+        100% { background-color: transparent; }
+      }
 
-   .new-offer {
-     animation: addOfferAnimation 2s; /* Run the animation for 6 seconds */
-   }
+      @keyframes modifyOfferAnimation {
+        0% { background-color: #008080; }
+        100% { background-color: transparent; }
+      }
 
-   .removed-offer {
-    animation: closeOfferAnimation 2s; /* Run the animation for 6 seconds */
-  }
- `;
+      .new-offer {
+        animation: addOfferAnimation 2s; /* Run the animation for 6 seconds */
+      }
+
+      .modified-offer {
+        animation: modifyOfferAnimation 2s; /* Run the animation for 6 seconds */
+      }
+
+      .removed-offer {
+        animation: closeOfferAnimation 2s; /* Run the animation for 6 seconds */
+      }
+    `;
 
   // use ethExplorer
   const { ethExplorer, setEthExplorer } = useEthExplorer();  
@@ -53,6 +62,7 @@ const Offers = (  ) => {
   
   // states for added and removed offers
   const [newOfferId, setNewOfferId] = useState(null);
+  const [modifiedOfferId, setModifiedOfferId] = useState(null);
   const [removedOfferIds, setRemovedOfferIds] = useState([]);
   const [loading, setLoading] = useState([]);
 
@@ -147,6 +157,22 @@ const Offers = (  ) => {
       // Set a timeout to remove the highlight after 2 seconds
       setTimeout(() => {
         setNewOfferId(null);
+      }, 2000);
+  }
+  });
+
+  useEventSubscription('OfferModified', async (event) => {
+    const newOffer = event.returnValues;        
+    const account = await ethExplorer.getUserAccount();
+    if (newOffer.seller === account) {
+      const transformedOffer = transformAndFilterData(newOffer);
+      // Update the state with the new offer after transforming and filtering
+      setData((prevData) => [...prevData, transformedOffer]);
+      // Set the new offer ID to highlight the row
+      setModifiedOfferId(transformedOffer.key);
+      // Set a timeout to remove the highlight after 2 seconds
+      setTimeout(() => {
+        setModifiedOfferId(null);
       }, 2000);
   }
   });
@@ -269,7 +295,7 @@ useEffect(() => {
   return (
     
   <div>
-     <style>{flashAnimation}</style>
+     <style>{highlightAnimation}</style>
       <Segment style={{ marginBottom: '200px', minHeight: '50vh'}}>
         <Header as="h2">Your Offers</Header>
       <Grid>
@@ -331,7 +357,7 @@ useEffect(() => {
           {sortedData.map((item, index) => (
             <Table.Row 
             key={item.key}
-            className={item.key === newOfferId ? 'new-offer' : removedOfferIds.includes(item.key) ? 'removed-offer' : ''}
+            className={item.key === newOfferId ? 'new-offer' : removedOfferIds.includes(item.key) ? 'removed-offer' : item.key === modifiedOfferId ? 'modified-offer' : ''}
           >
               <Table.Cell>{item.key}</Table.Cell>
               <Table.Cell>{item.amount}</Table.Cell>
@@ -357,24 +383,34 @@ useEffect(() => {
                 <Form onSubmit={handleUpdateOffer} >
                 <Form.Field>
                   <label>ID</label>
-                  <input placeholder='ID' defaultValue={selectedOffer?.key} disabled />
+                  <input placeholder='ID' value={selectedOffer?.key} disabled />
                 </Form.Field>
-                  <Form.Field>
-                    <label>Amount</label>
-                    <input placeholder='Amount' defaultValue={selectedOffer?.amount} />
-                  </Form.Field>
-                  <Form.Field>
-                    <label>Price Per Unit</label>
-                    <input placeholder='Price Per Unit' defaultValue={selectedOffer?.pricePerUnit} />
-                  </Form.Field>
-                  <Form.Field>
-                    <label>Valid Until</label>
-                    <input type='datetime-local' placeholder='Valid Until' defaultValue={selectedOffer?.validUntil} />
-                  </Form.Field>
-                  
-                  <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <Button type='submit' primary>Submit</Button>
-                  </div>
+                <Form.Field>
+                  <label>Amount</label>
+                  <input 
+                  placeholder='Amount' 
+                  value={selectedOffer?.amount} 
+                  onChange={(e) => setSelectedOffer({...selectedOffer, amount: e.target.value})} />
+                </Form.Field>
+                <Form.Field>
+                  <label>Price Per Unit</label>
+                  <input 
+                  placeholder='Price Per Unit' 
+                  value={selectedOffer?.pricePerUnit} 
+                  onChange={(e) => setSelectedOffer({...selectedOffer, pricePerUnit: e.target.value})} />
+                </Form.Field>
+                <Form.Field>
+                  <label>Valid Until</label>
+                  <input 
+                  type='datetime-local' 
+                  placeholder='Valid Until' 
+                  value={selectedOffer?.validUntil} 
+                  onChange={(e) => setSelectedOffer({...selectedOffer, validUntil: e.target.value})} />
+                </Form.Field>
+                
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Button type='submit' primary>Submit</Button>
+                </div>
                   
                 </Form>
               </Modal.Content>
