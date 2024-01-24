@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 
 import { 
   Table, 
@@ -57,33 +57,136 @@ const Offers = (  ) => {
   const [error, setError] = useState(null);  
  
   // market data
-  const [data, setData] = useState([]);
+  //const [data, setData] = useState([]);
   // selected items from market
+
+  // offer status
+  const [offerStatus, setOfferStatus] = useState({});  
+
+    // edit offer
+    const [open, setOpen] = useState(false);
+    const [selectedOffer, setSelectedOffer] = useState(null);
   
   // states for added and removed offers
   const [newOfferId, setNewOfferId] = useState(null);
   const [modifiedOfferId, setModifiedOfferId] = useState(null);
   const [removedOfferIds, setRemovedOfferIds] = useState([]);
-  const [loading, setLoading] = useState([]);
+  
+  // state reducer
+  const offerReducer = (state, action) => {
+    switch (action.type) {
+      case 'ADD_OFFER':
+        return state.some((offer) => offer.key === action.offer.key) 
+          ? state 
+          : [...state, action.offer];
+      case 'DELETE_OFFER':
+        return state.filter((offer) => offer.key !== action.key);
+      case 'MODIFY_OFFER':
+        return state.map((offer) => 
+          offer.key === action.offer.key ? action.offer : offer
+        );        
+      default:
+        throw new Error(`Unhandled action type: ${action.type}`);
+    }
+  };    
 
+  // data to maintain
+  const [data, dispatch] = useReducer(offerReducer, []);
+
+  // loading state
+  const [loading, setLoading] = useState([]);
   
   // search state
   const [searchColumn, setSearchColumn] = useState('totalPrice'); // Default search column
-  const [searchQuery, setSearchQuery] = useState('');
-
-
-  // edit offer
-  const [open, setOpen] = useState(false);
-  const [selectedOffer, setSelectedOffer] = useState(null);
-    
+  const [searchQuery, setSearchQuery] = useState('');    
 
   // sorting data
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState(null);
 
+    // handle data
+    const transformAndFilterData = (offer) => {
+    
+      return {
+        key: Number(offer.id),
+        account: web3.utils.toChecksumAddress(offer.seller),
+        amount: Number(offer.energyAmount),
+        pricePerUnit: Number(offer.pricePerEnergyAmount),
+        validUntil: new Date(Number(offer.validUntil) * 1000).toLocaleString(),
+        totalPrice: Number(offer.energyAmount) * Number(offer.pricePerEnergyAmount),
+      };
+    };
 
 
- const handleEditClick = (offer) => {
+    useEventSubscription('OfferCreated', (event) => {
+      const newOffer = event.returnValues;
+      const transformedOffer = transformAndFilterData(newOffer);
+      // Update the state with the new offer after transforming and filtering
+      // Dispatch an action to add the new offer
+      dispatch({ type: 'ADD_OFFER', offer: transformedOffer });
+       // Add the new offer ID to the array
+       // Update the offerStatuses state to indicate that this offer was added
+       setOfferStatus((prevStatus) => ({
+         ...prevStatus,
+         [transformedOffer.key]: 'added',
+       }));
+     
+       // After 2 seconds, remove the offer's ID from offerStatuses
+       setTimeout(() => {
+         setOfferStatus((prevStatus) => {
+           const { [transformedOffer.key]: _, ...rest } = prevStatus;
+           return rest;
+         });
+       }, 2000);
+     });
+  
+  useEventSubscription('OfferClosed', (event) => {
+    const closedOffer = event.returnValues;
+    const transformedOffer = transformAndFilterData(closedOffer);
+  
+    // Update the offerStatuses state to indicate that this offer was closed
+    setOfferStatus((prevStatus) => ({
+      ...prevStatus,
+      [transformedOffer.key]: 'deleted',
+    }));
+  
+    setTimeout(() => {
+      dispatch({ type: 'DELETE_OFFER', key: transformedOffer.key });
+      setOfferStatus((prevStatus) => {
+        const { [transformedOffer.key]: _, ...rest } = prevStatus;
+        return rest;
+      });
+    }, 2000);
+  });
+
+  useEventSubscription('OfferModified', (event) => {
+    const modifiedOffer = event.returnValues;
+  
+    console.log('Modified offer: ', modifiedOffer);
+  
+    const transformedOffer = transformAndFilterData(modifiedOffer);
+  
+    // Dispatch an action to modify the offer
+    dispatch({ type: 'MODIFY_OFFER', offer: transformedOffer });
+  
+    // Update the offerStatuses state to indicate that this offer was modified
+    setOfferStatus((prevStatus) => ({
+      ...prevStatus,
+      [transformedOffer.key]: 'modified',
+    }));
+  
+    // After 2 seconds, remove the offer's ID from offerStatuses
+    setTimeout(() => {
+      setOfferStatus((prevStatus) => {
+        const { [transformedOffer.key]: _, ...rest } = prevStatus;
+        return rest;
+      });
+    }, 2000);
+  });
+
+
+  // handlers
+  const handleEditClick = (offer) => {
     setSelectedOffer(offer);
     setLoading(prevLoading => ({ ...prevLoading, [offer.key]: true }));
     setOpen(true);
@@ -100,8 +203,10 @@ const Offers = (  ) => {
       selectedOffer.key,
       Math.floor(new Date(selectedOffer.validUntil).getTime() / 1000),      
       selectedOffer.pricePerUnit, 
-      selectedOffer.amount);
+      selectedOffer.amount
+      );
 
+      dispatch({ type: 'MODIFY_OFFER', offer: selectedOffer });
 
     if (response.receipt) {      
       setLoading(prevLoading => ({ ...prevLoading, [selectedOffer.key]: false }));      
@@ -132,73 +237,22 @@ const Offers = (  ) => {
       console.error('Error: ', response.error);
     }
   };
-  // handle data
-  const transformAndFilterData = (offer) => {
-    
-    return {
-      key: Number(offer.id),
-      account: web3.utils.toChecksumAddress(offer.seller),
-      amount: Number(offer.energyAmount),
-      pricePerUnit: Number(offer.pricePerEnergyAmount),
-      validUntil: new Date(Number(offer.validUntil) * 1000).toLocaleString(),
-      totalPrice: Number(offer.energyAmount) * Number(offer.pricePerEnergyAmount),
-    };
-  };
+
   
-  useEventSubscription('OfferCreated', async (event) => {
-    const newOffer = event.returnValues;        
-    const account = await ethExplorer.getUserAccount();
-    if (newOffer.seller === account) {
-      const transformedOffer = transformAndFilterData(newOffer);
-      // Update the state with the new offer after transforming and filtering
-      setData((prevData) => [...prevData, transformedOffer]);
-      // Set the new offer ID to highlight the row
-      setNewOfferId(transformedOffer.key);
-      // Set a timeout to remove the highlight after 2 seconds
-      setTimeout(() => {
-        setNewOfferId(null);
-      }, 2000);
-  }
-  });
-
-  useEventSubscription('OfferModified', async (event) => {
-    const newOffer = event.returnValues;        
-    const account = await ethExplorer.getUserAccount();
-    if (newOffer.seller === account) {
-      const transformedOffer = transformAndFilterData(newOffer);
-      // Update the state with the new offer after transforming and filtering
-      setData((prevData) => [...prevData, transformedOffer]);
-      // Set the new offer ID to highlight the row
-      setModifiedOfferId(transformedOffer.key);
-      // Set a timeout to remove the highlight after 2 seconds
-      setTimeout(() => {
-        setModifiedOfferId(null);
-      }, 2000);
-  }
-  });
-
-  useEventSubscription('OfferClosed', async (event) => {
-    const closedOffer = event.returnValues;
-    const account = await ethExplorer.getUserAccount();
-    if (closedOffer.seller === account) {
-      const transformedOffer = transformAndFilterData(closedOffer);
-      setRemovedOfferIds((prevKeys) => [...prevKeys, transformedOffer.key]);
-    }
-  });      
+       
 
   
   // Fetch offer details from the smart contract
 useEffect(() => {
   const fetchOffers = async () => {
     try {
-      const offerDetails = await ethExplorer.getAllOfferDetails();
+      const offers = await ethExplorer.getAllOfferDetails();
       const fetchedAccount = await ethExplorer.getUserAccount();      
       // Transform the offer details to match the expected data structure
-      let transformedData = [];           
-
-      for (const offer of offerDetails) {
+      
+      for (const offer of offers) {
         // Convert the energy amount and price per energy amount to BigInt        
-        const transformedOffer = {
+        const newOffer = {
           key: Number(offer.offerId),
           account: web3.utils.toChecksumAddress(offer.sellerAddress),
           amount: Number(offer.energyAmount),
@@ -207,12 +261,10 @@ useEffect(() => {
           totalPrice: Number(offer.energyAmount) * Number(offer.pricePerEnergyAmount),
         };
 
-        if (transformedOffer.account === fetchedAccount) {
-          transformedData.push(transformedOffer);
-        }
-        
-      }
-      setData(transformedData);     
+        if (newOffer.account === fetchedAccount) {
+          dispatch({ type: 'ADD_OFFER', offer: newOffer });  
+        }        
+    }      
       
     } catch (error) {
       console.error('Error fetching offer details:', error);
@@ -221,17 +273,7 @@ useEffect(() => {
   fetchOffers();
 }, []);
   
-useEffect(() => {
-  if (removedOfferIds.length > 0) {
-    const timer = setTimeout(() => {
-      setData((prevData) => prevData.filter(offer => !removedOfferIds.includes(offer.key)));
-      setRemovedOfferIds([]);
-    }, 2000);
-
-    return () => clearTimeout(timer); // Clean up on unmount or if removedOfferIds changes
-  }
-}, [removedOfferIds, setData, setRemovedOfferIds]);
-   
+  
   // search bar ops
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -256,8 +298,7 @@ useEffect(() => {
     const itemValue = item[searchColumn]?.toString().toLowerCase() || '';
     return itemValue.includes(searchQuery.toLowerCase());
   }) : data;
-
-  
+ 
  
   // sort filtered data
   const onSort = (newSortColumn) => {
@@ -357,7 +398,12 @@ useEffect(() => {
           {sortedData.map((item, index) => (
             <Table.Row 
             key={item.key}
-            className={item.key === newOfferId ? 'new-offer' : removedOfferIds.includes(item.key) ? 'removed-offer' : item.key === modifiedOfferId ? 'modified-offer' : ''}
+            className={
+              offerStatus[item.key] === 'added' ? 'new-offer' :
+              offerStatus[item.key] === 'deleted' ? 'removed-offer' :
+              offerStatus[item.key] === 'modified' ? 'modified-offer' :
+              ''
+            }
           >
               <Table.Cell>{item.key}</Table.Cell>
               <Table.Cell>{item.amount}</Table.Cell>

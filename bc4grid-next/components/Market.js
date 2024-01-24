@@ -118,7 +118,6 @@ const Market = ( { isBuyPage } ) => {
     }
   };
 
-
   // Function to transform and filter offer data
   const transformAndFilterData = (offer) => {
     
