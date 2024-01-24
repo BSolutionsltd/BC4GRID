@@ -486,8 +486,7 @@ class bc4Grid extends EthereumExplorer {
             let result = {};
         // Call the ModifyOffer method from the Trading contract
         return tradingContract.methods.ModifyOffer(
-            offerId,
-            fromAddress, 
+            offerId,            
             validUntil, 
             pricePerEnergyAmount, 
             energyAmount)
