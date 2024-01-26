@@ -4,15 +4,17 @@ import React, { useEffect, useState } from 'react';
 import { Segment, Grid, Header, Statistic } from 'semantic-ui-react';
 
 import web3 from '@/lib/ethereum/web3';
+import {style} from '@/components/ui/style.css.js';
 
 import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
 
 // define component
 const ShowAccount = ({ account }) => {
+  
     
   return (
     <div style={{ wordBreak: 'break-all' }}>
-      <Header as="h3" textAlign="center" >Address: {account}</Header>
+      <Header as="h3" textAlign="center" >Address: <span style={style.primary}>{account}</span></Header>
     </div>
   );
 };

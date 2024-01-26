@@ -4,6 +4,8 @@ import { Icon, Sidebar, Menu } from 'semantic-ui-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link'; 
 
+import {style} from '@/components/ui/style.css.js';
+
 const MainMenu = () => {
   const { data: session } = useSession();
   
@@ -43,7 +45,7 @@ const MainMenu = () => {
       <Icon
         name="bars"
         size="big"
-        style={{ cursor: 'pointer' }}
+        style={{ cursor: 'pointer', color: menuVisible ? style.primary.color : 'black' }}
         onClick={toggleMenu}
       />
 
