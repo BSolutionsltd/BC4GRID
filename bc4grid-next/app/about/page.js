@@ -22,8 +22,9 @@ export default function AboutPage() {
     <div style={style.container}>
       <Header as='h1' textAlign='center'>About</Header>
 
-      <Header as='h2'>Project</Header>
+     
       <Segment style={style.segment} >
+      <Header as='h2'>Project</Header>
       <p>
       The development of this application was supported by the EU H2020 SMART4ALL #3 CTTE "BC for creating decentralized smart grid system (BC4GRID)" project. BC4GRID aims to utilize Blockchain technology in the electricity sector as a crucial tool for transitioning to decentralized smart grids. The project's goal is to create Blockchain software for smart grids that can optimize existing processes, secure grid management, and enable energy trading. The result will be novel Blockchain software with enhanced trustworthiness and reliability in the smart grid sector, allowing energy producers, consumers, and prosumers, as well as all related stakeholders, to have timely, accurate, and reliable information on energy consumption, trading, and system maintenance.
       </p>

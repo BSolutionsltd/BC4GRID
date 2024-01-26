@@ -68,17 +68,17 @@ const MainMenu = () => {
             </Link>
             <Link href="/history" passHref>
             <Menu.Item 
-                name="history" 
-                active={activeItem === 'history'}
-                onMouseEnter={() => handleMouseEnter('history')}
+                name="transactions" 
+                active={activeItem === 'transactions'}
+                onMouseEnter={() => handleMouseEnter('transactions')}
                 onMouseLeave={handleMouseLeave}              
               />
             </Link>
             <Link href="/statistics" passHref>
             <Menu.Item 
-                name="statistics" 
-                active={activeItem === 'statistics'}
-                onMouseEnter={() => handleMouseEnter('statistics')}
+                name="monitoring" 
+                active={activeItem === 'monitoring'}
+                onMouseEnter={() => handleMouseEnter('monitoring')}
                 onMouseLeave={handleMouseLeave}              
               />
             </Link>

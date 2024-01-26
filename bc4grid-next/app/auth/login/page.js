@@ -139,7 +139,7 @@ const LoginPage = () => {
                 </Segment>
               </Form>
               <Segment>
-                Not registered?  <Link href="/register">Register</Link>
+                Not registered?  <Link href="/auth/register">Register</Link>
               </Segment>
             </Grid.Column>
           </Grid>

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
-import TradeMenu from '@/components/TradeMenu';
+
+import {Header} from 'semantic-ui-react';
 
 const TransactionHistory = () => {
   const [transactions, setTransactions] = useState([]);
@@ -23,7 +24,7 @@ const TransactionHistory = () => {
   return (
     <div>
         
-      <h2>Transaction History</h2>
+        <Header as='h1' textAlign='center'>Transactions</Header>
 
       
       <ul>
