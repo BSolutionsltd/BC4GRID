@@ -59,11 +59,11 @@ function SmartMeter() {
             <Grid.Column  textAlign='center' verticalAlign='middle'>
                <Statistic size='tiny' color='green'>                
                 <Statistic.Label>Production</Statistic.Label>
-                <Statistic.Value>{latestData?.total_production ? `${(latestData.total_production).toFixed(2)}  KWh` : 'N/A'}</Statistic.Value>
+                <Statistic.Value>{latestData?.total_production ? `${(latestData.total_production).toFixed(2)}  KWh` : '0 KWh'}</Statistic.Value>
               </Statistic>
               <Statistic size='tiny' color='red'>
                 <Statistic.Label>Consumption</Statistic.Label>
-                <Statistic.Value>{latestData?.total_consumption ? `${(latestData.total_consumption).toFixed(2)}  KWh` : 'N/A'}</Statistic.Value>
+                <Statistic.Value>{latestData?.total_consumption ? `${(latestData.total_consumption).toFixed(2)}  KWh` : '0 KWh'}</Statistic.Value>
               </Statistic>
               <p>measure time: {new Date(latestData?.time).toLocaleString()}</p>
             </Grid.Column>
