@@ -14,7 +14,7 @@ import EnergyTokenizer from '@/components/EnergyTokenizer';
 
 function SmartMeter() {
 
-  const { data, setData } = useEnergyData();
+  const { data, setData }  = useEnergyData();
   const [latestData, setLatestData] = useState({});
   const [meter, setMeter] = useState({});  
   const [timestamp, setTimestamp] = useState('');
