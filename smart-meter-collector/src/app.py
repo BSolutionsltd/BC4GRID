@@ -93,29 +93,114 @@ def smartMeterDataSend(sn):
     return formatSmartMeterData(smartmeterdata = smdata)
 
 
-@app.route('/api/v1/smartmeter/<id>/balance', methods = ['GET'])
-def userBalance(id):
+@app.route('/api/v1/smartmeter/<sn>/balance', methods = ['GET'])
+def userBalance(sn):
     
     from_time = request.args.get('from')
     to_time = request.args.get('to')
-    print(from_time)
-    print(to_time)
-    userdata = db.session.query(db.func.sum(SmartMeterData.total_consumption).label("total_consumption"),db.func.sum(SmartMeterData.total_production).label("total_production")).filter(SmartMeterData.smartmeter_id == id,cast(SmartMeterData.time, Time) >= cast(datetime.strptime(from_time,'%Y-%m-%d %H:%M:%S'),Time),cast(SmartMeterData.time, Time) <= cast(datetime.strptime(to_time,'%Y-%m-%d %H:%M:%S'),Time))
+    
+    try:
+        smartmeter = db.session.query(SmartMeter).filter(SmartMeter.sn == sn).one()
+        
+        smartmeterdata = db.session.query(db.func.sum(SmartMeterData.total_consumption).label("total_consumption"),db.func.sum(SmartMeterData.total_production).label("total_production")).filter(SmartMeterData.smartmeter_id == smartmeter.id)
+        
+        if from_time is not None:
+            try:
+                from_time = datetime.strptime(from_time,'%Y-%m-%dT%H:%M:%S')
+                smartmeterdata = smartmeterdata.filter(SmartMeterData.time>= from_time)
+            except Exception as e:
+                return f"The start time of the interval: {from_time} is invalid.", 400
+        if to_time is not None:
+            try:
+                to_time = datetime.strptime(to_time,'%Y-%m-%dT%H:%M:%S')
+                smartmeterdata = smartmeterdata.filter(SmartMeterData.time<= to_time)
+            except Exception as e:
+                return f"The end time of the interval: {to_time} is invalid.", 400
 
-    return [
-        {
-            'total_consumption': d.total_consumption,
-            'total_production': d.total_production
-        } for d in userdata
-    ]
+        return [
+                {
+                    'total_consumption': d.total_consumption,
+                    'total_production': d.total_production
+                } for d in smartmeterdata
+        ]
+    except Exception as e:
+        return {
+            'status_code': 400,
+            'message': f"Ensure that {sn} is a valid serial number. {e}"
+        }, 400
+    
+    
+    
+ 
+   
 
-@app.route('/api/v1/smartmeter/<id>', methods = ['GET'])
-def smartMeterData(id):
+@app.route('/api/v1/smartmeter/<sn>', methods = ['GET'])
+def smartMeterData(sn):
     
     from_time = request.args.get('from')
     to_time = request.args.get('to')
-
-    smartmeterdata = db.session.query(SmartMeterData).filter(SmartMeterData.smartmeter_id == id,cast(SmartMeterData.time, Time) >= cast(datetime.strptime(from_time,'%Y-%m-%d %H:%M:%S'),Time),cast(SmartMeterData.time, Time) <= cast(datetime.strptime(to_time,'%Y-%m-%d %H:%M:%S'),Time)).all()
+    
+    try:
+        smartmeter = db.session.query(SmartMeter).filter(SmartMeter.sn == sn).one()
+        smartmeterdata = db.session.query(SmartMeterData).filter(SmartMeterData.smartmeter_id == smartmeter.id)
+        
+        if from_time is not None:
+            try:
+                from_time = datetime.strptime(from_time,'%Y-%m-%dT%H:%M:%S')
+                smartmeterdata = smartmeterdata.filter(SmartMeterData.time>= from_time)
+            except Exception as e:
+                return f"The start time of the interval: {from_time} is invalid.", 400
+        if to_time is not None:
+            try:
+                to_time = datetime.strptime(to_time,'%Y-%m-%dT%H:%M:%S')
+                smartmeterdata = smartmeterdata.filter(SmartMeterData.time<= to_time)
+            except Exception as e:
+                return f"The end time of the interval: {to_time} is invalid.", 400
+    
+        smartmeterdata = smartmeterdata.all()
+    except Exception as e:
+        return {
+            'status_code': 400,
+            'message': f"Ensure that {sn} is a valid serial number. {e}"
+        }, 400
+        
+    
+# @app.route('/api/v1/smartmeter/<sn>', methods = ['GET'])
+# def smartMeterDataBySN(sn):
+    
+#     from_time = request.args.get('from')
+#     to_time = request.args.get('to')
+    
+#     try:
+#         smartmeter = db.session.query(SmartMeter).filter(sn=sn).one()
+        
+        
+#         smartmeterdata = db.session.query(SmartMeterData).filter(SmartMeterData.smartmeter_id == smartmeter.id)
+        
+#         if from_time is not None:
+#             try:
+#                 from_time = datetime.strptime(from_time,'%Y-%m-%dT%H:%M:%S')
+#                 smartmeterdata = smartmeterdata.filter(SmartMeterData.time>= from_time)
+#             except Exception as e:
+#                 return f"The start time of the interval: {from_time} is invalid.", 400
+#         if to_time is not None:
+#             try:
+#                 to_time = datetime.strptime(to_time,'%Y-%m-%dT%H:%M:%S')
+#                 smartmeterdata = smartmeterdata.filter(SmartMeterData.time<= to_time)
+#             except Exception as e:
+#                 return f"The end time of the interval: {to_time} is invalid.", 400
+    
+#         smartmeterdata = smartmeterdata.all()
+#     except Exception:
+#         return {
+#             'status_code': 400,
+#             'message': f"ID MUST be ineger. {id} is not an integer."
+#         }, 400
+         
+    
+    
+    
+    
 
     return [formatSmartMeterData(d) for d in smartmeterdata], 200
 
