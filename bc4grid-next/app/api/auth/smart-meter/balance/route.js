@@ -13,25 +13,34 @@ async function getAccumulatedData(req) {
   let userId = req.nextUrl.searchParams.get('userId');    
   
   try {
-    // Fetch the user's accumulated energy from the database
-    const data = await prisma.user.findUnique({
+    // Fetch the user from the database
+    const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { accumulatedEnergy: true }
-    });   
+    });
 
-    if (!data) {
+    if (!user) {
       return new NextResponse().json({ message: "User not found" }).status(404);
     }
 
-    // Generate the current timestamp
-    const timestamp = new Date().toISOString();
+    // Fetch the latest energy reading for the user's smart meter
+    const latestEnergyReading = await prisma.energyReading.findFirst({
+      where: { smartMeterSN: user.smartMeterSN },
+      orderBy: { timestamp: 'desc' },
+    });
+
+    
+    if (!latestEnergyReading) {
+      return new NextResponse().json({ message: "No energy readings found for user" }).status(404);
+    }
+
+    // Prepare the payload
     const payload = {
       'user': userId,
-      'timestamp': timestamp,
-      'accumulatedEnergy': data.accumulatedEnergy
+      'timestamp': latestEnergyReading.timestamp,
+      'accumulatedEnergy': latestEnergyReading.accumulatedEnergy,
     };
 
-    console.log('payload: ', payload);
+    //console.log('payload: ', payload);
     // Return the JSON object
     return NextResponse.json(payload, {status : 200}); // Use 200 for available resources
   } catch (error) {
@@ -42,22 +51,32 @@ async function getAccumulatedData(req) {
 
 async function updateAccumulatedEnergy(req) {
   const body = await req.json();
-  const { userId, accumulatedEnergy } = body;
- 
-  console.log('userId: ', userId);
-  console.log('accumulatedEnergy: ', accumulatedEnergy);
+  const { userId, accumulatedEnergy } = body;  
 
   if (!userId || accumulatedEnergy === undefined) {
     return NextResponse.json({ message: "Invalid inputs" }, {status : 400});
   }
 
   try {
-    const data = await prisma.user.update({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
-      data: { accumulatedEnergy: accumulatedEnergy }
     });
 
-    return NextResponse.json(data, {status: 200});
+    if (!user) {
+      return NextResponse.json({ message: "User not found" }, {status : 404});
+    }
+
+   const energyReading = await prisma.energyReading.create({
+      data: {
+        smartMeterSN: user.smartMeterSN,
+        accumulatedEnergy,
+      },
+    });
+
+    console.log('smartMeterSN: ', user.smartMeterSN);
+    console.log('accumulatedEnergy: ', accumulatedEnergy);
+
+    return NextResponse.json({ message: "Energy reading successfully created" }, {status: 200});
   } catch (error) {
     console.error(error);
     return NextResponse.json({ message: "Failed to update energy" }, {status : 500});

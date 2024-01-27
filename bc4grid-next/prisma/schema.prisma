@@ -48,9 +48,20 @@ model User {
   isVerified       Boolean   @default(false)  
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
-  accumulatedEnergy Float?   @default(0.0)
+  smartMeterSN     String?   @unique // New field for smart meter serial number  
+  energyReadings   EnergyReading[]
   accounts         Account[]
   sessions         Session[]
+}
+
+model EnergyReading {
+  id               String    @id @default(cuid())
+  smartMeterSN     String
+  accumulatedEnergy Float?   @default(0.0)
+  timestamp        DateTime @default(now())  
+  user             User     @relation(fields: [smartMeterSN], references: [smartMeterSN])
+
+  @@index([smartMeterSN])
 }
 
 model VerificationRequest {

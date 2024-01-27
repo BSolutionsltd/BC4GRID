@@ -22,19 +22,19 @@ import { Header, Button } from 'semantic-ui-react';
 
 
 function EnergyGraph() {
-  const [ dataPoints, setDataPoints ] = useEnergyData();
+  const { data, setData } = useEnergyData();
 
   useEffect(() => {
-    console.log('dataPoints: ', dataPoints);
-  }, [dataPoints]);
+    console.log('dataPoints on Monitor: ', data);
+  }, [data]);
 
 
-  const chartData = dataPoints ? {
-    labels: dataPoints.map(point => point.timestamp),
+  const chartData = data ? {
+    labels: data.map(point => point.time),
     datasets: [
       {
         label: 'Production Energy in KWh',
-        data: dataPoints.map(point => point.total_production),
+        data: data.map(point => point.total_production),
         fill: false,
         backgroundColor: 'rgba(75,192,192,0.2)',
         borderColor: 'rgba(75,192,192,1)',
@@ -42,7 +42,7 @@ function EnergyGraph() {
       },
       {
         label: 'Consumption Energy in KWh',
-        data: dataPoints.map(point => point.total_consumption),
+        data: data.map(point => point.total_consumption),
         fill: false,
         backgroundColor: 'rgba(255,99,132,0.2)',
         borderColor: 'rgba(255,99,132,1)',
@@ -82,7 +82,7 @@ function EnergyGraph() {
   return (
     <div>
        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <Header as='h3'>Energy Production and Consumption</Header>
+      <Header as='h3'> Daily Energy Production and Consumption</Header>
       <Button basic icon='trash' onClick={() => setDataPoints([])} />
     </div>
       <Line data={chartData} options={options} />

@@ -7,6 +7,8 @@ export async function GET(req) {
   try {
     async function getMeterInfo(userId) {
       // Dummy response
+      
+
       const dummyResponse = { name: 'Smart meter', description: 'This is a smart meter', SN: 'HG6789DS' };
       return dummyResponse;
     }

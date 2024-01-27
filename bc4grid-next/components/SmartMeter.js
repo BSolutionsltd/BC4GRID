@@ -14,10 +14,9 @@ import EnergyTokenizer from '@/components/EnergyTokenizer';
 
 function SmartMeter() {
 
-  const [ dataPoints, setDataPoints ] = useEnergyData();
-  
-  const [meter, setMeter] = useState({});
-  const [data, setData] = useState({});
+  const { data, setData } = useEnergyData();
+  const [latestData, setLatestData] = useState({});
+  const [meter, setMeter] = useState({});  
   const [timestamp, setTimestamp] = useState('');
 
   useEffect(() => {
@@ -30,8 +29,9 @@ function SmartMeter() {
   }, []);
 
   useEffect(() => {
-    if (dataPoints) setData(dataPoints[dataPoints.length - 1]);
-  }, [dataPoints]);
+    if (data) setLatestData(data[data.length - 1]);
+    console.log('latestData on SmartMeter: ', latestData);
+  }, [data, latestData]);
  
 
   return (
@@ -59,13 +59,13 @@ function SmartMeter() {
             <Grid.Column  textAlign='center' verticalAlign='middle'>
                <Statistic size='tiny' color='green'>                
                 <Statistic.Label>Production</Statistic.Label>
-                <Statistic.Value>{data?.total_consumption ? `${(data.total_production).toFixed(2)}  KWh` : 'N/A'}</Statistic.Value>
+                <Statistic.Value>{latestData?.total_production ? `${(latestData.total_production).toFixed(2)}  KWh` : 'N/A'}</Statistic.Value>
               </Statistic>
               <Statistic size='tiny' color='red'>
                 <Statistic.Label>Consumption</Statistic.Label>
-                <Statistic.Value>{data?.total_consumption ? `${(data.total_consumption).toFixed(2)}  KWh` : 'N/A'}</Statistic.Value>
+                <Statistic.Value>{latestData?.total_consumption ? `${(latestData.total_consumption).toFixed(2)}  KWh` : 'N/A'}</Statistic.Value>
               </Statistic>
-              <p>last update: {new Date(data?.timestamp).toLocaleString()}</p>
+              <p>measure time: {new Date(latestData?.time).toLocaleString()}</p>
             </Grid.Column>
           </Grid.Row>
         </Grid>       
