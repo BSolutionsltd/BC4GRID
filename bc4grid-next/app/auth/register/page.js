@@ -85,7 +85,7 @@ const SignUp = () => {
               });
               
               setTimeout(() => {
-                router.push('/auth/login'); // Replace '/login' with your login route
+                router.push('/auth/profile'); // update your profile
               }, 1500); // 3000 milliseconds = 3 seconds
               // Set the statusSet to true when the status changes
               setStatusSet(true);

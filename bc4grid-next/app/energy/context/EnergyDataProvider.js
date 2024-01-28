@@ -17,6 +17,8 @@ export const EnergyDataProvider = ({ children }) => {
         // data points
         const [data, setData] = useState([]); 
         const [tokenizationTime, setTokenizationTime] = useState(''); 
+
+        const startDate = new Date('2024-01-27T00:00:00');
         
         // refresh interval
         const refreshInterval = 1 * 60 * 1000; // 1 min
@@ -74,11 +76,16 @@ export const EnergyDataProvider = ({ children }) => {
                 
                 console.log('url: ', url);
                 fetch('/api/auth/smart-meter/timer?' + params.toString())
-                    .then(response => response.json())
+                .then(response => {
+                  if (!response.ok) {
+                      return;
+                  }
+                  return response.json();
+              })
                     .then(data => {
                         console.log('Latest timestamp: ', data.timestamp);
                         setTokenizationTime(data.timestamp);
-                        const checkpoint = data.timestamp ? new Date(data.timestamp) : new Date('2024-01-27T00:00:00');
+                        const checkpoint = data.timestamp ? new Date(data.timestamp) : startDate;
 
                         console.log('checkpoint: ', checkpoint);
                         fetchData(userId, checkpoint, null, true);

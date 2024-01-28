@@ -4,32 +4,34 @@ import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 
 // semantic-ui
-import { Card, Image, Form, Button, Grid, Header } from 'semantic-ui-react';
+import { 
+  Card, 
+  Image, 
+  Form, 
+  Button, 
+  Grid, 
+  Header, 
+  Message } from 'semantic-ui-react';
 
 const Profile = () => {
   const { data: session } = useSession();
 
-  const [profileData, setProfileData] = useState({
-    image: '',
-    name: '',
-    email: '',
-    phone: '',
-    joinedYear: '',
-    transactions: 0,
-    smartMeterAddress: '', // Added smart meter address
-    privateKey: '', // Added private key
-  });
+  const [profileData, setProfileData] = useState({});
+  // if successfull update
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
 
   useEffect(() => {
     if (session?.user?.id) {
       fetch(`/api/auth/profile?id=${session.user.id}`)
         .then(response => {
-          if (response.ok) {
+          if (response.ok) {            
             return response.json();
           }
           throw new Error('Network response was not ok.');
         })
         .then(data => {
+          console.log('profile data:', data);
           setProfileData({ ...data.profile });
         })
         .catch(error => {
@@ -51,12 +53,37 @@ const Profile = () => {
   // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Here you would send the updated profile data to the server
-    console.log('Updated profile data:', profileData);
+  
+    // Send a PUT request to the server with the updated profile data
+    fetch(`/api/auth/profile?id=${session.user.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(profileData),
+    })
+      .then(response => {
+        if (response.ok) {
+          setSubmitSuccess(true);
+          // Set submitSuccess back to false after 5 seconds
+          setTimeout(() => {
+            setSubmitSuccess(false);
+          }, 5000);
+          return response.json();
+        }
+        throw new Error('Network response was not ok.');
+      })
+      .then(data => {
+        console.log('Updated profile data:', data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
   };
 
   // Function to handle form field changes
-  const handleChange = (e, { name, value }) => {
+  const handleChange = (e) => {
+    const {name, value} = e.target;
     setProfileData({ ...profileData, [name]: value });
   };
 
@@ -87,31 +114,34 @@ const Profile = () => {
         <Grid.Column width={10}>
           <Form onSubmit={handleSubmit}>
             <Form.Field>
-              <label>Full Name</label>
+              <label>Name</label>
               <input placeholder={profileData.name} name="name" onChange={handleChange} />
             </Form.Field>
             <Form.Field>
               <label>Email Address</label>
-              <input placeholder={profileData.email} name="email" onChange={handleChange} />
+              <input placeholder={profileData.email} name="email" onChange={handleChange}  />
             </Form.Field>
             <Form.Field>
-              <label>Phone Number</label>
-              <input placeholder={profileData.phone} name="phone" onChange={handleChange} />
+              <label>password</label>
+              <input type="password" placeholder="********" name="password" onChange={handleChange} />
             </Form.Field>
             <Form.Field>
-              <label>Smart Meter Address</label>
-              <input placeholder='Smart Meter Address' name="smartMeterAddress" onChange={handleChange} />
-            </Form.Field>
-            <Form.Field>
-              <label>Private Key</label>
-              <input placeholder='Private Key' name="privateKey" onChange={handleChange} />
-            </Form.Field>
+              <label>Smart Meter Serial Number</label>
+              <input placeholder={profileData.smartMeterSN} name="smartMeterSN" onChange={handleChange} />
+            </Form.Field>            
             <Form.Field>
               <label>Profile Image</label>
               <input type="file" accept="image/*" onChange={handleImageChange} />
             </Form.Field>
             <Button type='submit'>Update</Button>
           </Form>
+          {submitSuccess && (
+            <Message
+              success
+              header='Profile Update'
+              content='Your profile has been updated successfully.'
+            />
+          )}
         </Grid.Column>
       </Grid>
     </>
