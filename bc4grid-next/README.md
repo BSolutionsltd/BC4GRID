@@ -43,6 +43,10 @@ Before you begin, ensure you have met the following requirements:
     docker-compose up --build -d
     ```
 
+    To run application, run in browser with **installed Metamask**: `localhost:3000`.
+
+    Admin user is `admin`, password `bc4grid`. All other registered users should be approved by admin. 
+    
 ## Contributing
 
 This project is sponsored by SMART4ALL EU grant.
