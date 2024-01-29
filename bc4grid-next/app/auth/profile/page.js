@@ -1,4 +1,5 @@
 "use client";
+import hashPassword from "@/lib/hash";
 
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
@@ -54,13 +55,17 @@ const Profile = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
   
+    // Hash the password before sending it to the server
+  const hashedPassword = hashPassword(profileData.password);
+  const updatedProfileData = { ...profileData, password: hashedPassword };
+
     // Send a PUT request to the server with the updated profile data
     fetch(`/api/auth/profile?id=${session.user.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(profileData),
+      body: JSON.stringify(updatedProfileData),
     })
       .then(response => {
         if (response.ok) {
@@ -104,10 +109,7 @@ const Profile = () => {
               </Card.Description>
             </Card.Content>
             <Card.Content extra>
-              <a>
-                <i className='user icon' />
-                {profileData.transactions} Transactions
-              </a>
+            
             </Card.Content>
           </Card>
         </Grid.Column>

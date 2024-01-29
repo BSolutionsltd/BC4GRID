@@ -16,8 +16,7 @@ function SmartMeter() {
 
   const { data, setData }  = useEnergyData();
   const [latestData, setLatestData] = useState({});
-  const [meter, setMeter] = useState({});  
-  const [timestamp, setTimestamp] = useState('');
+  const [meter, setMeter] = useState({});    
 
   useEffect(() => {
     fetch('/api/auth/smart-meter/info')

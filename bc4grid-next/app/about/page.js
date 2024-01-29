@@ -1,7 +1,13 @@
 "use client";
 import React from 'react';
+import Link from 'next/link';
 
-import { Header, List, Segment } from 'semantic-ui-react';
+import { 
+  Header, 
+  List,
+  ListItem,
+  ListHeader,
+  Segment } from 'semantic-ui-react';
 
 export default function AboutPage() {
   const style = {
@@ -9,10 +15,11 @@ export default function AboutPage() {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',      
-      padding: '10px'      
+      padding: '10px'
+      
     },
     segment: {
-      width: '80%',
+      width: '100%',
       textAlign: 'justify',
     },
   };
@@ -30,31 +37,36 @@ export default function AboutPage() {
       </p>
       <p>
 BC4GRID has a significant impact on sensitive social groups in two ways:
-
+</p>
 <List bulleted>
-        <List.Item> The first impact relates to people with serious health issues, those with many outdoor activities, babies and infants suffering from air pollution, the elderly, and residents of cities with high Air Quality Index.
-          </List.Item>
-          <List.Item> The second impact addresses long-term energy poverty. Introducing smart grids into households will solve energy deficiencies, improve energy efficiency, and contribute to a cleaner, more sustainable environment. 
-          </List.Item>
+        <ListItem> 
+          The first impact relates to people with serious health issues, those with many outdoor activities, babies and infants suffering from air pollution, the elderly, and residents of cities with high Air Quality Index.
+          </ListItem>
+          <ListItem> The second impact addresses long-term energy poverty. Introducing smart grids into households will solve energy deficiencies, improve energy efficiency, and contribute to a cleaner, more sustainable environment. 
+          </ListItem>
 </List>
-Moreover, the decentralization of energy supply will economically benefit individual households by enabling local energy trade and consumption, primarily through Blockchain technologies.    </p>
+<p>
+Moreover, the decentralization of energy supply will economically benefit individual households by enabling local energy trade and consumption, primarily through Blockchain technologies.    
+</p>
       </Segment>
       <Segment style={style.segment}>
       <Header as='h2'>Project Partners</Header>
       <List bulleted>
-        <List.Item>
-          <Header as='h3'>Mathematical Institute of the Serbian Academy of Sciences and Arts (MISANU)</Header>
-          <p>Part of the Serbian Academy of Sciences and Arts, specializes in mathematics, mechanics, and computer science research and focuses on advanced research, industry applications, and international collaboration.</p>
-        </List.Item>
-        <List.Item>
-          <Header as='h3'>INCEPTON</Header>
-          <p>A Croatian SME developing data-driven models in commercial software projects for smart energy grid solutions, including custom-made software for the industry.</p>
-        </List.Item>
-        <List.Item>
-          <Header as='h3'>B Solutions doo (BSN)</Header>
-          <p>A Montenegrin SME with a proven track record in marketing and commercialization, responsible for marketing, commercialization, and expansion to the South-East Europe market.</p>
-        </List.Item>
+        <ListItem>          
+          <ListHeader as='a'>Mathematical Institute of the Serbian Academy of Sciences and Arts (MISANU)
+          </ListHeader>
+          Part of the Serbian Academy of Sciences and Arts, specializes in mathematics, mechanics, and computer science research and focuses on advanced research, industry applications, and international collaboration.
+        </ListItem>
+        <ListItem>
+          <ListHeader as='a'>INCEPTON</ListHeader>
+          A Croatian SME developing data-driven models in commercial software projects for smart energy grid solutions, including custom-made software for the industry.
+        </ListItem>
+        <ListItem>
+          <ListHeader as='a'>B Solutions doo (BSN)</ListHeader>
+          A Montenegrin SME with a proven track record in marketing and commercialization, responsible for marketing, commercialization, and expansion to the South-East Europe market.
+        </ListItem>
       </List>
+   
       </Segment>
 
       <Segment style={style.segment}>
@@ -63,14 +75,15 @@ Moreover, the decentralization of energy supply will economically benefit indivi
       <p>This distributed application represents a Blockchain software solution based on cryptographic technology. It was developed to support the transition of power grids from a centralized to a decentralized model, offering functionalities for prosumers and consumers to monitor their energy production and consumption. It also provides an energy market for users to sell excess energy or buy energy from others in a decentralized manner.
 
 The application serves as a starting point for product developers, students, and researchers to develop new products using Blockchain technology. It facilitates learning and experimentation with different consensus protocols and cryptographic algorithms and techniques.
+</p>
 
 Key components include:
 <List bulleted>
-<List.Item> Ethereum smart contracts for core functionalities. </List.Item>
-<List.Item> A user web interface using the Web3.js library and Metamask wallet to communicate with the Ethereum blockchain platform hosting the smart contracts. </List.Item>
-<List.Item> A smart meter simulator that emulates energy consumption and production based on real-life data.</List.Item>
+<ListItem> Ethereum smart contracts for core functionalities. </ListItem>
+<ListItem> A user web interface using the Web3.js library and Metamask wallet to communicate with the Ethereum blockchain platform hosting the smart contracts. </ListItem>
+<ListItem> A smart meter simulator that emulates energy consumption and production based on real-life data.</ListItem>
 </List>
-</p>
+
 </Segment>
       </div>    
   );

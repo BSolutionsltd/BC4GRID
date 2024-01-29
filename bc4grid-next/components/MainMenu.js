@@ -68,22 +68,16 @@ const MainMenu = () => {
                 onMouseLeave={handleMouseLeave}              
               />
             </Link>
-            <Link href="/history" passHref>
-            <Menu.Item 
-                name="transactions" 
-                active={activeItem === 'transactions'}
-                onMouseEnter={() => handleMouseEnter('transactions')}
+
+            <Link href="/Help" passHref>
+              <Menu.Item 
+                name="help" 
+                active={activeItem === 'help'}
+                onMouseEnter={() => handleMouseEnter('help')}
                 onMouseLeave={handleMouseLeave}              
               />
             </Link>
-            <Link href="/statistics" passHref>
-            <Menu.Item 
-                name="monitoring" 
-                active={activeItem === 'monitoring'}
-                onMouseEnter={() => handleMouseEnter('monitoring')}
-                onMouseLeave={handleMouseLeave}              
-              />
-            </Link>
+          
           </>
         ) : (null)}
 

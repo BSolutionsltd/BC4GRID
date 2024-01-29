@@ -7,7 +7,6 @@ import {
   Icon,
   Loader } from "semantic-ui-react";
 
-
 const { Row, Cell, Body } = Table;
 
 const CartHeader = () => {
@@ -28,27 +27,17 @@ const CartHeader = () => {
         );
 }
 
-
-const CartRow = ({ offer, status, onFinalize, onDiscard }) => {
+const CartRow = ({ offer, loadingKey, onFinalize, onDiscard }) => {
     const { key, account, amount, pricePerUnit, validUntil, totalPrice, isFinalized } = offer;
-    
-    
-    const [isLoading, setIsLoading] = useState(false);
 
     const handleFinalize = async (id) => {
-      setIsLoading(true);
-      await onFinalize(id);
-      setIsLoading(false);
+      onFinalize(id);
     };
   
     const handleDiscard = async (id) => {
-      setIsLoading(true);
-      await onDiscard(id);
-      setIsLoading(false);
+      onDiscard(id);
     };
 
-    
-  
   return (
     <Table.Row>      
       <Table.Cell>{key}</Table.Cell>
@@ -62,32 +51,29 @@ const CartRow = ({ offer, status, onFinalize, onDiscard }) => {
           <Button.Group>                        
             <Button onClick={() => handleDiscard(key)}>✗</Button>
             <Button.Or />
-            <Button loading= {status} onClick={() => handleFinalize(key)} primary>✓</Button>
+            <Button loading={loadingKey === key} onClick={() => handleFinalize(key)} primary>✓</Button>
           </Button.Group>
         )}
     {isFinalized && <Icon name='checkmark' color='green' />}
       </Table.Cell>
     </Table.Row>
   );
-
- 
 };
-
 
 const Cart = ({ offers, onFinalize, onDiscard }) => {
   
-  const [finalizing, setFinalizing] = useState(false);
+  const [loadingKey, setLoadingKey] = useState(null);
 
   const finalizeOrder = async (offerId) => {
-    setFinalizing(true);
+    setLoadingKey(offerId);
     await onFinalize(offerId);
-    setFinalizing(false);
+    setLoadingKey(null);
   }
 
   const finalizeDiscard = async (offerId) => {
-    setFinalizing(true);
+    setLoadingKey(offerId);
     await onDiscard(offerId);
-    setFinalizing(false);
+    setLoadingKey(null);
   }
 
   const renderRows = (offers) => {
@@ -97,7 +83,7 @@ const Cart = ({ offers, onFinalize, onDiscard }) => {
         <CartRow
           key={offer.key}
           offer={offer}
-          status = {finalizing}
+          loadingKey={loadingKey}
           onFinalize={finalizeOrder}
           onDiscard={finalizeDiscard}          
         />

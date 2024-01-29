@@ -1,8 +1,8 @@
-# Your Project Name
+# BC4GRID Distributed Blockchain App
 
 ## Description
 
-A brief description of your project goes here.
+BC4GRID is a smart-grid power trading application that uses Ethereum smart contracts. The project consists of a trading app built with Next.js and a smart-meter data collector that interacts with nodes of smart-meters. The application allows for efficient and secure power trading within a smart grid environment.
 
 ## Prerequisites
 
@@ -10,6 +10,10 @@ Before you begin, ensure you have met the following requirements:
 
 - Node.js: [![Node.js](https://img.shields.io/badge/Node.js-v14.17.4-green.svg)](https://nodejs.org/)
 - npm: [![npm](https://img.shields.io/badge/npm-v6.14.14-blue.svg)](https://www.npmjs.com/)
+- Docker: [![Docker](https://img.shields.io/badge/Docker-v20.10.8-blue.svg)](https://www.docker.com/)
+  - Docker must be installed and running on your machine. You can verify this by running `docker -v` in your terminal. If Docker is installed, this command will return the version number.
+- Docker Compose: [![Docker Compose](https://img.shields.io/badge/Docker%20Compose-v1.29.2-blue.svg)](https://docs.docker.com/compose/)
+  - Docker Compose must be installed and working. You can verify this by running `docker-compose -v` in your terminal. If Docker Compose is installed, this command will return the version number.
 
 ## Installation
 
@@ -22,31 +26,22 @@ Before you begin, ensure you have met the following requirements:
 2. **Navigate to the project directory:**
 
     ```bash
-    cd BC4GRID/bc4grid-next
+    cd BC4GRID/
     ```
 
-3. **Install project dependencies:**
-
-You will need `node ^20.9.0`. Highly suggest using `nvm` to install it: `nvm install 20.9.0`. After that install the project:
+3. **Build and run the application using Docker Compose:**
 
     ```bash
-    npm install
+    docker-compose up --build
     ```
 
-4. **Prima installation**
+    This command will build the Docker images for the services defined in your `docker-compose.yml` file and start the containers.
 
-Use `Prisma` ORM scheme `@/prisma/schema.prisma` folder. Make migration with 
+    If you want to run the containers in the background, you can use the `-d` option:
 
-`npx prisma migrate dev --name init`
-
-Prisma client also should be provided: `npm install @prisma/client`
-
-## Usage
-
-This is a frontend of the BC4GRID app. 
-
-
-
+    ```bash
+    docker-compose up --build -d
+    ```
 
 ## Contributing
 
