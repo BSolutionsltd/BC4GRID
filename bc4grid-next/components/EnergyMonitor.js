@@ -82,7 +82,7 @@ function EnergyGraph() {
   return (
     <div>
        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <Header as='h3'> Daily Energy Production and Consumption</Header>
+      <Header as='h3'> Energy Production and Consumption After Tokenization</Header>
       <Button basic icon='trash' onClick={() => setDataPoints([])} />
     </div>
       <Line data={chartData} options={options} />

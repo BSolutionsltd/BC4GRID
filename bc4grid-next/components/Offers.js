@@ -220,6 +220,7 @@ const Offers = (  ) => {
 
   const handleCloseModal = () => {
     setSelectedOffer(null);
+    setLoading(prevLoading => ({ ...prevLoading, [selectedOffer.key]: false }));
     setOpen(false);
   }
 
@@ -420,8 +421,7 @@ useEffect(() => {
                     onClick={() => handleEditClick(item)} 
                     loading={loading[item.key]}
                     />
-                  }
-                    
+                  }                    
                 >
               <Modal.Header>Update Offer</Modal.Header>
               <Modal.Content>
@@ -449,7 +449,7 @@ useEffect(() => {
                   <input 
                   type='datetime-local' 
                   placeholder='Valid Until' 
-                  value={selectedOffer?.validUntil} 
+                  value={selectedOffer?.validUntil ? new Date(selectedOffer.validUntil).toISOString().substring(0,16) : ""}
                   onChange={(e) => setSelectedOffer({...selectedOffer, validUntil: e.target.value})} />
                 </Form.Field>
                 
@@ -459,6 +459,16 @@ useEffect(() => {
                   
                 </Form>
               </Modal.Content>
+              <Modal.Actions>
+              <Button 
+                onClick={() => {
+                  setLoading(prevLoading => ({ ...prevLoading, [selectedOffer.key]: false }));
+                  handleCloseModal();
+                }}
+              >
+                Close
+              </Button>
+            </Modal.Actions>
             </Modal> 
               <Button 
                 icon='delete' 

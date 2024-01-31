@@ -97,7 +97,7 @@ const BuyCreator = () => {
     console.log('Finalized offers: ', finalizedOffers);
         
     } catch (err) {
-      setError('Error finalizing energy offer: ' + err.message);
+      setError('Error finalizing energy offer! Check if Metamask is installed in browser and logged in.');
     }
   };
   
