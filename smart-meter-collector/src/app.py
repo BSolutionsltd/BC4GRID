@@ -1,17 +1,18 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from flask_migrate import Migrate
 from models import *
-from sqlalchemy import Time, cast
-from psycopg2.errors import UniqueViolation
+import os
+
+
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:bc4grid@localhost/smart-meter-collector"
-from flask import jsonify
+app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}@{os.getenv('POSTGRES_HOST')}/{os.getenv('POSTGRES_DATABASE')}"
 
 db = SQLAlchemy(app)
 cors = CORS(app)
@@ -92,6 +93,9 @@ def smartMeterDataSend(sn):
     
     return formatSmartMeterData(smartmeterdata = smdata)
 
+@app.route('/check', methods = ['GET'])
+def check():
+    return "OK"
 
 @app.route('/api/v1/smartmeter/<sn>/balance', methods = ['GET'])
 def userBalance(sn):
@@ -227,4 +231,4 @@ def addUser():
     return formatUserData(user)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host="0.0.0.0")

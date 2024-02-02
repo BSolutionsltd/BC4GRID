@@ -1,0 +1,94 @@
+<mxfile host="Electron" modified="2024-02-02T09:15:14.865Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.0.3 Chrome/114.0.5735.289 Electron/25.8.4 Safari/537.36" etag="vAW96E3nBg5J3I71ETks" version="22.0.3" type="device">
+  <diagram name="Page-1" id="sfU6q4pDpHJ_Nem2gO8z">
+    <mxGraphModel dx="1434" dy="878" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="1" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-39" value="&lt;font color=&quot;#1a8098&quot; face=&quot;Arial&quot; style=&quot;font-size: 18px;&quot;&gt;&lt;b&gt;Smart Meter Collector Frontend&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#1A8098;strokeWidth=2;verticalAlign=bottom;spacingBottom=8;" parent="1" vertex="1">
+          <mxGeometry x="127" y="740" width="574" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-1" value="&lt;font size=&quot;1&quot; color=&quot;#1a8098&quot; face=&quot;Arial&quot;&gt;&lt;b style=&quot;font-size: 18px;&quot;&gt;REST API&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1A8098;" parent="1" vertex="1">
+          <mxGeometry x="124" y="330" width="576" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-13" value="" style="group" parent="1" vertex="1" connectable="0">
+          <mxGeometry x="124" y="100" width="120" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-2" value="&lt;font face=&quot;Arial&quot; color=&quot;#1a8098&quot;&gt;Smart Meter&lt;br&gt;Simulator&lt;br&gt;&lt;i&gt;1&lt;/i&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1A8098;" parent="5dS-S5kkGBBSwVbEfs-k-13" vertex="1">
+          <mxGeometry width="120" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-4" value="" style="image;sketch=0;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/mscae/Docker.svg;" parent="5dS-S5kkGBBSwVbEfs-k-13" vertex="1">
+          <mxGeometry x="35" y="130" width="50" height="41" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-10" value="" style="sketch=0;html=1;dashed=0;whitespace=wrap;fillColor=#1a8098;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];verticalLabelPosition=bottom;align=center;verticalAlign=top;shape=mxgraph.kubernetes.icon;prIcon=master" parent="5dS-S5kkGBBSwVbEfs-k-13" vertex="1">
+          <mxGeometry x="35" y="10" width="50" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-12" value="" style="verticalLabelPosition=bottom;sketch=0;html=1;fillColor=#1A8098;strokeColor=#ffffff;verticalAlign=top;align=center;points=[[0,0.5,0],[0.125,0.25,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[0.875,0.25,0],[1,0.5,0],[0.875,0.75,0],[0.75,1,0],[0.5,1,0],[0.125,0.75,0]];pointerEvents=1;shape=mxgraph.cisco_safe.compositeIcon;bgIcon=ellipse;resIcon=mxgraph.cisco_safe.design.user;aspect=fixed;" parent="5dS-S5kkGBBSwVbEfs-k-13" vertex="1">
+          <mxGeometry x="10" y="38" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-14" value="" style="group" parent="1" vertex="1" connectable="0">
+          <mxGeometry x="284" y="100" width="120" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-15" value="&lt;font color=&quot;#1a8098&quot;&gt;&lt;font face=&quot;Arial&quot;&gt;Smart Meter&lt;br&gt;Simulator&lt;br&gt;&lt;i&gt;2&lt;/i&gt;&lt;/font&gt;&lt;br&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1A8098;" parent="5dS-S5kkGBBSwVbEfs-k-14" vertex="1">
+          <mxGeometry width="120" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-16" value="" style="image;sketch=0;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/mscae/Docker.svg;" parent="5dS-S5kkGBBSwVbEfs-k-14" vertex="1">
+          <mxGeometry x="35" y="130" width="50" height="41" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-17" value="" style="sketch=0;html=1;dashed=0;whitespace=wrap;fillColor=#1a8098;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];verticalLabelPosition=bottom;align=center;verticalAlign=top;shape=mxgraph.kubernetes.icon;prIcon=master" parent="5dS-S5kkGBBSwVbEfs-k-14" vertex="1">
+          <mxGeometry x="35" y="10" width="50" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-18" value="" style="verticalLabelPosition=bottom;sketch=0;html=1;fillColor=#1A8098;strokeColor=#ffffff;verticalAlign=top;align=center;points=[[0,0.5,0],[0.125,0.25,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[0.875,0.25,0],[1,0.5,0],[0.875,0.75,0],[0.75,1,0],[0.5,1,0],[0.125,0.75,0]];pointerEvents=1;shape=mxgraph.cisco_safe.compositeIcon;bgIcon=ellipse;resIcon=mxgraph.cisco_safe.design.user;aspect=fixed;" parent="5dS-S5kkGBBSwVbEfs-k-14" vertex="1">
+          <mxGeometry x="10" y="38" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-19" value="" style="group" parent="1" vertex="1" connectable="0">
+          <mxGeometry x="584" y="100" width="120" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-20" value="&lt;font face=&quot;Arial&quot; color=&quot;#1a8098&quot;&gt;Smart Meter&lt;br&gt;Simulator &lt;br&gt;&lt;i&gt;N&lt;/i&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1A8098;" parent="5dS-S5kkGBBSwVbEfs-k-19" vertex="1">
+          <mxGeometry width="120" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-21" value="" style="image;sketch=0;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/mscae/Docker.svg;" parent="5dS-S5kkGBBSwVbEfs-k-19" vertex="1">
+          <mxGeometry x="35" y="130" width="50" height="41" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-22" value="" style="sketch=0;html=1;dashed=0;whitespace=wrap;fillColor=#1a8098;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];verticalLabelPosition=bottom;align=center;verticalAlign=top;shape=mxgraph.kubernetes.icon;prIcon=master" parent="5dS-S5kkGBBSwVbEfs-k-19" vertex="1">
+          <mxGeometry x="35" y="10" width="50" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-23" value="" style="verticalLabelPosition=bottom;sketch=0;html=1;fillColor=#1A8098;strokeColor=#ffffff;verticalAlign=top;align=center;points=[[0,0.5,0],[0.125,0.25,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[0.875,0.25,0],[1,0.5,0],[0.875,0.75,0],[0.75,1,0],[0.5,1,0],[0.125,0.75,0]];pointerEvents=1;shape=mxgraph.cisco_safe.compositeIcon;bgIcon=ellipse;resIcon=mxgraph.cisco_safe.design.user;aspect=fixed;" parent="5dS-S5kkGBBSwVbEfs-k-19" vertex="1">
+          <mxGeometry x="10" y="38" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-24" value="&lt;font size=&quot;1&quot; color=&quot;#1a8098&quot; face=&quot;Arial&quot; style=&quot;&quot;&gt;&lt;b style=&quot;font-size: 18px;&quot;&gt;Smart Meter Collector&lt;br&gt;Backend&lt;br&gt;&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=bottom;spacingBottom=14;strokeColor=#1A8098;" parent="1" vertex="1">
+          <mxGeometry x="124" y="410" width="576" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-25" value="" style="verticalLabelPosition=bottom;sketch=0;html=1;fillColor=#A153A0;strokeColor=#ffffff;verticalAlign=top;align=center;points=[[0,0.5,0],[0.125,0.25,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[0.875,0.25,0],[1,0.5,0],[0.875,0.75,0],[0.75,1,0],[0.5,1,0],[0.125,0.75,0]];pointerEvents=1;shape=mxgraph.cisco_safe.compositeIcon;bgIcon=mxgraph.cisco_safe.design.blank_device;resIcon=mxgraph.cisco_safe.design.flow_collector;aspect=fixed;" parent="1" vertex="1">
+          <mxGeometry x="589.11" y="455" width="88.89" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-28" value="&lt;font face=&quot;Arial&quot; color=&quot;#1a8098&quot;&gt;Collector&lt;br&gt;Database&lt;/font&gt;" style="html=1;verticalLabelPosition=bottom;align=center;labelBackgroundColor=#ffffff;verticalAlign=top;strokeWidth=2;strokeColor=#1A8098;shadow=0;dashed=0;shape=mxgraph.ios7.icons.data;" parent="1" vertex="1">
+          <mxGeometry x="150" y="450" width="70" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-29" value="" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/management_governance/Scheduler_Job_Collections.svg;" parent="1" vertex="1">
+          <mxGeometry x="150" y="30" width="68" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-30" value="" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/management_governance/Scheduler_Job_Collections.svg;" parent="1" vertex="1">
+          <mxGeometry x="310" y="30" width="68" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-31" value="" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/management_governance/Scheduler_Job_Collections.svg;" parent="1" vertex="1">
+          <mxGeometry x="610" y="30" width="68" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-32" value="&lt;font color=&quot;#1a8098&quot;&gt;........&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="470" y="175" width="50" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-33" value="&lt;font size=&quot;1&quot; color=&quot;#1a8098&quot; face=&quot;Arial&quot;&gt;&lt;b style=&quot;font-size: 18px;&quot;&gt;REST API&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1A8098;" parent="1" vertex="1">
+          <mxGeometry x="126" y="620" width="576" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-34" value="" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/other/Azure_Monitor_Dashboard.svg;" parent="1" vertex="1">
+          <mxGeometry x="145" y="800" width="172.15" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-35" value="" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#1A8098;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;shape=mxgraph.vvd.nsx_dashboard;" parent="1" vertex="1">
+          <mxGeometry x="339" y="800" width="161.29" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="5dS-S5kkGBBSwVbEfs-k-38" value="" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#1A8098;shape=mxgraph.mscae.intune.user_management;aspect=fixed;" parent="1" vertex="1">
+          <mxGeometry x="519" y="800" width="163.04" height="150" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
