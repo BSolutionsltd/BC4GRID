@@ -54,8 +54,7 @@ export const EnergyDataProvider = ({ children }) => {
 
                 if (isInitialFetch) {                           
                     setData(filteredData);
-                } else {
-                    console.log('limit-1 fetching data: ', filteredData);             
+                } else {                    
                     setData(prevData => [...prevData, ...filteredData]);
                 }
             })
@@ -64,7 +63,7 @@ export const EnergyDataProvider = ({ children }) => {
                 // Handle the error
               });
 
-              console.log('data on Provider: ', data);
+              //console.log('data on Provider: ', data);
           };
           
         useEffect(() => {
@@ -73,8 +72,7 @@ export const EnergyDataProvider = ({ children }) => {
                 const userId = session.user.id;
                 const params = new URLSearchParams({ userId: userId });
                 const url = '/api/auth/smart-meter/timer?' + params.toString();
-                
-                console.log('url: ', url);
+                                
                 fetch('/api/auth/smart-meter/timer?' + params.toString())
                 .then(response => {
                   if (!response.ok) {
@@ -83,11 +81,11 @@ export const EnergyDataProvider = ({ children }) => {
                   return response.json();
               })
                     .then(data => {
-                        console.log('Latest timestamp: ', data.timestamp);
+                        //console.log('Latest timestamp: ', data.timestamp);
                         setTokenizationTime(data.timestamp);
                         const checkpoint = data.timestamp ? new Date(data.timestamp) : startDate;
 
-                        console.log('checkpoint: ', checkpoint);
+                        //console.log('checkpoint: ', checkpoint);
                         fetchData(userId, checkpoint, null, true);
                     });
                 

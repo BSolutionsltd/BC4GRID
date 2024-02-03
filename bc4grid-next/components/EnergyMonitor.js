@@ -25,7 +25,7 @@ function EnergyGraph() {
   const { data, setData } = useEnergyData();
 
   useEffect(() => {
-    console.log('dataPoints on Monitor: ', data);
+    //console.log('dataPoints on Monitor: ', data);
   }, [data]);
 
 

@@ -47,7 +47,7 @@ const SignUp = () => {
     const onSubmit = async (e) => {
       e.preventDefault();
 
-      console.log('payload: ',registerData);
+      //console.log('payload: ',registerData);
 
       // client side validation
       if (registerData.password !== registerData.confirmPassword) {

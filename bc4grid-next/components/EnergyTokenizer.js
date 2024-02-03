@@ -26,7 +26,7 @@ function EnergyTokenizer() {
   useEffect(() => {
     // reducer function to sum up the total production
     const accumulatedValue = data.reduce((accumulator, dataPoint) => accumulator + dataPoint.total_production, 0);
-    console.log('accumulatedValue: ', accumulatedValue);
+    //console.log('accumulatedValue: ', accumulatedValue);
     setAccumulatedData(accumulatedValue);     
     
   }, [data]);
@@ -42,7 +42,7 @@ function EnergyTokenizer() {
       ethExplorer.sendEnergy(totalProductionWatts)
         .then((receipt) => {
           const newTokenTime = new Date().toISOString();
-          console.log('new token time: ', newTokenTime);
+          //console.log('new token time: ', newTokenTime);
           setTokenizationTime(newTokenTime);          
           // Update accumulated energy in the database
           fetch('/api/auth/smart-meter/balance', {

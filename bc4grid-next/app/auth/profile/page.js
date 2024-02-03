@@ -32,7 +32,7 @@ const Profile = () => {
           throw new Error('Network response was not ok.');
         })
         .then(data => {
-          console.log('profile data:', data);
+          // console.log('profile data:', data);
           setProfileData({ ...data.profile });
         })
         .catch(error => {
@@ -79,7 +79,7 @@ const Profile = () => {
         throw new Error('Network response was not ok.');
       })
       .then(data => {
-        console.log('Updated profile data:', data);
+        // console.log('Updated profile data:', data);
       })
       .catch(error => {
         console.error(error);

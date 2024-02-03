@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 
 // layout components
 import { Grid, Item, Icon, Header, Segment, Statistic } from 'semantic-ui-react';
@@ -14,22 +15,30 @@ import EnergyTokenizer from '@/components/EnergyTokenizer';
 
 function SmartMeter() {
 
+  const {data : session } = useSession();
   const { data, setData }  = useEnergyData();
   const [latestData, setLatestData] = useState({});
   const [meter, setMeter] = useState({});    
 
   useEffect(() => {
-    fetch('/api/auth/smart-meter/info')
+    if (session) {
+      const userId = session.user.id;
+      const params = new URLSearchParams({ userId: userId });
+      const url = '/api/auth/smart-meter/info?' + params.toString();
+    // Make the fetch call
+    fetch(url)
       .then(response => response.json())
       .then(info => {
-        console.log('smart-meter info:', data);
+        console.log('SMART-METER information:', info);
         setMeter(info);
       });
-  }, []);
+    }
+  }, [session]);
+
 
   useEffect(() => {
     if (data) setLatestData(data[data.length - 1]);
-    console.log('latestData on SmartMeter: ', latestData);
+    //console.log('latestData on SmartMeter: ', latestData);
   }, [data, latestData]);
  
 
@@ -48,8 +57,8 @@ function SmartMeter() {
                   <Item.Content>
                     <Item.Header>{meter.name}</Item.Header>
                     <Item.Description>
-                      <p>description: {meter.description}</p>
-                      <p>serial number: {meter.SN}</p>                      
+                      <p><strong>model:</strong> {meter.model ? meter.model : 'N/A'}</p>
+                      <p><strong>serial number</strong>: {meter.sn}</p>                      
                     </Item.Description>
                   </Item.Content>
                 </Item>

@@ -14,7 +14,7 @@ export async function GET(req) {
   try {
 
     if (!smartMeter[userId]) {      
-      console.log('fetching smart-meter SN from database');
+      // console.log('fetching smart-meter SN from database');
       const user = await prisma.user.findUnique({
         where: { id: userId },
         select: { smartMeterSN: true }

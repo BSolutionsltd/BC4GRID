@@ -9,7 +9,7 @@ export async function GET(req) {
   const userId = req.nextUrl.searchParams.get('userId');   
   try {
     if (!smartMeter[userId]) {      
-      console.log('fetching smart-meter SN from database');
+      //console.log('fetching smart-meter SN from database');
       const user = await prisma.user.findUnique({
         where: { id: userId },
         select: { smartMeterSN: true }
@@ -38,7 +38,7 @@ async function getTokenizationTime(smartMeterSN) {
    });
    
    if (!latestTokenization) {
-    console.log('Something went wrong. No tokenization time found.');
+    //console.log('Something went wrong. No tokenization time found.');
      return NextResponse.json({ message: "No tokenization time" }, {status: 404});
    }   
    
@@ -47,7 +47,7 @@ async function getTokenizationTime(smartMeterSN) {
      'timestamp': latestTokenization.timestamp        
    };
 
-   console.log('Timer payload: ', payload);
+   //console.log('Timer payload: ', payload);
    // Return the JSON object
    return NextResponse.json(payload, {status : 200}); // Use 200 for available resources
 }

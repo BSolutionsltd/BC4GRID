@@ -39,7 +39,7 @@ async function approveUsers(req) {
   const body = await req.json();
 
 
-  console.log('body: ', body);
+  //console.log('body: ', body);
   const { userId, isVerified } = body;
 
   try {

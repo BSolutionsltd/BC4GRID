@@ -73,8 +73,8 @@ async function updateAccumulatedEnergy(req) {
       },
     });
 
-    console.log('smartMeterSN: ', user.smartMeterSN);
-    console.log('accumulatedEnergy: ', accumulatedEnergy);
+    //console.log('smartMeterSN: ', user.smartMeterSN);
+    //console.log('accumulatedEnergy: ', accumulatedEnergy);
 
     return NextResponse.json({ message: "Energy reading successfully created" }, {status: 200});
   } catch (error) {
