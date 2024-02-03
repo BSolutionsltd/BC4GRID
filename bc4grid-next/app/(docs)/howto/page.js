@@ -72,7 +72,7 @@ This connection is maintained for future sessions, removing the need to reconnec
         <List.Header>Blockchain Account Overview:</List.Header>
         </List.Content>
         <List.List>
-          <List.Item>Displays the user's blockchain address.</List.Item>
+          <List.Item>Displays the user&apos;s blockchain address.</List.Item>
           <List.Item>Shows the balance in ethers.</List.Item>
           <List.Item>Lists the amount of energy tokens the user possesses.</List.Item>
         </List.List>
@@ -83,7 +83,7 @@ This connection is maintained for future sessions, removing the need to reconnec
         <List.Header>Smart Meter Integration:</List.Header>
         </List.Content>
         <List.List>
-          <List.Item>Provides fine-grained readings from the user's registered smart meter.</List.Item>
+          <List.Item>Provides fine-grained readings from the user&apos;s registered smart meter.</List.Item>
           <List.Item>Details electrical consumption and production.</List.Item>
           <List.Item>Indicates the amount of produced energy available for tokenization.</List.Item>
         </List.List>      
@@ -156,7 +156,7 @@ This connection is maintained for future sessions, removing the need to reconnec
   <List.Item>Initiate a buy transaction that will be sent to the blockchain; a MetaMask notification will provide details about the transaction cost.</List.Item>
   <List.Item>Confirm the transaction within MetaMask to execute the purchase.</List.Item>
 </List>
-<p>Once the transaction is validated and added to the blockchain, the purchase is completed and the user's account will be updated accordingly.</p>
+<p>Once the transaction is validated and added to the blockchain, the purchase is completed and the user&apos;s account will be updated accordingly.</p>
 </Segment>
 <Segment style={style.segment}>
 
@@ -166,7 +166,7 @@ This connection is maintained for future sessions, removing the need to reconnec
 <List bulleted>
   <List.Item>
     <List.Content>
-      <List.Header>User's Offer Table:</List.Header>
+      <List.Header>User&apos;s Offer Table:</List.Header>
       <List.Description>Displays the offers that the user has placed, allowing for easy tracking and management.</List.Description>
     </List.Content>
   </List.Item>
@@ -195,11 +195,11 @@ This connection is maintained for future sessions, removing the need to reconnec
         Users also have the flexibility to modify the details of their existing offers. To modify an offer:
         <List ordered>
           <List.Item>Navigate to the offer you intend to adjust in your list of active offers.</List.Item>
-          <List.Item>Select the 'edit offer' option to edit the offer's details such as expiration date, price per energy unit, or quantity of energy.</List.Item>
+          <List.Item>Select the <emph>edit offer</emph> option to edit the offer&apos;s details such as expiration date, price per energy unit, or quantity of energy.</List.Item>
           <List.Item>After making the desired changes, submit the modification, which will prompt a MetaMask notification detailing the associated transaction costs.</List.Item>
           <List.Item>Approve the modification via MetaMask to submit the changes to the blockchain.</List.Item>
         </List>
-        The offer's updated details will be displayed on the trading table once the modification has been validated and accepted by the blockchain.
+        The offer&apos;s updated details will be displayed on the trading table once the modification has been validated and accepted by the blockchain.
       </List.Description>
     </List.Content>
   </List.Item>

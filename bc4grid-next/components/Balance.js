@@ -8,78 +8,61 @@ import {style} from '@/components/ui/style.css.js';
 
 import { useEthExplorer } from '@/app/web3/context/ethExplorerContext';
 
-// define component
-const ShowAccount = ({ account }) => {
-  
-    
-  return (
-    <div style={{ wordBreak: 'break-all' }}>
-      <Header as="h3" textAlign="center" >Address: <span style={style.primary}>{account}</span></Header>
-    </div>
-  );
-};
+const ShowAccount = ({ account }) => (
+  <div style={{ wordBreak: 'break-all' }}>
+    <Header as="h3" textAlign="center" >Address: <span style={style.primary}>{account}</span></Header>
+  </div>
+);
 
-// API endpoint: /user/id/balance
-const BalanceInfo = ({ balance, power }) => {
-   
-  return (
-    <Segment padded="very">
-      <Grid columns={2} relaxed="very" stackable textAlign="center">
-        <Grid.Row>
-          <Grid.Column>
+const BalanceInfo = ({ balance, power }) => (
+  <Segment padded="very">
+    <Grid columns={2} relaxed="very" stackable textAlign="center">
+      <Grid.Row>
+        <Grid.Column>
           <Statistic size='mini' label='Balance (eth)' value={Number(balance).toFixed(2)} /> 
-          </Grid.Column>
-          <Grid.Column>
+        </Grid.Column>
+        <Grid.Column>
           <Statistic size='mini' label='Tokens (ENT)' value={power} /> 
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
-    </Segment>
-  );
-};
+        </Grid.Column>
+      </Grid.Row>
+    </Grid>
+  </Segment>
+);
 
 const Balance = () => {
-  
-  // use ethExplorer
   const { ethExplorer } = useEthExplorer();
-
   const [account, setAccount] = useState([]);  
-  const [balance, setBalance] = useState(''); // assuming balance is a string
-  const [power, setPower] = useState(''); // total power at disposal
+  const [balance, setBalance] = useState(''); 
+  const [power, setPower] = useState(''); 
 
   useEffect(() => {
     const fetchAccountAndBalance = async () => {
       if (!ethExplorer) {
-        // ethExplorer is not yet initialized, so we can't proceed
         console.log('ethExplorer is not initialized yet.');
         return;
       }
 
-      
-      const fetchedAccount = await ethExplorer.getUserAccount();
-      setAccount(fetchedAccount);
+      try {
+        const fetchedAccount = await ethExplorer.getUserAccount();
+        setAccount(fetchedAccount);
 
-      if (account !== '') {        
         const fetchedBalance = await ethExplorer.getBalance(fetchedAccount);
         const balanceInEther = web3.utils.fromWei(fetchedBalance, 'ether');
-        setBalance(balanceInEther); // You might need to convert this to kWh based on your logic
+        setBalance(balanceInEther);
 
         const tokenBalance = await ethExplorer.getTokenBalance(fetchedAccount);
         setPower(tokenBalance);
+      } catch (error) {
+        console.error(error);
       }
     };
 
     fetchAccountAndBalance();
-  }, [ethExplorer, account]); // Add ethExplorer to the dependency array
-
-
+  }, [ethExplorer]);
 
   return (
-
     <Segment>
-      <ShowAccount
-        account={account}        
-      />
+      <ShowAccount account={account} />
       <BalanceInfo balance={balance} power={power} />
     </Segment>
   );

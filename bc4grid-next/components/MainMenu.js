@@ -69,17 +69,17 @@ const MainMenu = () => {
               />
             </Link>
 
-            <Link href="/Help" passHref>
-              <Menu.Item 
-                name="help" 
-                active={activeItem === 'help'}
-                onMouseEnter={() => handleMouseEnter('help')}
-                onMouseLeave={handleMouseLeave}              
-              />
-            </Link>
-          
+           
           </>
         ) : (null)}
+        <Link href="/howto" passHref>
+            <Menu.Item 
+                name="User Guide" 
+                active={activeItem === 'User Guide'}
+                onMouseEnter={() => handleMouseEnter('User Guide')}
+                onMouseLeave={handleMouseLeave}              
+              />
+          </Link>
 
       <Link href="/about" passHref>
             <Menu.Item 
