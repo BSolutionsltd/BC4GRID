@@ -33,6 +33,7 @@ async function loginUserHandler(req) {
         image: true,
         isAdmin: true,
         isVerified: true, 
+        smartMeterSN: false
       },
     });
     if (user && user.password === hashPassword(password) && user.isVerified) {      

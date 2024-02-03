@@ -28,8 +28,7 @@ function SmartMeter() {
     // Make the fetch call
     fetch(url)
       .then(response => response.json())
-      .then(info => {
-        console.log('SMART-METER information:', info);
+      .then(info => {        
         setMeter(info);
       });
     }
@@ -58,7 +57,7 @@ function SmartMeter() {
                     <Item.Header>{meter.name}</Item.Header>
                     <Item.Description>
                       <p><strong>model:</strong> {meter.model ? meter.model : 'N/A'}</p>
-                      <p><strong>serial number</strong>: {meter.sn}</p>                      
+                      <p><strong>serial number</strong>: {meter.sn ? meter.sn : 'N/A'}</p>                      
                     </Item.Description>
                   </Item.Content>
                 </Item>

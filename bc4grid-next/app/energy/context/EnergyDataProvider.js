@@ -17,11 +17,13 @@ export const EnergyDataProvider = ({ children }) => {
         // data points
         const [data, setData] = useState([]); 
         const [tokenizationTime, setTokenizationTime] = useState(''); 
+        const [meter, setMeter] = useState({});
 
         const startDate = new Date('2024-01-27T00:00:00');
         
         // refresh interval
-        const refreshInterval = 1 * 60 * 1000; // 1 min
+        const refreshInterval = 1 * 60 * 1000; // 1 min        
+
 
         const fetchData = (userId, from, to, isInitialFetch) => {
             // Create a new URL object
@@ -65,12 +67,29 @@ export const EnergyDataProvider = ({ children }) => {
 
               //console.log('data on Provider: ', data);
           };
+
+          useEffect(() => {
+            if (session) {
+              const userId = session.user.id;
+              const params = new URLSearchParams({ userId: userId });
+              const url = '/api/auth/smart-meter/info?' + params.toString();
+            // Make the fetch call
+            fetch(url)
+              .then(response => response.json())
+              .then(info => {        
+                setMeter(info);
+              });
+            }
+          }, [session]);
           
         useEffect(() => {
             // Initial fetch of data from the start of the day
-            if (session) {
+            if (session && meter.sn) {
                 const userId = session.user.id;
+                console.log('Here is the user:', session.user);
                 const params = new URLSearchParams({ userId: userId });
+                // check if user has 
+
                 const url = '/api/auth/smart-meter/timer?' + params.toString();
                                 
                 fetch('/api/auth/smart-meter/timer?' + params.toString())
