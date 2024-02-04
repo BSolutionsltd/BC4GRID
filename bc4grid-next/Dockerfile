@@ -1,6 +1,7 @@
-FROM node:19-alpine
+FROM node:20-alpine
 WORKDIR /app
-COPY package.json ./
-COPY . .
+COPY package.json package-lock.json ./
 RUN npm install
-# CMD [ "npm", "run", "build" ]
+COPY . .
+RUN npx prisma generate
+CMD [ "npm", "run", "build" ]
