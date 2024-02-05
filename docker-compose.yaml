@@ -80,10 +80,7 @@ services:
     build:
       context: ./bc4grid-next
       dockerfile: ./Dockerfile
-    working_dir: /app
-    volumes:
-      - ./bc4grid-next:/app
-      - /app/node_modules
+    working_dir: /app    
     ports:
       - 3000:3000
     expose:
@@ -91,6 +88,8 @@ services:
     entrypoint: ["npm", "run", "start"]    
     tty: true
     user: root
+    environment:
+    - PRISMA_CLI_PLATFORM=linux 
     depends_on:
       sdc:
           condition: service_healthy

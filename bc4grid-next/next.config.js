@@ -4,6 +4,7 @@ const nextConfig = {
         domains: ['localhost'],
     },
     reactStrictMode: false,
+    transpilePackages: ['crypto-js']
 
 }
 

@@ -4,4 +4,5 @@ COPY package.json package-lock.json ./
 RUN npm install
 COPY . .
 RUN npx prisma generate
-CMD [ "npm", "run", "build" ]
+RUN npm run build
+CMD [ "npm", "start" ]
