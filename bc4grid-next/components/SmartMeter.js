@@ -30,6 +30,7 @@ function SmartMeter() {
       .then(response => response.json())
       .then(info => {        
         setMeter(info);
+        console.log('meter info: ', info);
       });
     }
   }, [session]);

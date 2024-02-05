@@ -27,7 +27,7 @@ export async function GET(req) {
 
     async function getProsumerData(smartMeterSN, from, to ) {     
 
-      const url = new URL(`http://localhost:5000/api/v1/smartmeter/${smartMeterSN}`);
+      const url = new URL(`http://sdc:5000/api/v1/smartmeter/${smartMeterSN}`);
       
       // add from timestamp to url
       url.searchParams.append("from", from);
