@@ -71,7 +71,7 @@ Before you begin, ensure you have met the following requirements:
 
 The development of this application was supported by the **EU H2020 SMART4ALL #3 CTTE BC for creating decentralized smart grid system (BC4GRID) project**
 
-### Particapants
+### Consortium
  * [Mathematical Institute of the Serbian Academy of Sciences and Arts (MISANU)](https://www.mi.sanu.ac.rs/): 
 Part of the Serbian Academy of Sciences and Arts, specializes in mathematics, mechanics, and computer science research and focuses on advanced research, industry applications, and international collaboration.
  * [INCEPTON](incepton.hr): a Croatian SME developing data-driven models in commercial software projects for smart energy grid solutions, including custom-made software for the industry.
