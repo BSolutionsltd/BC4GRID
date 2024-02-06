@@ -24,7 +24,7 @@ export async function GET(req) {
     async function getSmartMeterInfo(smartMeterSN) {     
 
       // Fetch the smart meter info from the database
-      const url = new URL(`http://sdc:5000/api/v1/smartmeter/${smartMeterSN}`);
+      const url = new URL(`http://${process.env.COLLECTOR_API}:5000/api/v1/smartmeter/${smartMeterSN}`);
            
       const res = await fetch(url, {
         method: "GET",
@@ -32,8 +32,6 @@ export async function GET(req) {
           "Content-Type": "application/json"
         }
       });
-
-      console.log('response: ', res);
 
       if (!res.ok) {
         // This will activate the closest `error.js` Error Boundary        
