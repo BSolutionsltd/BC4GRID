@@ -1,0 +1,14 @@
+@startuml fig_02
+"Smart Meter (Simulator)" --> "Authorization Server": Authenticate with Client ID + Client Secret
+activate "Authorization Server"
+alt Client ID + Client Secret VALID
+    "Authorization Server" --> "Smart Meter (Simulator)": Authentication Success: Access Token
+else Client ID + Client Secret NOT VALID
+    "Authorization Server" --> "Smart Meter (Simulator)":  Authentication Failure
+end
+deactivate "Authorization Server"
+"Smart Meter (Simulator)" --> "Smart Meter Collector Backend": Request to the protected resource with Access Token
+activate "Smart Meter Collector Backend"
+"Smart Meter Collector Backend" --> "Smart Meter (Simulator)": Protected resource response
+deactivate "Smart Meter Collector Backend"
+@enduml

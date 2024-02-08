@@ -1,0 +1,7 @@
+pandas
+numpy
+requests
+openpyxl
+datetime
+pytest-cov
+requests-mock

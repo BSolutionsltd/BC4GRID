@@ -838,11 +838,6 @@ async function initSmartContractEvents() {
     loadEventsFromSmartContracts(from);
 }
 
-/**
- * It loads the events from the latest X blocks (passed as parameter).
- *
- * @param   {integer}  fromBlockNumber      The number of latest blocks to load the events.
- */
 async function loadEventsFromLatestBlocks(fromBlockNumber) {
     var blockNumber = await window.ethExp.getBlockNumber();
     var from = blockNumber - fromBlockNumber;
@@ -865,7 +860,7 @@ async function loadEventsFromLatestBlocks(fromBlockNumber) {
 function loadEventsFromSmartContracts(fromBlockNumber) {
     for (let contractName in window.ethExp.contractDetails) {
         window.ethExp.contract(contractName).events.allEvents({
-            fromBlock: fromBlockNumber
+            fromBlock: fromBlockNumber //'latest'
         }, function(error, event) { 
             UI.eventsConsoleError(event);
         })

@@ -1,0 +1,53 @@
+POST http://localhost:5000/api/v1/user HTTP/1.1
+Content-Type: application/json
+
+{
+    "code": "Consumer1",
+    "firstname": "John",
+    "lastname": "Williams",
+    "email": "somebody@gmail.com",
+    "password": "password",
+    "smartmeter": {
+        "sn": "HG6789DS"
+    }
+}
+
+POST http://localhost:5000/api/v1/user HTTP/1.1
+Content-Type: application/json
+
+{
+    "code": "Consumer2",
+    "firstname": "Henry",
+    "lastname": "Hampton",
+    "email": "somebody2@gmail.com",
+    "password": "password",
+    "smartmeter": {
+        "sn": "HG678K5F"
+    }
+}
+
+
+POST http://localhost:5000/api/v1/smartmeter/HG6789DS/data HTTP/1.1
+Content-Type: application/json
+
+{
+    "dish_washer": 0.0
+}
+
+GET http://localhost:5000/api/v1/smartmeter/HG6789DS/balance?from=2024-01-26T23:00:00&to=2024-01-26T23:35:00 HTTP/1.1
+Content-Type: application/json
+
+GET http://localhost:5000/api/v1/smartmeter/HG67ffDS?from=2024-01-26T23:00:00&to=2024-01-26T23:35:00 HTTP/1.1
+Content-Type: application/json
+
+GET http://localhost:5000/api/v1/smartmeter/HG6789DS?from=2024-01-26T23:00:00&to=2024-01-26T23:35:00 HTTP/1.1
+Content-Type: application/json
+
+GET http://localhost:5000/api/v1/smartmeter/HG6789DS HTTP/1.1
+Content-Type: application/json
+
+GET http://localhost:5000/api/v1/smartmeter/HG6789DS?from=2024-01-01T00:00:00 HTTP/1.1
+Content-Type: application/json
+
+GET http://127.0.0.1:5000/api/v1/smartmeter/HG6789DS?to=2024-01-27T00:00:00 HTTP/1.1
+Content-Type: application/json

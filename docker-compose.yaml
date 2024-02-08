@@ -1,0 +1,116 @@
+services:
+
+  sim1:
+    build:
+      context: ./smart-meter-simulator
+      dockerfile: ./Dockerfile
+    environment:
+      - SN=HG6789DS
+      - CONSUMER=Consumer1
+      - CONSUMER_FIRSTNAME=John
+      - CONSUMER_LASTNAME=Williams
+      - CONSUMER_EMAIL=somebody@gmail.com
+      - CONSUMER_PASSWORD=password
+      - SMART_COLLECTOR_BACKEND_URL=sdc:5000
+      - DATA_DIR=./data
+      - DATA_FILE=Dataset.xlsx
+      - DATA_KEYS=Total Production,Total Consumption,AC,Dish washer,Washing Machine,Dryer,Water heater,TV,Microwave,Kettle,Lighting,Refrigerator
+    volumes:
+      - ./smart-meter-simulator:/root
+    entrypoint: ["sh", "./src/run.sh"]
+    tty: true
+    user: root
+    depends_on:
+      sdc:
+        condition: service_healthy
+  
+  sim2:
+    build:
+      context: ./smart-meter-simulator
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./smart-meter-simulator:/root
+    environment:
+      - SN=HG678K5F
+      - CONSUMER=Consumer2
+      - CONSUMER_FIRSTNAME=Henry
+      - CONSUMER_LASTNAME=Hamptom
+      - CONSUMER_EMAIL=somebody2@gmail.com
+      - CONSUMER_PASSWORD=password
+      - SMART_COLLECTOR_BACKEND_URL=sdc:5000
+      - DATA_DIR=./data
+      - DATA_FILE=Dataset.xlsx
+      - DATA_KEYS=Total Production,Total Consumption,AC,Dish washer,Washing Machine,Dryer,Water heater,TV,Microwave,Kettle,Lighting,Refrigerator
+    entrypoint: ["sh", "./src/run.sh"]
+    tty: true
+    user: root
+    depends_on:
+      sdc:
+        condition: service_healthy
+
+  sdc:
+    build:
+      context: ./smart-meter-collector
+      dockerfile: ./Dockerfile
+    working_dir: /app/smart-meter-collector/src
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=bc4grid
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=smart-meter-collector
+      - FLASK_ENV=production
+      - DEBUG=False
+      - TESTING=False
+    volumes:
+      - .:/app
+    ports:
+      - 5000:5000
+    expose:
+      - 5000
+    entrypoint: ["flask", "run", "--host=0.0.0.0"]
+    tty: true
+    user: root
+    healthcheck:
+      test: curl --fail http://localhost:5000/check || exit 1
+      interval: 4s
+      timeout: 2s
+      retries: 3
+    depends_on:
+      db:
+        condition: service_started
+
+  frontend:
+    build:
+      context: ./bc4grid-next
+      dockerfile: ./Dockerfile
+    working_dir: /app    
+    ports:
+      - 3000:3000
+    expose:
+      - 3000
+    entrypoint: ["npm", "run", "start"]    
+    tty: true
+    user: root
+    environment:
+    - PRISMA_CLI_PLATFORM=linux 
+    depends_on:
+      sdc:
+          condition: service_healthy
+      sim1:
+        condition: service_started
+      sim2:
+        condition: service_started
+
+  db:
+      image: postgres
+      volumes:
+        - postgres_data:/var/lib/postgresql/data/
+      ports:
+        - '5432:5432'
+      environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=bc4grid
+
+volumes:
+  postgres_data:

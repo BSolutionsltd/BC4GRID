@@ -1,12 +1,15 @@
-# BC4GRID
+# BC4GRID Distributed Blockchain App
 
-Repository for power-grid energy trading via blockchain
+## Description
 
-## Ethereum DApp Interface
+This distributed application represents a Blockchain software solution based on cryptographic technology. It was developed to support the transition of power grids from a centralized to a decentralized model, offering functionalities for prosumers and consumers to monitor their energy production and consumption. It also provides an energy market for users to sell excess energy or buy energy from others in a decentralized manner. The application serves as a starting point for product developers, students, and researchers to develop new products using Blockchain technology. It facilitates learning and experimentation with different consensus protocols and cryptographic algorithms and techniques.
 
-This project provides a user interface for interacting with the Ethereum blockchain. It allows users to interact with smart contracts, monitor blockchain events, and view network status information.
+Key components include:
+ * Ethereum smart contracts for core functionalities.
+ * A user web interface using the Web3.js library and Metamask wallet to communicate with the Ethereum blockchain platform hosting the smart contracts.
+ * A smart meter simulator that emulates energy consumption and production based on real-life data.
 
-## Features
+ ## Features
 
 - **Network status display**: Shows connected status, wallet address, network ID, gas limit, base fee, and priority fee.
 - **Wallet input**: Allows input of wallet address and private key.
@@ -21,26 +24,59 @@ This project provides a user interface for interacting with the Ethereum blockch
   - **Search and filter**: Add functionality to search and filter through blockchain events and transactions.
   - **User management**: If your DApp has user accounts,  a dashboard for managing user information and activity is provided.
 
-## Main Files
+## Prerequisites
 
-- `index.html`: The main page of the application. It includes Bootstrap for styling and the Web3.js library for interacting with Ethereum nodes.
-- `scripts/bc4grid.js`: This script file defines classes and functions for interacting with the Ethereum blockchain using Web3.js.
+Before you begin, ensure you have met the following requirements:
 
-## How to Use
+- Node.js: [![Node.js](https://img.shields.io/badge/Node.js-v14.17.4-green.svg)](https://nodejs.org/)
+- npm: [![npm](https://img.shields.io/badge/npm-v6.14.14-blue.svg)](https://www.npmjs.com/)
+- Docker: [![Docker](https://img.shields.io/badge/Docker-v20.10.8-blue.svg)](https://www.docker.com/)
+  - Docker must be installed and running on your machine. You can verify this by running `docker -v` in your terminal. If Docker is installed, this command will return the version number.
+- Docker Compose: [![Docker Compose](https://img.shields.io/badge/Docker%20Compose-v1.29.2-blue.svg)](https://docs.docker.com/compose/)
+  - Docker Compose must be installed and working. You can verify this by running `docker-compose -v` in your terminal. If Docker Compose is installed, this command will return the version number.
 
-1. Open `index.html` in your web browser.
-2. Connect to your Ethereum node and input your wallet credentials.
-3. Use the interface to interact with your smart contracts and monitor blockchain events.
+## Installation
 
-## Dependencies
+1. **Clone the repository:**
 
-- [Bootstrap](https://getbootstrap.com/): Used for styling the application.
-- [Web3.js](https://web3js.readthedocs.io/): A collection of libraries that allow you to interact with a local or remote Ethereum node using HTTP, IPC or WebSocket.
+    ```bash
+    git clone https://github.com/BSolutions/BC4GRID.git
+    ```
 
+2. **Navigate to the project directory:**
+
+    ```bash
+    cd BC4GRID/
+    ```
+
+3. **Build and run the application using Docker Compose:**
+
+    ```bash
+    docker-compose up --build
+    ```
+
+    This command will build the Docker images for the services defined in your `docker-compose.yml` file and start the containers.
+
+    If you want to run the containers in the background, you can use the `-d` option:
+
+    ```bash
+    docker-compose up --build -d
+    ```
+
+    To run application, run in browser with **installed Metamask**: `localhost:3000`.
+
+    Admin user is `admin`, password `bc4grid`. All other registered users should be approved by admin. 
+    
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+The development of this application was supported by the **EU H2020 SMART4ALL #3 CTTE BC for creating decentralized smart grid system (BC4GRID) project**
+
+### Consortium
+ * [Mathematical Institute of the Serbian Academy of Sciences and Arts (MISANU)](https://www.mi.sanu.ac.rs/): 
+Part of the Serbian Academy of Sciences and Arts, specializes in mathematics, mechanics, and computer science research and focuses on advanced research, industry applications, and international collaboration.
+ * [INCEPTON](incepton.hr): a Croatian SME developing data-driven models in commercial software projects for smart energy grid solutions, including custom-made software for the industry.
+ * [B Solutions doo (BSN)](https://www.b-solutions.me/): 
+ A Montenegrin SME with a proven track record in marketing and commercialization, responsible for marketing, commercialization, and expansion to the South-East Europe market.
 
 ## License
-
-Not sure what licence should be here :-) 
+This project is licensed under the MIT License
