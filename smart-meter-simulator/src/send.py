@@ -10,6 +10,35 @@ import json
 import sys
 
 
+def download(url: str, dest_folder: str, filename: str):
+    if not os.path.exists(dest_folder):
+        os.makedirs(dest_folder)  # create folder if it does not exist
+
+    # filename = url.split('/')[-1].replace(" ", "_")  # be careful with file names
+    file_path = os.path.join(dest_folder, filename)
+
+    r = requests.get(url, stream=True)
+    if r.ok:
+        print("saving to", os.path.abspath(file_path))
+        with open(file_path, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=1024 * 32):
+                if chunk:
+                    f.write(chunk)
+                    f.flush()
+                    os.fsync(f.fileno())
+    else:  # HTTP status code 4XX/5XX
+        print("Download failed: status code {}\n{}".format(r.status_code, r.text))
+        
+
+
+if os.getenv('DATA_DIR') is None:
+    os.environ['DATA_DIR'] = './data'
+if os.getenv('DATA_FILE') is None:
+    os.environ['DATA_FILE'] = 'Dataset.xlsx'
+
+if not os.path.isfile(os.path.join(os.getenv('DATA_DIR'),os.getenv('DATA_FILE'))):
+    # download file to location
+    download(url = "https://onedrive.live.com/download?resid=48274D220F42BCFB%21235220&authkey=!AMULzAXlapGQToE&em=2", dest_folder=os.getenv('DATA_DIR'), filename='Dataset.xlsx')
 
 
 s = requests.Session()

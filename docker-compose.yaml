@@ -59,6 +59,9 @@ services:
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
       - POSTGRES_DATABASE=smart-meter-collector
+      - FLASK_ENV=production
+      - DEBUG=False
+      - TESTING=False
     volumes:
       - .:/app
     ports:
@@ -74,7 +77,8 @@ services:
       timeout: 2s
       retries: 3
     depends_on:
-      - db
+      db:
+        condition: service_started
 
   frontend:
     build:
