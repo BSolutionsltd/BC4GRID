@@ -21,7 +21,7 @@ def download(url: str, dest_folder: str, filename: str):
     if r.ok:
         print("saving to", os.path.abspath(file_path))
         with open(file_path, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=1024 * 32):
+            for chunk in r.iter_content(chunk_size=1024 * 8):
                 if chunk:
                     f.write(chunk)
                     f.flush()
